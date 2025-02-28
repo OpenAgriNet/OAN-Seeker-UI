@@ -1,3 +1,10 @@
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif !important;
+  background-color: rgba(255, 255, 255, 1);
+}
 * {
   margin: 0;
   padding: 0;
@@ -5,21 +12,131 @@
   font-family: "Poppins", sans-serif !important;
 }
 
-
 .page-content {
-  margin: 10px; 
+  margin: 10px;
 }
 
+/* Landing page */
+.landing-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(171.86deg, #02224c -107.4%, #cfcfcf 104.96%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+/* Circles */
+.circle-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(163px, -76px);
+}
 
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
 
+/* Circle Sizes */
+.outer-circle {
+  width: 789px;
+  height: 789px;
+}
+.second-circle {
+  width: 587px;
+  height: 587px;
+}
+.third-circle {
+  width: 386px;
+  height: 386px;
+}
+.inner-circle {
+  width: 170px;
+  height: 170px;
+}
 
+/* Sun and Cloud */
+.sun {
+  position: absolute;
+  top: 3%;
+  left: 0%;
+  width: 70px;
+  height: auto;
+  z-index: 1;
+}
 
+.cloud {
+  position: absolute;
+  bottom: 20%;
+  left: 32%;
+  transform: translateX(0%);
+  width: 68vw;
+  /* max-width: 290px; */
+  height: auto;
+  z-index: 1;
+}
 
+/* Site Logo */
+.logo {
+  /* position: absolute;
+  top: 5%;
+  left: 10%; */
+  width: 80px;
+  height: auto;
+  z-index: 2;
+}
+
+/* Text Section */
+.text-container {
+  position: absolute;
+  top: 40%;
+  /* left: 10%; */
+  width: 90%;
+  text-align: left;
+  color: rgba(73, 74, 75, 1);
+  z-index: 2;
+}
+
+.text-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.text-container p {
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* CTA Button */
+.button {
+  position: absolute;
+  /* bottom: 10%; */
+  background-color: rgba(11, 85, 138, 1);
+  color: white;
+  font-size: 1rem;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+  margin-top: 3rem;
+
+}
+
+.button:hover {
+  background-color: rgba(11, 85, 138, 1);
+}
 
 /* MUI Style change */
-
-/* Bottom bar tabs text color */
 .css-1l6hn1g-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
   color: rgba(49, 92, 10, 1) !important;
 }
