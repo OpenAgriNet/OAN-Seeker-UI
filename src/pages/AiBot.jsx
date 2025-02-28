@@ -1,6 +1,6 @@
 import { Box, TextField, IconButton, Typography, MenuItem, Select } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const AiBot = () => {
   const [messages, setMessages] = useState([
@@ -20,15 +20,14 @@ const AiBot = () => {
     }
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+//   useEffect(() => {
+//     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+//   }, [messages]);
 
   return (
     <Box
       sx={{
         width: "100%",
-        maxWidth: 400,
         margin: "auto",
         display: "flex",
         flexDirection: "column",
@@ -42,12 +41,11 @@ const AiBot = () => {
       <Box sx={{ padding: 2, backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Schemes Chatbot</Box>
       
       {/* Messages */}
-      <Box sx={{ flexGrow: 1, padding: 2, overflowY: "auto", display: "flex", flexDirection: "column", marginBottom: "60px" }}>
+      <Box sx={{ flexGrow: 1, padding: 2, overflowY: "auto", display: "flex", flexDirection: "column", marginBottom: "160px" }}>
         {messages.map((msg, index) => (
           <Box
             key={index}
             sx={{
-              maxWidth: "75%",
               padding: 1.5,
               borderRadius: 2,
               marginBottom: 2,
@@ -82,7 +80,7 @@ const AiBot = () => {
       </Box>
       
       {/* Input Box with Language Selection */}
-      <Box sx={{ display: "flex", flexDirection: "column", padding: 2, borderTop: "1px solid #ccc", position: "fixed", bottom: "50px", backgroundColor: "white", zIndex: 1000, width: "100%", maxWidth: 400 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", padding: 2, borderTop: "1px solid #ccc", position: "fixed", bottom: "50px", backgroundColor: "white", zIndex: 1000, width: "100%" }}>
         <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#f8f8ff", borderRadius: "50px", padding: "5px 10px", border:'1px solid rgba(244, 244, 244, 1)' }}>
           <TextField
             fullWidth

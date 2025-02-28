@@ -29,7 +29,7 @@ const BottomBar = () => {
         value={value}
         onChange={(event, newValue) => {
           setValue(newValue);
-          if (newValue === 0) navigate("/");
+          if (newValue === 0) navigate("/home");
           if (newValue === 1) navigate("/weather");
           if (newValue === 2) navigate("/schemes");
           if (newValue === 3) navigate("/aibot");
