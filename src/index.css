@@ -4,3 +4,22 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif !important;
 }
+
+
+.page-content {
+  margin: 10px; 
+}
+
+
+
+
+
+
+
+
+/* MUI Style change */
+
+/* Bottom bar tabs text color */
+.css-1l6hn1g-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
+  color: rgba(49, 92, 10, 1) !important;
+}
