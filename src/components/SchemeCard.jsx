@@ -6,7 +6,7 @@ import {
   Button,
   Chip,
 } from "@mui/material";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from "react-router-dom";
 
 const SchemeCard = ({ scheme }) => {
@@ -26,9 +26,11 @@ const SchemeCard = ({ scheme }) => {
         maxWidth: "100%",
         position: "relative",
         marginTop: "1rem",
+        cursor: "pointer",
       }}
+      onClick={handleViewDetails}
     >
-      {/* Application Deadline Label */}
+
       <Box
         sx={{
           position: "absolute",
@@ -46,17 +48,16 @@ const SchemeCard = ({ scheme }) => {
       </Box>
 
       <CardContent sx={{ mt: 1, pb: "4px !important" }}>
-        {/* Scheme Name */}
+
         <Typography variant="h6" fontWeight="500" mt={2}>
           {scheme.title}
         </Typography>
 
-        {/* Scheme Provider */}
-        <Typography variant="body2" color="text.secondary" >
+
+        <Typography variant="body2" color="text.secondary">
           {scheme.provider_name}
         </Typography>
 
-        {/* Benefit Detail */}
         <Typography
           variant="body2"
           fontWeight="500"
@@ -65,7 +66,7 @@ const SchemeCard = ({ scheme }) => {
           ₹ {scheme.categories?.join(", ") || "Benefit Detail"}
         </Typography>
 
-        {/* Labels */}
+
         <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
           {scheme.fulfillments?.map((tag, index) => (
             <Chip
@@ -83,12 +84,11 @@ const SchemeCard = ({ scheme }) => {
           ))}
         </Box>
 
-        {/* Short Description */}
         <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
           {scheme.short_desc}
         </Typography>
 
-        {/* View Details Button */}
+
         <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
           <Button
             onClick={handleViewDetails}
@@ -99,7 +99,7 @@ const SchemeCard = ({ scheme }) => {
               display: "flex",
               alignItems: "center",
             }}
-            endIcon={<ArrowForwardIosIcon fontSize="small" />}
+            endIcon={<ArrowForwardIcon fontSize="small" />}
           >
             View Details
           </Button>

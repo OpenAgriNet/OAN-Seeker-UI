@@ -1,7 +1,7 @@
 import { TextField, InputAdornment, Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
-const SearchBar = () => {
+const SearchBar = ({ searchQuery, setSearchQuery }) => {
   return (
     <Box
       sx={{
@@ -16,6 +16,8 @@ const SearchBar = () => {
         fullWidth
         placeholder="Search By Name"
         variant="outlined"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)} 
         InputProps={{
           sx: {
             backgroundColor: "rgba(233, 231, 239, 1)",
