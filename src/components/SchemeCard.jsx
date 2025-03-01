@@ -9,12 +9,11 @@ import {
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 
-// eslint-disable-next-line react/prop-types
-const SchemeCard = ({ schemeId  }) => {
+const SchemeCard = ({ scheme }) => {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/schemes/details/${schemeId}`);
+    navigate(`/schemes/details/${scheme.id}`, { state: { scheme } });
   };
 
   return (
@@ -29,7 +28,7 @@ const SchemeCard = ({ schemeId  }) => {
         marginTop: "1rem",
       }}
     >
-      {/* Application Deadline Label (Positioned to the Right) */}
+      {/* Application Deadline Label */}
       <Box
         sx={{
           position: "absolute",
@@ -40,7 +39,7 @@ const SchemeCard = ({ schemeId  }) => {
           padding: "4px 10px",
           borderRadius: "0px 10px ",
           fontSize: "14px",
-          fontWeight: "bold",
+          fontWeight: "500",
         }}
       >
         Application Deadline
@@ -48,72 +47,51 @@ const SchemeCard = ({ schemeId  }) => {
 
       <CardContent sx={{ mt: 1, pb: "4px !important" }}>
         {/* Scheme Name */}
-        <Typography variant="h6" fontWeight="bold">
-          Scheme Name
+        <Typography variant="h6" fontWeight="500" mt={2}>
+          {scheme.title}
         </Typography>
 
         {/* Scheme Provider */}
-        <Typography variant="body2" color="text.secondary">
-          Scheme Provider
+        <Typography variant="body2" color="text.secondary" >
+          {scheme.provider_name}
         </Typography>
 
-        {/* Benefit Detail with ₹ Symbol */}
+        {/* Benefit Detail */}
         <Typography
           variant="body2"
           fontWeight="500"
           sx={{ mt: 1, display: "flex", alignItems: "center" }}
         >
-          ₹ Benefit Detail
+          ₹ {scheme.categories?.join(", ") || "Benefit Detail"}
         </Typography>
 
-        {/* Labels (Aligned Horizontally) */}
+        {/* Labels */}
         <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
-          <Chip
-            label="Label 1"
-            variant="outlined"
-            sx={{
-              borderRadius: "5px",
-              fontSize: "12px",
-              height: "26px",
-              color: "rgba(11, 85, 138, 1)",
-              borderColor: "rgba(11, 85, 138, 1)",
-            }}
-          />
-          <Chip
-            label="Label 2"
-            variant="outlined"
-            sx={{
-              borderRadius: "5px",
-              fontSize: "12px",
-              height: "26px",
-              color: "rgba(11, 85, 138, 1)",
-              borderColor: "rgba(11, 85, 138, 1)",
-            }}
-          />
-          <Chip
-            label="Label 3"
-            variant="outlined"
-            sx={{
-              borderRadius: "5px",
-              fontSize: "12px",
-              height: "26px",
-              color: "rgba(11, 85, 138, 1)",
-              borderColor: "rgba(11, 85, 138, 1)",
-            }}
-          />
+          {scheme.fulfillments?.map((tag, index) => (
+            <Chip
+              key={index}
+              label={tag}
+              variant="outlined"
+              sx={{
+                borderRadius: "5px",
+                fontSize: "12px",
+                height: "26px",
+                color: "rgba(11, 85, 138, 1)",
+                borderColor: "rgba(11, 85, 138, 1)",
+              }}
+            />
+          ))}
         </Box>
 
-        {/* Description */}
+        {/* Short Description */}
         <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
-          Lorem ipsum dolor sit amet consectetur. A felis ut ullamcorper augue
-          feugiat at nisi id. Pharetra sit at risus natoque vel habitasse. Nisl
-          nunc curabitur sit id tortor faucibus vel fermentum.
+          {scheme.short_desc}
         </Typography>
 
-        {/* Centered View Details Button */}
+        {/* View Details Button */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
           <Button
-            onClick={handleViewDetails} // Navigate on click
+            onClick={handleViewDetails}
             sx={{
               color: "#0056b3",
               fontWeight: "bold",

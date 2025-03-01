@@ -34,6 +34,7 @@ const Header = () => {
         px: 2,
         paddingLeft: "0px !imprtant",
         paddingRight: "0px !imprtant",
+        boxShadow:'none'
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
