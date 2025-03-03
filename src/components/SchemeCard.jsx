@@ -6,7 +6,7 @@ import {
   Button,
   Chip,
 } from "@mui/material";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 
 const SchemeCard = ({ scheme }) => {
@@ -30,8 +30,7 @@ const SchemeCard = ({ scheme }) => {
       }}
       onClick={handleViewDetails}
     >
-
-      <Box
+      {/* <Box
         sx={{
           position: "absolute",
           top: 0,
@@ -45,14 +44,12 @@ const SchemeCard = ({ scheme }) => {
         }}
       >
         Application Deadline
-      </Box>
+      </Box> */}
 
-      <CardContent sx={{ mt: 1, pb: "4px !important" }}>
-
-        <Typography variant="h6" fontWeight="500" mt={2}>
+      <CardContent sx={{ padding: "10px 16px", pb: "4px !important" }}>
+        <Typography variant="h6" fontWeight="500">
           {scheme.title}
         </Typography>
-
 
         <Typography variant="body2" color="text.secondary">
           {scheme.provider_name}
@@ -65,7 +62,6 @@ const SchemeCard = ({ scheme }) => {
         >
           ₹ {scheme.categories?.join(", ") || "Benefit Detail"}
         </Typography>
-
 
         <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
           {scheme.fulfillments?.map((tag, index) => (
@@ -87,7 +83,6 @@ const SchemeCard = ({ scheme }) => {
         <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
           {scheme.short_desc}
         </Typography>
-
 
         <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
           <Button

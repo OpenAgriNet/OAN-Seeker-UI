@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 import {
   Container,
   TextField,
@@ -22,9 +22,23 @@ const Home = () => {
   const [loadingStates, setLoadingStates] = useState(true);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [data, setData] = useState({});
+  const navigate = useNavigate(); 
 
-  const navigate = useNavigate(); // ✅ Initialize navigate
+  // Load data from localStorage when the component mounts
+  useEffect(() => {
+    const storedState = localStorage.getItem("selectedState");
+    const storedDistrict = localStorage.getItem("selectedDistrict");
 
+    if (storedState) {
+      setSelectedState({ value: storedState, label: storedState });
+      fetchDistricts(storedState);
+    }
+    if (storedDistrict) {
+      setSelectedDistrict(storedDistrict);
+    }
+  }, []);
+
+  // Fetch states data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,6 +62,7 @@ const Home = () => {
     fetchData();
   }, []);
 
+  // Fetch districts for a selected state
   const fetchDistricts = (stateName) => {
     setLoadingDistricts(true);
     try {
@@ -61,13 +76,27 @@ const Home = () => {
     }
   };
 
+  // Store selected values in localStorage & navigate to "/schemes"
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
       localStorage.setItem("selectedState", selectedState.value);
       localStorage.setItem("selectedDistrict", selectedDistrict);
-      navigate("/schemes"); // ✅ Redirect user to "/schemes"
+      navigate("/schemes");
     }
   };
+
+  // Clear localStorage when the tab is closed
+  useEffect(() => {
+    const handleTabClose = () => {
+      localStorage.removeItem("selectedState");
+      localStorage.removeItem("selectedDistrict");
+    };
+
+    window.addEventListener("beforeunload", handleTabClose);
+    return () => {
+      window.removeEventListener("beforeunload", handleTabClose);
+    };
+  }, []);
 
   return (
     <Container maxWidth="xs">

@@ -2,6 +2,31 @@ import axios from "axios";
 
 const API_URL = "https://oan-schemes.tekdinext.com/content/search";
 
+// API URL for weather
+const WEATHER_API_URL = "https://oan-weather-seeker-api.tekdinext.com/content/searchWeather";
+
+export const fetchWeather = async (selectedDistrict) => {
+  if (!selectedDistrict) {
+    throw new Error("No location selected");
+  }
+  
+  try {
+    const response = await axios.post(
+      WEATHER_API_URL,
+      { location: selectedDistrict },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    // Return the array of items. Adjust this based on your API response structure.
+    return response.data?.responses?.[0]?.message?.catalog?.providers?.[0]?.items || [];
+  } catch (error) {
+    console.error("Error fetching weather:", error);
+    throw error;
+  }
+};
+
+// --- Your other API functions (fetchSchemes, sendQueryToBot, etc.) can remain here ---
+
+
 export const fetchSchemes = async (selectedDistrict) => {
   if (!selectedDistrict) return [];
 

@@ -15,7 +15,10 @@ body {
   margin: 10px;
 }
 
-/* Landing page */
+.no-scroll {
+  overflow: hidden;
+}
+
 .landing-page {
   position: relative;
   width: 100vw;
@@ -24,9 +27,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+
 }
 
-/* Circles */
 .circle-container {
   position: absolute;
   display: flex;
@@ -41,7 +45,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-/* Circle Sizes */
 .outer-circle {
   width: 789px;
   height: 789px;
@@ -93,7 +96,7 @@ body {
 /* Text Section */
 .text-container {
   position: absolute;
-  top: 40%;
+  top: 30%;
   /* left: 10%; */
   width: 90%;
   text-align: left;
@@ -128,7 +131,6 @@ body {
   text-align: center;
   z-index: 2;
   margin-top: 3rem;
-
 }
 
 .button:hover {

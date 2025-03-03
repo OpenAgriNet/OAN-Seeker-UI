@@ -14,13 +14,13 @@ const AiBot = () => {
   const [messages, setMessages] = useState([
     {
       text:
-        "Welcome to OAN AI Assistant! I am here to assist you with understanding and applying for various government schemes that support your agricultural activities and provide financial security.\n\n" +
-        "Here are a few examples of what you can ask:\n\n" +
-        "1. What are the benefits of the Pradhan Mantri Fasal Bima Yojana (PMFBY)?\n" +
-        "2. How can I register for the PM Kisan Samman Nidhi Yojana?\n" +
-        "3. What are the eligibility criteria for the PM Kisan Maandhan Yojana?\n" +
-        "4. What types of crop risks are covered under PMFBY?\n\n" +
-        "Feel free to ask about any of these schemes to get detailed information and guidance tailored to your needs.",
+        "Welcome to Kisan Sahayak AI!\n\n" +
+        "I am here to assist you with understanding and applying for various government schemes that support your agricultural activities. Here are a few examples of what you can ask: \n\n" +
+        "1. How can I apply for Pradhan Mantri Fasal Bima Yojana (PMFBY)?\n " +
+        "2. What are the eligibility criteria for PM Kisan Samman Nidhi Yojana?\n" +
+        "3. How does PM Kisan Maandhan Yojana provide pension benefits for farmers?\n" +
+        "4. What crops are covered under PMFBY and what risks are insured?\n\n" +
+        "I will provide clear and simple answers based on official government documents to help you make informed decisions. Ask me anything related to farming.",
       sender: "bot",
     },
   ]);
@@ -177,7 +177,6 @@ const AiBot = () => {
             backgroundColor: "#f8f8ff",
             borderRadius: "50px",
             padding: "5px 10px",
-            border: "1px solid #ccc",
           }}
         >
           <TextField
@@ -208,16 +207,8 @@ const AiBot = () => {
           sx={{ marginTop: 1, borderRadius: "10px" }}
         >
           <MenuItem value="en">English</MenuItem>
-          <MenuItem value="bn">Bengali</MenuItem>
-          <MenuItem value="gu">Gujarati</MenuItem>
           <MenuItem value="hi">Hindi</MenuItem>
-          <MenuItem value="kn">Kannada</MenuItem>
-          <MenuItem value="ml">Malayalam</MenuItem>
           <MenuItem value="mr">Marathi</MenuItem>
-          <MenuItem value="or">Odia</MenuItem>
-          <MenuItem value="pa">Punjabi</MenuItem>
-          <MenuItem value="ta">Tamil</MenuItem>
-          <MenuItem value="te">Telugu</MenuItem>
         </Select>
       </Box>
     </Box>

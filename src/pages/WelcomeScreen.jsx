@@ -1,13 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Sun from "../assets/Sun.svg";
 import Cloud from "../assets/cloud.svg";
 import Logo from "../assets/siteLogo.png";
 
-const LandingPage = () => {
+const WelcomeScreen = () => {
   const navigate = useNavigate();
-  
-
   return (
     <div className="landing-page">
       {/* Sun and Cloud Background */}
@@ -19,18 +17,18 @@ const LandingPage = () => {
         {/* Site Logo */}
         <img src={Logo} alt="Site Logo" className="logo" />
         <h1 style={{ fontSize: "40px", lineHeight: "45.6px" }}>
-        AgriNet: Your Farm, Our Weather, Better Harvests
+        <span style={{color:'rgba(11, 85, 138, 1)'}}>AgriNet: </span>Your Farm, Our Weather, Better Harvests
         </h1>
         <p>Stay ahead of the weather with our accurate forecasts</p>
-        
+
         {/* CTA Button */}
         <button className="button" onClick={() => navigate("/home")}>
           Get Started
         </button>
       </div>
 
-      {/* Circles Wrapper */}
-      <div className="circle-container">
+       {/* Circles Wrapper */}
+       <div className="circle-container">
         <div className="circle outer-circle"></div>
         <div className="circle second-circle"></div>
         <div className="circle third-circle"></div>
@@ -40,4 +38,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+export default WelcomeScreen;

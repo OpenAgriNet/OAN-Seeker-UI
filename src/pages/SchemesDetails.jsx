@@ -1,12 +1,12 @@
 import { Box, Typography, IconButton, Container, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useLocation } from "react-router-dom";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew"; // Import icon
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"; 
 
 const SchemesDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const scheme = location.state?.scheme; // Get scheme details
+  const scheme = location.state?.scheme; 
 
   if (!scheme) {
     return <Typography>No scheme details found.</Typography>;
@@ -33,14 +33,11 @@ const SchemesDetails = () => {
           </Typography>
         </Box>
 
-        {/* Page Content */}
         <Box className="page-content" sx={{ padding: "16px" }}>
-          {/* Provider Name */}
           <Typography variant="body1" fontWeight="bold" sx={{ mt: 1 }}>
             Provider: {scheme.provider_name}
           </Typography>
 
-          {/* Categories */}
           {scheme.categories && scheme.categories.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">Categories</Typography>
@@ -50,7 +47,6 @@ const SchemesDetails = () => {
             </Box>
           )}
 
-          {/* Fulfillments */}
           {scheme.fulfillments && scheme.fulfillments.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">Fulfillments</Typography>
@@ -60,7 +56,6 @@ const SchemesDetails = () => {
             </Box>
           )}
 
-          {/* Locations */}
           {scheme.locations && scheme.locations.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">Locations</Typography>
@@ -70,14 +65,12 @@ const SchemesDetails = () => {
             </Box>
           )}
 
-          {/* Tags */}
           {scheme.tags && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">
                 Eligibility & Required Documents
               </Typography>
 
-              {/* Required Documents */}
               {scheme.tags["Required documents"] && (
                 <Box sx={{ mt: 1 }}>
                   <Typography variant="subtitle1">
@@ -89,7 +82,6 @@ const SchemesDetails = () => {
                 </Box>
               )}
 
-              {/* Additional Eligibility */}
               {scheme.tags["Additional eligibility"] && (
                 <Box sx={{ mt: 1 }}>
                   <Typography variant="subtitle1">
@@ -101,7 +93,6 @@ const SchemesDetails = () => {
                 </Box>
               )}
 
-              {/* Demographic Eligibility */}
               {scheme.tags["Demographic eligibility"] && (
                 <Box sx={{ mt: 1 }}>
                   <Typography variant="subtitle1">
@@ -115,7 +106,6 @@ const SchemesDetails = () => {
             </Box>
           )}
 
-          {/* Long Description */}
           <Box sx={{ mt: 3 }}>
             <Typography variant="h6">Details</Typography>
             <Typography variant="body2" color="rgba(67, 62, 63, 1)" fontSize={'14px'} sx={{ mt: 1 }}>
@@ -123,7 +113,6 @@ const SchemesDetails = () => {
             </Typography>
           </Box>
 
-          {/* Media Download Button */}
           {scheme.media && (
             <Box sx={{ mt: 3, textAlign: "center" }}>
               <Button
