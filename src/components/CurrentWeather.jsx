@@ -58,7 +58,6 @@ const CurrentWeather = ({ widgetData }) => {
           color: "white",
           borderRadius: "16px",
           padding: "14px 18px",
-          width: "350px",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
