@@ -43,7 +43,7 @@ jobs:
       - name: List Contents
         run: |
            echo "Contents of the dist directory (in reverse order):"
-            cd /home/runner/work/scholarship-app-ui/scholarship-app-ui/dist
+            cd /home/runner/work/OAN-Seeker-UI/OAN-Seeker-UI/dist
             ls -lr
 
       - name: Deploy to Server 1
