@@ -65,7 +65,7 @@ jobs:
 
       - name: Deploy with rsync
         run: |
-           rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./dist/ ${{ secrets.USERNAME_DEV }}@${{ secrets.HOST_DNS_DEV }}:/var/www//var/www/oan-agri.tekdinext.com/public
+           rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./dist/ ${{ secrets.USERNAME_DEV }}@${{ secrets.HOST_DNS_DEV }}:/var/www/oan-agri.tekdinext.com/public
 
 
    
