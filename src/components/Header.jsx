@@ -68,7 +68,7 @@ const Header = () => {
           src={siteLogo}
           alt="siteLogo"
           sx={{ height: 30, cursor: "pointer" }}
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/weather")}
         />
 
         {/* Right: Location button and Hamburger Menu */}
