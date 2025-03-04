@@ -22,7 +22,7 @@ const WelcomeScreen = () => {
         <p>Stay ahead of the weather with our accurate forecasts</p>
 
         {/* CTA Button */}
-        <button className="button" onClick={() => navigate("/home")}>
+        <button className="button" onClick={() => navigate("/weather")}>
           Get Started
         </button>
       </div>

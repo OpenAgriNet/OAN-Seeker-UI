@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Grid } from "@mui/material";
-import WeatherWidget from "../components/WeatherWidget";
+import { Box, Typography } from "@mui/material";
+import LocationOffIcon from '@mui/icons-material/LocationOff';
+// import LocationOnIcon from "@mui/icons-material/LocationOn"; // if you prefer
+
+import WeatherWidget from "../components/CurrentWeather";
 import Loading from "../components/Loading";
 import { fetchWeather } from "../api/apiService";
 import NextWeekWeather from "../components/NextWeekWeather";
@@ -22,14 +25,14 @@ const Weather = () => {
         const items = await fetchWeather(location);
         setWeatherData(items);
         setWidgetData(items[0]);
-        console.log("First item in weatherData:", items[0]);
       } catch (err) {
         setError(err.message);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   const getGreetingTime = (d = new Date()) => {
     const currentHour = d.getHours();
@@ -46,12 +49,49 @@ const Weather = () => {
     });
   };
 
-  if (error) return <Typography>Error: {error}</Typography>;
-  // Uncomment Loading component if you need a loading state
-  // if (!widgetData) return <Loading />;
+  // Show a friendly message if user has not selected a location yet
+  if (error === "No location selected") {
+    return (
+      <Box
+        sx={{
+          height: "80vh",          
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          px: 2,
+        }}
+      >
+        <LocationOffIcon sx={{ fontSize: 80, color: "#004d8a", mb: 2 }} />
+        {/* Or use <LocationOnIcon sx={{ fontSize: 80, color: "gray", mb: 2 }} /> */}
+
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          Please select your location
+        </Typography>
+        <Typography variant="body2">
+          We need your location to provide accurate weather information.
+          Tap on the <strong>Location</strong> button in the header above
+          to get started.
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Show any other errors in a simple text (or handle them differently if you wish)
+  if (error) {
+    return (
+      <Typography sx={{ color: "red", textAlign: "center", mt: 4 }}>
+        Error: {error}
+      </Typography>
+    );
+  }
+
+  // If you want a loading spinner before data is ready, uncomment:
+  if (!widgetData) return <Loading />;
 
   return (
-    <Box className="page-content" sx={{ paddingBottom: "80px",}}>
+    <Box className="page-content" sx={{ paddingBottom: "80px" }}>
       <Typography variant="h5" fontWeight="bold" sx={{ fontSize: "16px" }}>
         {getGreetingTime(date)}
       </Typography>

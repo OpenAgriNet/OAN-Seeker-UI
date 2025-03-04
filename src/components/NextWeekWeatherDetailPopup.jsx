@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, SwipeableDrawer, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const WeatherDetailPopup = ({ open, onClose, forecast }) => {
+const NextWeekWeatherDetailPopup = ({ open, onClose, forecast }) => {
   return (
     <SwipeableDrawer
       anchor="bottom"
@@ -32,4 +32,4 @@ const WeatherDetailPopup = ({ open, onClose, forecast }) => {
   );
 };
 
-export default WeatherDetailPopup;
+export default NextWeekWeatherDetailPopup;

@@ -6,8 +6,9 @@ import BottomBar from "./components/BottomBar";
 import Header from "./components/Header";
 import SchemesDetails from "./pages/SchemesDetails";
 import AiBot from "./pages/AiBot";
-import LandingPage from "./pages/LandingPage";
+// import LandingPage from "./pages/LandingPage";
 import WelcomeScreen from "./pages/WelcomeScreen";
+
 
 const Layout = ({ children }) => {
   const location = useLocation();

@@ -28,12 +28,12 @@ export const fetchWeather = async (selectedDistrict) => {
 
 
 export const fetchSchemes = async (selectedDistrict) => {
-  if (!selectedDistrict) return [];
+
 
   try {
     const response = await axios.post(
       API_URL,
-      { locations: [selectedDistrict] },
+      {  },
       { headers: { "Content-Type": "application/json" } }
     );
 

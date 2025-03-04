@@ -8,25 +8,24 @@ import WbSunnyIcon from "@mui/icons-material/WbSunny";
 // Utility function to get background gradient based on weather description
 const getBackgroundGradient = (weatherDescription) => {
   const gradients = {
-    "clear sky": "linear-gradient(91.45deg, #B9E5FB 5.54%, #91D1F2 97.44%)",
-    "few clouds": "linear-gradient(91.45deg, #D6D6D6 5.54%, #E8E8E8 97.44%)",
-    "scattered clouds":
-      "linear-gradient(91.45deg, #C1D3E0 5.54%, #E3EAF0 97.44%)",
-    "broken clouds": "linear-gradient(91.45deg, #C0C0C0 5.54%, #F0F0F0 97.44%)",
-    "shower rain": "linear-gradient(91.45deg, #BFCFE9 5.54%, #DFE9F3 97.44%)",
-    rain: "linear-gradient(91.45deg, #A6ACB5 5.54%, #CDD2DA 97.44%)",
-    thunderstorm: "linear-gradient(91.45deg, #A6AECB 5.54%, #D1D9E6 97.44%)",
-    snow: "linear-gradient(91.45deg, #D0E6F1 5.54%, #F7FAFC 97.44%)",
-    mist: "linear-gradient(91.45deg, #DADADA 5.54%, #F4F4F4 97.44%)",
-    "overcast clouds":
-      "linear-gradient(91.45deg, #B2B8C3 5.54%, #DEE2EB 97.44%)",
-    sunny: "linear-gradient(91.45deg, #FAD961 5.54%, #F76B1C 97.44%)",
+    "clear sky": "linear-gradient(91.45deg, #A8D8EA 5.54%, #87BDD8 97.44%)",
+    "few clouds": "linear-gradient(91.45deg, #D3D3D3 5.54%, #BFBFBF 97.44%)",
+    "scattered clouds": "linear-gradient(91.45deg, #BCD4E6 5.54%, #A2C3D6 97.44%)",
+    "broken clouds": "linear-gradient(91.45deg, #C2C2C2 5.54%, #A8A8A8 97.44%)",
+    "shower rain": "linear-gradient(91.45deg, #CCE3F2 5.54%, #ACCDE9 97.44%)",
+    "rain": "linear-gradient(91.45deg, #B3CDE0 5.54%, #8BAFC8 97.44%)",
+    "thunderstorm": "linear-gradient(91.45deg, #B5A8D8 5.54%, #9F8ECC 97.44%)",
+    "snow": "linear-gradient(91.45deg, #E0F7FA 5.54%, #B2EBF2 97.44%)",
+    "mist": "linear-gradient(91.45deg, #E4E4E4 5.54%, #CACACA 97.44%)",
+    "overcast clouds": "linear-gradient(91.45deg, #B0B0B0 5.54%, #9B9B9B 97.44%)",
+    "sunny": "linear-gradient(91.45deg, #FFE7A8 5.54%, #FFD66B 97.44%)",
   };
+  
 
   return gradients[weatherDescription.toLowerCase()] || gradients["sunny"]; // Default to sunny if no match
 };
 
-const WeatherWidget = ({ widgetData }) => {
+const CurrentWeather = ({ widgetData }) => {
   if (!widgetData) return <Box>No data available</Box>;
 
   const { images, short_desc, long_desc, tags } = widgetData.descriptor;
@@ -206,4 +205,4 @@ const WeatherWidget = ({ widgetData }) => {
   );
 };
 
-export default WeatherWidget;
+export default CurrentWeather;
