@@ -14,7 +14,7 @@ const AiBot = () => {
   const [messages, setMessages] = useState([
     {
       text:
-        "Welcome to Kisan Sahayak AI!\n\n" +
+        "Welcome to AgriNet AI!\n\n" +
         "I am here to assist you with understanding and applying for various government schemes that support your agricultural activities. Here are a few examples of what you can ask: \n\n" +
         "1. How can I apply for Pradhan Mantri Fasal Bima Yojana (PMFBY)?\n " +
         "2. What are the eligibility criteria for PM Kisan Samman Nidhi Yojana?\n" +
