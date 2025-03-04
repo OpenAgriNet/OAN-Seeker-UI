@@ -1,62 +1,107 @@
-import { Box, Typography, Grid } from "@mui/material";
-import WeatherWidget from "../components/WeatherWidget";
-import WbSunnyIcon from "@mui/icons-material/WbSunny"; // Sun icon
+import React, { useState, useEffect } from "react";
+import { Box, Typography } from "@mui/material";
+import LocationOffIcon from '@mui/icons-material/LocationOff';
+// import LocationOnIcon from "@mui/icons-material/LocationOn"; // if you prefer
+
+import WeatherWidget from "../components/CurrentWeather";
+import Loading from "../components/Loading";
+import { fetchWeather } from "../api/apiService";
+import NextWeekWeather from "../components/NextWeekWeather";
 
 const Weather = () => {
-  return (
-    <Box className="page-content">
-      {/* Greeting Message */}
-      <Typography variant="h5" fontWeight="bold" sx={{ fontSize: "14px" }}>
-        Good morning
-      </Typography>
-      <Typography variant="h5" sx={{ mb: 3, fontSize: "14px" }}>
-        Thu, 31 Oct
-      </Typography>
+  const [weatherData, setWeatherData] = useState(null);
+  const [widgetData, setWidgetData] = useState(null);
+  const [error, setError] = useState(null);
+  const [date, setDate] = useState(new Date());
 
-      {/* Weather Widget */}
-      <WeatherWidget />
+  useEffect(() => {
+    const fetchData = async () => {
+      const location = localStorage.getItem("selectedDistrict");
+      if (!location) {
+        setError("No location selected");
+        return;
+      }
+      try {
+        const items = await fetchWeather(location);
+        setWeatherData(items);
+        setWidgetData(items[0]);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
 
-      {/* Weather Info Section */}
+  const getGreetingTime = (d = new Date()) => {
+    const currentHour = d.getHours();
+    if (currentHour < 12) return "Good morning";
+    if (currentHour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const formatDate = (d = new Date()) => {
+    return d.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  // Show a friendly message if user has not selected a location yet
+  if (error === "No location selected") {
+    return (
       <Box
         sx={{
+          height: "80vh",          
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          justifyContent: "center",
           alignItems: "center",
-          border: "1px solid #f7e6c4",
-          borderRadius: "12px",
-          padding: "12px",
-          mt: 3,
+          textAlign: "center",
+          px: 2,
         }}
       >
-        <Grid container spacing={2} justifyContent="space-between">
-          {/* UV Index */}
-          <Grid item xs={4} textAlign="center">
-            <WbSunnyIcon sx={{ fontSize: 18, color: "gray" }} />
-            <Typography variant="body2" color="text.secondary">
-              UV Index
-            </Typography>
-            <Typography variant="h6" fontWeight="bold">7 High</Typography>
-          </Grid>
+        <LocationOffIcon sx={{ fontSize: 80, color: "#004d8a", mb: 2 }} />
+        {/* Or use <LocationOnIcon sx={{ fontSize: 80, color: "gray", mb: 2 }} /> */}
 
-          {/* Humidity */}
-          <Grid item xs={4} textAlign="center">
-            <WbSunnyIcon sx={{ fontSize: 18, color: "gray" }} />
-            <Typography variant="body2" color="text.secondary">
-              Humidity
-            </Typography>
-            <Typography variant="h6" fontWeight="bold">61%</Typography>
-          </Grid>
-
-          {/* Precipitation */}
-          <Grid item xs={4} textAlign="center">
-            <WbSunnyIcon sx={{ fontSize: 18, color: "gray" }} />
-            <Typography variant="body2" color="text.secondary">
-              Precipitation
-            </Typography>
-            <Typography variant="h6" fontWeight="bold">4mm</Typography>
-          </Grid>
-        </Grid>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          Please select your location
+        </Typography>
+        <Typography variant="body2">
+          We need your location to provide accurate weather information.
+          Tap on the <strong>Location</strong> button in the header above
+          to get started.
+        </Typography>
       </Box>
+    );
+  }
+
+  // Show any other errors in a simple text (or handle them differently if you wish)
+  if (error) {
+    return (
+      <Typography sx={{ color: "red", textAlign: "center", mt: 4 }}>
+        Error: {error}
+      </Typography>
+    );
+  }
+
+  // If you want a loading spinner before data is ready, uncomment:
+  if (!widgetData) return <Loading />;
+
+  return (
+    <Box className="page-content" sx={{ paddingBottom: "80px" }}>
+      <Typography variant="h5" fontWeight="bold" sx={{ fontSize: "16px" }}>
+        {getGreetingTime(date)}
+      </Typography>
+      <Typography variant="h5" sx={{ mb: 3, fontSize: "14px" }}>
+        {formatDate(date)}
+      </Typography>
+
+      <WeatherWidget widgetData={widgetData} />
+
+      <NextWeekWeather weatherData={weatherData} />
     </Box>
   );
 };

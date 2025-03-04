@@ -6,15 +6,14 @@ import {
   Button,
   Chip,
 } from "@mui/material";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 
-// eslint-disable-next-line react/prop-types
-const SchemeCard = ({ schemeId  }) => {
+const SchemeCard = ({ scheme }) => {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/schemes/details/${schemeId}`);
+    navigate(`/schemes/details/${scheme.id}`, { state: { scheme } });
   };
 
   return (
@@ -27,10 +26,11 @@ const SchemeCard = ({ schemeId  }) => {
         maxWidth: "100%",
         position: "relative",
         marginTop: "1rem",
+        cursor: "pointer",
       }}
+      onClick={handleViewDetails}
     >
-      {/* Application Deadline Label (Positioned to the Right) */}
-      <Box
+      {/* <Box
         sx={{
           position: "absolute",
           top: 0,
@@ -40,80 +40,53 @@ const SchemeCard = ({ schemeId  }) => {
           padding: "4px 10px",
           borderRadius: "0px 10px ",
           fontSize: "14px",
-          fontWeight: "bold",
+          fontWeight: "500",
         }}
       >
         Application Deadline
-      </Box>
+      </Box> */}
 
-      <CardContent sx={{ mt: 1, pb: "4px !important" }}>
-        {/* Scheme Name */}
-        <Typography variant="h6" fontWeight="bold">
-          Scheme Name
+      <CardContent sx={{ padding: "10px 16px", pb: "4px !important" }}>
+        <Typography variant="h6" fontWeight="500">
+          {scheme.title}
         </Typography>
 
-        {/* Scheme Provider */}
         <Typography variant="body2" color="text.secondary">
-          Scheme Provider
+          {scheme.provider_name}
         </Typography>
 
-        {/* Benefit Detail with ₹ Symbol */}
         <Typography
           variant="body2"
           fontWeight="500"
           sx={{ mt: 1, display: "flex", alignItems: "center" }}
         >
-          ₹ Benefit Detail
+          ₹ {scheme.categories?.join(", ") || "Benefit Detail"}
         </Typography>
 
-        {/* Labels (Aligned Horizontally) */}
         <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
-          <Chip
-            label="Label 1"
-            variant="outlined"
-            sx={{
-              borderRadius: "5px",
-              fontSize: "12px",
-              height: "26px",
-              color: "rgba(11, 85, 138, 1)",
-              borderColor: "rgba(11, 85, 138, 1)",
-            }}
-          />
-          <Chip
-            label="Label 2"
-            variant="outlined"
-            sx={{
-              borderRadius: "5px",
-              fontSize: "12px",
-              height: "26px",
-              color: "rgba(11, 85, 138, 1)",
-              borderColor: "rgba(11, 85, 138, 1)",
-            }}
-          />
-          <Chip
-            label="Label 3"
-            variant="outlined"
-            sx={{
-              borderRadius: "5px",
-              fontSize: "12px",
-              height: "26px",
-              color: "rgba(11, 85, 138, 1)",
-              borderColor: "rgba(11, 85, 138, 1)",
-            }}
-          />
+          {scheme.fulfillments?.map((tag, index) => (
+            <Chip
+              key={index}
+              label={tag}
+              variant="outlined"
+              sx={{
+                borderRadius: "5px",
+                fontSize: "12px",
+                height: "26px",
+                color: "rgba(11, 85, 138, 1)",
+                borderColor: "rgba(11, 85, 138, 1)",
+              }}
+            />
+          ))}
         </Box>
 
-        {/* Description */}
         <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
-          Lorem ipsum dolor sit amet consectetur. A felis ut ullamcorper augue
-          feugiat at nisi id. Pharetra sit at risus natoque vel habitasse. Nisl
-          nunc curabitur sit id tortor faucibus vel fermentum.
+          {scheme.short_desc}
         </Typography>
 
-        {/* Centered View Details Button */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
           <Button
-            onClick={handleViewDetails} // Navigate on click
+            onClick={handleViewDetails}
             sx={{
               color: "#0056b3",
               fontWeight: "bold",
@@ -121,7 +94,7 @@ const SchemeCard = ({ schemeId  }) => {
               display: "flex",
               alignItems: "center",
             }}
-            endIcon={<ArrowForwardIosIcon fontSize="small" />}
+            endIcon={<ArrowForwardIcon fontSize="small" />}
           >
             View Details
           </Button>
