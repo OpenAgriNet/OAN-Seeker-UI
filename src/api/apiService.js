@@ -6,24 +6,19 @@ const SEARCH_API_URL = import.meta.env.VITE_SEARCH_API_URL;
 const AIBOT_API_URL = import.meta.env.VITE_AIBOT_API_URL;
 const AUTH_TOKEN = import.meta.env.VITE_AUTH_TOKEN;
 
-// Enhanced helper to remove code blocks, leftover backticks, empty lines, etc.
+// Helper to clean redundant code blocks and markers from the response text
 const cleanResponseText = (text) => {
-  // 1) Remove everything inside triple backticks (full code fences)
-  let cleaned = text.replace(/```[\s\S]*?```/g, "");
-
-  // 2) Split into lines, trim each line
-  let lines = cleaned.split("\n").map((line) => line.trim());
-
-  // 3) Filter out lines that are empty, bracket-only, or leftover backtick lines
-  lines = lines.filter((line) => {
-    if (!line) return false;                   // remove empty lines
-    if (line === "[" || line === "]") return false;
-    if (/^`+$/g.test(line)) return false;      // line is only backticks
+  // Split text into lines and filter out any lines that are only code block markers or stray brackets.
+  const lines = text.split("\n");
+  const filtered = lines.filter((line) => {
+    const trimmed = line.trim();
+    // Remove lines that are exactly a bracket
+    if (trimmed === "[" || trimmed === "]") return false;
+    // Remove lines that start with triple backticks and contain only optional language text
+    if (/^```[a-zA-Z]*$/.test(trimmed)) return false;
     return true;
   });
-
-  // 4) Join back into a single string
-  return lines.join("\n").trim();
+  return filtered.join("\n").trim();
 };
 
 export const fetchWeather = async (selectedDistrict) => {
@@ -71,7 +66,10 @@ export const sendQueryToBot = async (
     if (prev.length > 0 && prev[prev.length - 1].text.startsWith("Typing")) {
       return prev;
     }
-    return [...prev, { text: "Typing" + typingDots, sender: "bot" }];
+    return [
+      ...prev,
+      { text: "Typing" + typingDots, sender: "bot" },
+    ];
   });
 
   try {
@@ -95,7 +93,7 @@ export const sendQueryToBot = async (
 
     const data = await response.json();
 
-    // Clean the API response text to remove redundant code blocks, etc.
+    // Clean the API response text to remove redundant code block markers
     const cleanedText = cleanResponseText(
       data.output.text || "Sorry, I couldn't fetch a response."
     );
