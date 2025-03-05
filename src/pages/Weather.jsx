@@ -57,7 +57,7 @@ const Weather = () => {
           px: 2,
         }}
       >
-        <LocationOffIcon sx={{ fontSize: 80, color: "#004d8a", mb: 2 }} />
+        {/* <LocationOffIcon sx={{ fontSize: 80, color: "#004d8a", mb: 2 }} /> */}
         <Typography variant="h6" sx={{ mb: 1 }}>
           Please select your location
         </Typography>
