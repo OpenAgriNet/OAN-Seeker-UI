@@ -11,7 +11,7 @@ const Loading = () => {
         textAlign: "center",
       }}
     >
-      <CircularProgress size={50} sx={{ color: "rgb(11, 85, 138)" }} />
+      <CircularProgress size={50} sx={{ color: "rgba(0, 0, 0, 1)" }} />
       <Typography
         sx={{
           fontFamily: "Poppins, sans-serif",

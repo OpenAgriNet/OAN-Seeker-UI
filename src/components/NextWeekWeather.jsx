@@ -4,27 +4,29 @@ import WeatherDetailPopup from "./NextWeekWeatherDetailPopup";
 
 const NextWeekWeather = ({ weatherData }) => {
   const [selectedForecast, setSelectedForecast] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
 
   if (!weatherData || weatherData.length === 0) return null;
 
   // Assume the first item is current weather.
   const currentWeather = weatherData[0];
-  const currentDate = currentWeather?.tags?.[0]?.descriptor?.code; // e.g. "2025-03-03"
+  // Example: "2025-03-05"
+  const currentDate = currentWeather?.tags?.[0]?.descriptor?.code;
 
-  // Filter out current weather and any forecasts for the current date.
+  // Filter out current weather and forecasts for the *same* date as current weather
   const forecastItems = weatherData.filter((item) => {
     if (!item.descriptor.name.startsWith("Forecast")) return false;
     const parts = item.descriptor.name.split(" ");
     if (parts.length < 4) return false;
-    const forecastDate = parts[2]; 
+    const forecastDate = parts[2];
     return forecastDate !== currentDate;
   });
 
   // Group forecasts by day
   const groupedForecasts = forecastItems.reduce((acc, forecast) => {
     const parts = forecast.descriptor.name.split(" ");
-    const forecastDate = parts[2]; 
+    const forecastDate = parts[2]; // e.g. "2025-03-06"
     if (!acc[forecastDate]) {
       acc[forecastDate] = [];
     }
@@ -32,26 +34,27 @@ const NextWeekWeather = ({ weatherData }) => {
     return acc;
   }, {});
 
-  // Get forecast dates sorted in ascending order.
+  // Sort the dates
   const forecastDates = Object.keys(groupedForecasts).sort();
 
-  // For each day, pick one representative forecast.
-  // Here we choose the forecast whose time is closest to noon.
+  // For each day, pick one forecast (closest to noon)
   const dailyForecasts = forecastDates.map((dateKey) => {
     const forecasts = groupedForecasts[dateKey];
-    let selectedForecast = forecasts[0];
+    let bestForecast = forecasts[0];
     let minDiff = Number.MAX_VALUE;
-    forecasts.forEach((forecast) => {
-      const parts = forecast.descriptor.name.split(" ");
-      const timeStr = parts[3]; // e.g., "18:00:00"
-      const hour = parseInt(timeStr.split(":")[0]);
-      const diff = Math.abs(hour - 12); // distance from noon
+
+    forecasts.forEach((fc) => {
+      const parts = fc.descriptor.name.split(" ");
+      // parts[3] = "06:00:00"
+      const hour = parseInt(parts[3]?.split(":")[0], 10) || 0;
+      const diff = Math.abs(hour - 12);
       if (diff < minDiff) {
         minDiff = diff;
-        selectedForecast = forecast;
+        bestForecast = fc;
       }
     });
-    return { date: dateKey, forecast: selectedForecast };
+
+    return { date: dateKey, forecast: bestForecast };
   });
 
   return (
@@ -63,35 +66,46 @@ const NextWeekWeather = ({ weatherData }) => {
         mt: 3,
       }}
     >
-      <Typography variant="h6" sx={{ mb: 2, fontSize: "14px" }} fontWeight={500}>
+      <Typography
+        variant="h6"
+        sx={{ mb: 2, fontSize: "14px" }}
+        fontWeight={500}
+      >
         Next 5 days
       </Typography>
 
       {dailyForecasts.map((item, index) => {
-        // Extract the temperature from the forecast tags.
         const temperatureObj = item.forecast.tags?.[0]?.list.find(
           (t) => t.descriptor.code === "temperature"
         );
         const temperature = temperatureObj
-          ? temperatureObj.value
-          : item.forecast.descriptor.short_desc;
+          ? parseFloat(temperatureObj.value)
+          : null;
 
-        // Parse the forecast date string into a Date object.
         const dateObj = new Date(item.date);
-        const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+        const dayName = dateObj.toLocaleDateString("en-US", {
+          weekday: "long",
+        });
         const formattedDate = dateObj.toLocaleDateString("en-US", {
           day: "numeric",
           month: "short",
         });
-        // Get the weather icon URL from the forecast.
         const iconUrl = item.forecast.descriptor.images?.[0]?.url;
 
         return (
           <Box
             key={index}
-            sx={{ display: "flex", alignItems: "center", py: 1, cursor: "pointer" }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              py: 1,
+              cursor: "pointer",
+            }}
             onClick={() => {
+              // Set the forecast to show in the detail popup
               setSelectedForecast(item.forecast);
+              // Also set the date so that the popup can highlight it
+              setSelectedDate(item.date);
               setPopupOpen(true);
             }}
           >
@@ -126,7 +140,14 @@ const NextWeekWeather = ({ weatherData }) => {
                   marginRight: 3,
                 }}
               >
-                {temperature}
+                {temperature !== null ? (
+                  <>
+                    {temperature.toFixed(0)}
+                    <sup style={{ fontSize: "0.8em", marginLeft: 1 }}>°</sup>C
+                  </>
+                ) : (
+                  item.forecast.descriptor.short_desc
+                )}
               </Typography>
             </Box>
             <Box>
@@ -138,11 +159,13 @@ const NextWeekWeather = ({ weatherData }) => {
         );
       })}
 
-
+      {/* Pass selectedDate as initialDate to the popup */}
       <WeatherDetailPopup
         open={popupOpen}
         onClose={() => setPopupOpen(false)}
         forecast={selectedForecast}
+        allForecastData={weatherData}
+        initialDate={selectedDate}
       />
     </Box>
   );

@@ -44,29 +44,30 @@ const BottomBar = () => {
         }}
         sx={{
           "& .Mui-selected": {
-            color: "rgba(11, 85, 138, 1)",
+            color: "rgba(178, 210, 53, 1)",
           },
+          background:'rgba(0, 0, 0, 1)'
         }}
       >
         {/* <BottomNavigationAction
           label="Home"
-          icon={<Home sx={{ color: value === 0 ? "rgba(11, 85, 138, 1)" : "gray" }} />}
-          sx={{ color: value === 0 ? "rgba(11, 85, 138, 1)" : "gray" }}
+          icon={<Home sx={{ color: value === 0 ? "rgba(178, 210, 53, 1)" : "gray" }} />}
+          sx={{ color: value === 0 ? "rgba(178, 210, 53, 1)" : "gray" }}
         /> */}
         <BottomNavigationAction
           label="Weather"
           icon={<img src={value === 0 ? WeatherActive : weather} alt="Weather" style={{ width: 23, height: 23 }} />}
-          sx={{ color: value === 0 ? "rgba(11, 85, 138, 1)" : "gray" }}
+          sx={{ color: value === 0 ? "rgba(178, 210, 53, 1)" : "gray" }}
         />
         <BottomNavigationAction
           label="Schemes"
           icon={<img src={value === 1 ? schemesActive : schemes} alt="Schemes" style={{ width: 22, height: 22, marginBottom: "3px" }} />}
-          sx={{ color: value === 1 ? "rgba(11, 85, 138, 1)" : "gray" }}
+          sx={{ color: value === 1 ? "rgba(178, 210, 53, 1)" : "gray" }}
         />
         <BottomNavigationAction
-          label="AI Bot"
+          label="AI Chatbot"
           icon={<img src={value === 2 ? BotActive : Bot} alt="AI Bot" style={{ width: 22, height: 22, marginBottom: "3px" }} />}
-          sx={{ color: value === 2 ? "rgba(11, 85, 138, 1)" : "gray" }}
+          sx={{ color: value === 2 ? "rgba(178, 210, 53, 1)" : "gray" }}
         />
       </BottomNavigation>
     </Paper>

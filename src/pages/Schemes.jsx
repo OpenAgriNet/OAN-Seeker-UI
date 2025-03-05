@@ -88,7 +88,7 @@ const Schemes = () => {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: "#0056b3",
+                backgroundColor: "rgba(0, 0, 0, 1)",
                 color: "white",
                 fontSize: "16px",
                 borderRadius: "8px",

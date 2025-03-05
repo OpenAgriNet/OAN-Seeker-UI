@@ -174,7 +174,7 @@ const SchemesDetails = () => {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "rgba(11, 85, 138, 1)",
+                  backgroundColor: "rgba(0, 0, 0, 1)",
                   color: "white",
                   fontSize: "16px",
                   borderRadius: "8px",
