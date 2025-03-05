@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import LocationOffIcon from '@mui/icons-material/LocationOff';
-// import LocationOnIcon from "@mui/icons-material/LocationOn"; // if you prefer
-
+import LocationOffIcon from "@mui/icons-material/LocationOff";
 import WeatherWidget from "../components/CurrentWeather";
 import Loading from "../components/Loading";
 import { fetchWeather } from "../api/apiService";
@@ -10,7 +8,6 @@ import NextWeekWeather from "../components/NextWeekWeather";
 
 const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
-  const [widgetData, setWidgetData] = useState(null);
   const [error, setError] = useState(null);
   const [date, setDate] = useState(new Date());
 
@@ -24,15 +21,13 @@ const Weather = () => {
       try {
         const items = await fetchWeather(location);
         setWeatherData(items);
-        setWidgetData(items[0]);
       } catch (err) {
         setError(err.message);
       }
     };
-  
+
     fetchData();
   }, []);
-  
 
   const getGreetingTime = (d = new Date()) => {
     const currentHour = d.getHours();
@@ -49,12 +44,11 @@ const Weather = () => {
     });
   };
 
-  // Show a friendly message if user has not selected a location yet
   if (error === "No location selected") {
     return (
       <Box
         sx={{
-          height: "80vh",          
+          height: "80vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -64,21 +58,18 @@ const Weather = () => {
         }}
       >
         <LocationOffIcon sx={{ fontSize: 80, color: "#004d8a", mb: 2 }} />
-        {/* Or use <LocationOnIcon sx={{ fontSize: 80, color: "gray", mb: 2 }} /> */}
-
         <Typography variant="h6" sx={{ mb: 1 }}>
           Please select your location
         </Typography>
         <Typography variant="body2">
-          We need your location to provide accurate weather information.
-          Tap on the <strong>Location</strong> button in the header above
-          to get started.
+          We need your location to provide accurate weather information. Tap on
+          the <strong>Location</strong> button in the header above to get
+          started.
         </Typography>
       </Box>
     );
   }
 
-  // Show any other errors in a simple text (or handle them differently if you wish)
   if (error) {
     return (
       <Typography sx={{ color: "red", textAlign: "center", mt: 4 }}>
@@ -87,8 +78,7 @@ const Weather = () => {
     );
   }
 
-  // If you want a loading spinner before data is ready, uncomment:
-  if (!widgetData) return <Loading />;
+  if (!weatherData) return <Loading />;
 
   return (
     <Box className="page-content" sx={{ paddingBottom: "80px" }}>
@@ -99,8 +89,7 @@ const Weather = () => {
         {formatDate(date)}
       </Typography>
 
-      <WeatherWidget widgetData={widgetData} />
-
+      <WeatherWidget widgetData={weatherData} />
       <NextWeekWeather weatherData={weatherData} />
     </Box>
   );

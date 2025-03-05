@@ -57,7 +57,7 @@ const Header = () => {
       position="sticky"
       sx={{
         top: 0,
-        backgroundColor: "rgba(11, 85, 138, 1)",
+        backgroundColor: "rgba(0, 0, 0, 1)",
         boxShadow: "none",
       }}
     >

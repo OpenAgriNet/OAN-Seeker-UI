@@ -60,7 +60,7 @@ const SchemeCard = ({ scheme }) => {
           fontWeight="500"
           sx={{ mt: 1, display: "flex", alignItems: "center" }}
         >
-          ₹ {scheme.categories?.join(", ") || "Benefit Detail"}
+          {scheme.categories?.join(", ") || "Benefit Detail"}
         </Typography>
 
         <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
@@ -73,8 +73,8 @@ const SchemeCard = ({ scheme }) => {
                 borderRadius: "5px",
                 fontSize: "12px",
                 height: "26px",
-                color: "rgba(11, 85, 138, 1)",
-                borderColor: "rgba(11, 85, 138, 1)",
+                color: "rgba(0, 0, 0, 1)",
+                borderColor: "rgba(0, 0, 0, 1)",
               }}
             />
           ))}
@@ -88,7 +88,7 @@ const SchemeCard = ({ scheme }) => {
           <Button
             onClick={handleViewDetails}
             sx={{
-              color: "#0056b3",
+              color: "rgba(0, 0, 0, 1)",
               fontWeight: "bold",
               textTransform: "none",
               display: "flex",
