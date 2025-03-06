@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
+  Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -105,7 +106,7 @@ const Header = () => {
           </Button>
 
           <IconButton onClick={handleOpenLanguage} color="inherit" sx={{ mr: 1 }}>
-            <GTranslateIcon />
+            <GTranslateIcon /><Typography sx={{fontSize:'1rem' , marginLeft:'1rem'}}>En</Typography>
           </IconButton>
 
           <IconButton onClick={handleMenuToggle} color="inherit">

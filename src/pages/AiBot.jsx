@@ -1,7 +1,85 @@
+import React, { useState, useRef, useEffect } from "react";
 import { Box, TextField, IconButton, Typography, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { useState, useRef, useEffect } from "react";
-import { sendQueryToBot } from "../api/apiService";
+
+// Import both sendQueryToBot and fetchWeather
+import { sendQueryToBot, fetchWeather } from "../api/apiService";
+
+// Helper to get ordinal suffix for dates (e.g., 7th, 1st, etc.)
+const getOrdinalSuffix = (i) => {
+  const j = i % 10,
+    k = i % 100;
+  if (j === 1 && k !== 11) return i + "st";
+  if (j === 2 && k !== 12) return i + "nd";
+  if (j === 3 && k !== 13) return i + "rd";
+  return i + "th";
+};
+
+// Format a date string (YYYY-MM-DD) into "7th March 2025"
+const formatDateOrdinal = (dateString) => {
+  const date = new Date(dateString);
+  const day = getOrdinalSuffix(date.getDate());
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+};
+
+// Group forecast items by date (extracted from the "name" field)
+const groupForecastByDate = (forecastItems) => {
+  const grouped = {};
+  forecastItems.forEach((item) => {
+    // Expecting item.descriptor.name to be like "Forecast for 2025-03-07 03:00:00"
+    const namePart = item.descriptor.name.split("Forecast for ")[1];
+    const [datePart, timePart] = namePart.split(" ");
+    if (!grouped[datePart]) {
+      grouped[datePart] = [];
+    }
+    grouped[datePart].push({ time: timePart, item });
+  });
+  // Sort forecasts within each date by time
+  for (let date in grouped) {
+    grouped[date].sort((a, b) => a.time.localeCompare(b.time));
+  }
+  return grouped;
+};
+
+// Format the grouped forecast data into a nice multiline string with emojis
+const formatForecastData = (forecastItems) => {
+  const grouped = groupForecastByDate(forecastItems);
+  let result = "";
+  // Sort the dates
+  const dates = Object.keys(grouped).sort();
+  dates.forEach((date) => {
+    result += `${formatDateOrdinal(date)}\n\n`;
+    grouped[date].forEach((entry) => {
+      const { time, item } = entry;
+      // Format the time into a simpler format. E.g., "03:00:00" becomes "3 AM"
+      const hour = parseInt(time.split(":")[0], 10);
+      const formattedTime = hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : `${hour - 12} PM`;
+      
+      // Extract forecast details from the tags if available
+      const tags = item.tags && item.tags[0] && item.tags[0].list;
+      let temperature = "N/A";
+      let windSpeed = "N/A";
+      let humidity = "N/A";
+      if (tags) {
+        const tempTag = tags.find(tag => tag.descriptor.code === "temperature") ||
+                        tags.find(tag => tag.descriptor.code === "min-temp"); // fallback
+        const windTag = tags.find(tag => tag.descriptor.code === "wind-speed");
+        const humidityTag = tags.find(tag => tag.descriptor.code === "humidity");
+        if (tempTag) temperature = tempTag.value;
+        if (windTag) windSpeed = windTag.value;
+        if (humidityTag) humidity = humidityTag.value;
+      }
+      result += `Forecast data for: ${formattedTime}\n`;
+      result += `1. Temperature: ${temperature} 🌡️\n`;
+      result += `2. Wind Speed: ${windSpeed} 💨\n`;
+      result += `3. Humidity: ${humidity} 💧\n\n`;
+    });
+    result += "\n";
+  });
+  return result;
+};
 
 const AiBot = () => {
   const languageMap = {
@@ -12,25 +90,23 @@ const AiBot = () => {
 
   const [messages, setMessages] = useState([
     {
-      text: "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
+      text:
+        "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
       sender: "bot",
       options: ["English", "Hindi", "Marathi"],
     },
   ]);
-
-
   const [input, setInput] = useState("");
-
-
   const [language, setLanguage] = useState("");
-
-
   const [loading, setLoading] = useState(false);
   const [typingDots, setTypingDots] = useState("");
   const [userSubmitted, setUserSubmitted] = useState(false);
+  // New state: store the complete weather data response so we can show forecasts later
+  const [weatherData, setWeatherData] = useState(null);
+
   const messagesEndRef = useRef(null);
 
-
+  // Animate the "Typing..." dots when loading
   useEffect(() => {
     let interval;
     if (loading) {
@@ -43,26 +119,22 @@ const AiBot = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-
+  // On initial load, show the welcome message with a typing delay (runs only once)
   useEffect(() => {
     if (messages.length === 1 && messages[0].sender === "bot") {
-      const originalMessage = messages[0]; // Keep the original
-      // Temporarily replace it with "Typing..."
+      const originalMessage = messages[0];
       setMessages([{ text: "Typing", sender: "bot" }]);
       setLoading(true);
-
       const timer = setTimeout(() => {
-        // After the delay, restore the original welcome message
         setLoading(false);
         setMessages([originalMessage]);
         setUserSubmitted(true);
       }, 1500);
-
       return () => clearTimeout(timer);
     }
   }, []);
 
-  // Scroll to bottom whenever new messages are added
+  // Always scroll to bottom whenever new messages are added
   useEffect(() => {
     if (userSubmitted && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -71,48 +143,39 @@ const AiBot = () => {
   }, [messages, userSubmitted]);
 
   /**
-   * Helper to simulate "Typing..." before adding a new bot message.
-   *  - Adds a temporary "Typing" message
-   *  - Waits for `delay` ms
-   *  - Removes the "Typing" message and adds the real bot message
+   * Helper that returns a Promise so messages can be chained.
+   *  1) Adds a temporary "Typing" message
+   *  2) Waits for `delay` ms
+   *  3) Removes the "Typing" message and adds the real bot message
    */
   const simulateTypingThenAddMessage = (newBotMessage, delay = 1500) => {
-    // 1) Add a "Typing" placeholder
-    setMessages((prev) => [...prev, { text: "Typing", sender: "bot" }]);
-    setLoading(true);
-
-    setTimeout(() => {
-      // 2) Remove the "Typing" message
-      setMessages((prev) => prev.slice(0, -1));
-      setLoading(false);
-
-      // 3) Add the actual bot message
-      setMessages((prev) => [...prev, newBotMessage]);
-      setUserSubmitted(true);
-    }, delay);
+    return new Promise((resolve) => {
+      setMessages((prev) => [...prev, { text: "Typing", sender: "bot" }]);
+      setLoading(true);
+      setTimeout(() => {
+        setMessages((prev) => prev.slice(0, -1));
+        setLoading(false);
+        setMessages((prev) => [...prev, newBotMessage]);
+        setUserSubmitted(true);
+        resolve();
+      }, delay);
+    });
   };
 
-  // Handles sending user-typed queries
+  // Sends the user-typed query to your AI Bot
   const handleSend = async () => {
     if (input.trim()) {
-      // Add the user’s message
       setMessages((prev) => [...prev, { text: input, sender: "user" }]);
       setUserSubmitted(true);
-
       const userQuery = input;
       setInput("");
-
-      // Show "Typing..." once, unless it’s already at the end
       setMessages((prev) => {
         if (prev.length && prev[prev.length - 1].text === "Typing") {
-          // If the last message is already "Typing", do nothing
           return prev;
         }
         return [...prev, { text: "Typing", sender: "bot" }];
       });
       setLoading(true);
-
-      // Call the API
       await sendQueryToBot(
         userQuery,
         language,
@@ -120,10 +183,7 @@ const AiBot = () => {
         setLoading,
         typingDots
       );
-
-      // After the API call finishes, remove the "Typing" placeholder
       setMessages((prev) => {
-        // Remove the last message if it's still "Typing"
         if (prev.length && prev[prev.length - 1].text === "Typing") {
           return prev.slice(0, -1);
         }
@@ -133,13 +193,11 @@ const AiBot = () => {
     }
   };
 
-  // Handles a user clicking on one of the bot’s “tabs” (options)
-  const handleOptionClick = (option) => {
-    // 1) Remove the options from the last message that had them
-    //    so they disappear once the user selects.
+  // Handles a user clicking on one of the bot's "option" buttons
+  const handleOptionClick = async (option) => {
+    // Remove options from the last message
     setMessages((prev) => {
       const newMessages = [...prev];
-      // Find the last message that still has an 'options' array
       for (let i = newMessages.length - 1; i >= 0; i--) {
         if (newMessages[i].options) {
           newMessages[i] = { ...newMessages[i], options: null };
@@ -148,44 +206,153 @@ const AiBot = () => {
       }
       return newMessages;
     });
+    setMessages((prev) => [...prev, { text: option, sender: "user" }]);
+    setUserSubmitted(true);
 
-    // 2) Proceed with your existing logic
     if (!language) {
-      // If language is not yet selected, this click is for language
       const selectedLangCode = languageMap[option] || "en";
       setLanguage(selectedLangCode);
-
-      // Show user’s selection in chat
-      setMessages((prev) => [...prev, { text: option, sender: "user" }]);
-      setUserSubmitted(true);
-
-      // Next bot message: "Please select the service..."
-      simulateTypingThenAddMessage({
+      await simulateTypingThenAddMessage({
         text: "Please select the service you need help with",
         sender: "bot",
         options: ["Weather", "Government Schemes"],
       });
-    } else {
-      // If language was already selected, this click is for the service
-      setMessages((prev) => [...prev, { text: option, sender: "user" }]);
-      setUserSubmitted(true);
+    } else if (option === "Government Schemes") {
+      await simulateTypingThenAddMessage({
+        text: "Ask me anything related to farming.",
+        sender: "bot",
+      });
+    } else if (option === "Weather") {
+      const selectedDistrict =
+        localStorage.getItem("selectedDistrict") || "your location";
+      await simulateTypingThenAddMessage({
+        text: `I see you are interested in weather updates. Please confirm if this is your location: ${selectedDistrict}`,
+        sender: "bot",
+        options: ["Yes, this is my location", "No, I want to change my location"],
+      });
+    } else if (option === "Yes, this is my location") {
+      await simulateTypingThenAddMessage({
+        text: "Great! Fetching the latest weather update for your area...",
+        sender: "bot",
+      });
+      setTimeout(async () => {
+        try {
+          const selectedDistrict =
+            localStorage.getItem("selectedDistrict") || "your location";
+          const weatherItems = await fetchWeather(selectedDistrict);
+          setWeatherData(weatherItems);
+          if (weatherItems && weatherItems.length > 0) {
+            const currentWeather = weatherItems[0];
+            // Instead of just showing the short description,
+            // we can build a more detailed message for the current weather.
+            // Here we extract values from the tags (if available).
+            const tags = currentWeather.tags && currentWeather.tags[0] && currentWeather.tags[0].list;
+            const location = tags ? tags.find(tag => tag.descriptor.code === "location")?.value : "N/A";
+            const minTemp = tags ? tags.find(tag => tag.descriptor.code === "min-temp")?.value : "N/A";
+            const maxTemp = tags ? tags.find(tag => tag.descriptor.code === "max-temp")?.value : "N/A";
+            const humidity = tags ? tags.find(tag => tag.descriptor.code === "humidity")?.value : "N/A";
+            const windSpeed = tags ? tags.find(tag => tag.descriptor.code === "wind-speed")?.value : "N/A";
 
-      if (option === "Government Schemes") {
-        simulateTypingThenAddMessage({
-          text: "Ask me anything related to farming.",
+            const currentWeatherMsg = 
+              `Current Weather for ${location}:\n` +
+              `🌡️ Temperature: ${minTemp} (Min) / ${maxTemp} (Max)\n` +
+              `💧 Humidity: ${humidity}\n` +
+              `💨 Wind Speed: ${windSpeed}`;
+
+            await simulateTypingThenAddMessage({
+              text: currentWeatherMsg,
+              sender: "bot",
+            });
+
+            // Then ask if the user wants a forecast
+            await simulateTypingThenAddMessage({
+              text: "Would you like to see a weather forecast for the next few days?",
+              sender: "bot",
+              options: [
+                "Yes, show forecast for 5 days",
+                "Yes, show forecast for 15 days",
+                "No, that’s all for now",
+              ],
+            });
+          } else {
+            await simulateTypingThenAddMessage({
+              text: "Sorry, no weather data available for your location.",
+              sender: "bot",
+            });
+          }
+        } catch (error) {
+          await simulateTypingThenAddMessage({
+            text: "Sorry, there was an error fetching the weather data.",
+            sender: "bot",
+          });
+        }
+      }, 1500);
+    } else if (option === "No, I want to change my location") {
+      await simulateTypingThenAddMessage({
+        text: "Sure! Please type in the new location you'd like to set.",
+        sender: "bot",
+      });
+    }
+    // Forecast options handling:
+    else if (option === "Yes, show forecast for 5 days") {
+      if (weatherData) {
+        // Get all forecast items (assumed to be from index 1 onward)
+        const forecastItems = weatherData.slice(1);
+        // Group by date and then take the first 5 distinct dates
+        const grouped = groupForecastByDate(forecastItems);
+        const dates = Object.keys(grouped).sort();
+        const first5Dates = dates.slice(0, 5);
+        // Filter forecast items to only include those in the first 5 dates
+        const filteredForecast = forecastItems.filter((item) => {
+          const namePart = item.descriptor.name.split("Forecast for ")[1];
+          const datePart = namePart.split(" ")[0];
+          return first5Dates.includes(datePart);
+        });
+        const formattedForecast = formatForecastData(filteredForecast);
+        await simulateTypingThenAddMessage({
+          text: formattedForecast,
           sender: "bot",
         });
       } else {
-
-        const selectedDistrict = localStorage.getItem("selectedDistrict") || "your location";
-        
-        simulateTypingThenAddMessage({
-          text: `I see you are interested in weather updates. Please confirm if this is your location: ${selectedDistrict}`,
+        await simulateTypingThenAddMessage({
+          text: "Weather data is not available. Please try again.",
           sender: "bot",
-          options: ["Yes, this is my location", "No, I want to change my location"],
         });
       }
-      
+    } else if (option === "Yes, show forecast for 15 days") {
+      if (weatherData) {
+        // Use all forecast items beyond the current weather
+        const forecastItems = weatherData.slice(1);
+        // Group by date and take the first 15 distinct dates
+        const grouped = groupForecastByDate(forecastItems);
+        const dates = Object.keys(grouped).sort();
+        const first15Dates = dates.slice(0, 15);
+        const filteredForecast = forecastItems.filter((item) => {
+          const namePart = item.descriptor.name.split("Forecast for ")[1];
+          const datePart = namePart.split(" ")[0];
+          return first15Dates.includes(datePart);
+        });
+        const formattedForecast = formatForecastData(filteredForecast);
+        await simulateTypingThenAddMessage({
+          text: formattedForecast,
+          sender: "bot",
+        });
+      } else {
+        await simulateTypingThenAddMessage({
+          text: "Weather data is not available. Please try again.",
+          sender: "bot",
+        });
+      }
+    } else if (option === "No, that’s all for now") {
+      await simulateTypingThenAddMessage({
+        text: "Okay, let me know if you need anything else.",
+        sender: "bot",
+      });
+    } else {
+      await simulateTypingThenAddMessage({
+        text: "I'm not sure how to handle that option yet.",
+        sender: "bot",
+      });
     }
   };
 
@@ -233,7 +400,7 @@ const AiBot = () => {
               alignItems: msg.sender === "bot" ? "flex-start" : "flex-end",
             }}
           >
-            {/* Chat bubble */}
+            {/* Chat Bubble */}
             <Box
               sx={{
                 padding: 1.5,
@@ -258,7 +425,7 @@ const AiBot = () => {
                 maxWidth: "90%",
               }}
             >
-              {/* The chat bubble 'arrow' styling */}
+              {/* Bubble "arrow" styling */}
               <Box
                 sx={{
                   position: "absolute",
@@ -292,27 +459,24 @@ const AiBot = () => {
               </Typography>
             </Box>
 
-            {/* Render "tabs" (buttons) if this bot message has options, BELOW the bubble */}
+            {/* Option Buttons */}
             {msg.sender === "bot" && msg.options && (
               <Box sx={{ display: "flex", gap: 1, marginBottom: 2 }}>
-                {msg.options.map((option, idx) => (
+                {msg.options.map((opt, idx) => (
                   <Button
                     key={idx}
                     variant="contained"
                     size="small"
-                    onClick={() => handleOptionClick(option)}
+                    onClick={() => handleOptionClick(opt)}
                     sx={{
                       border: "none",
                       backgroundColor: "#808080",
                       boxShadow: "none",
                       color: "white",
-                      "&:hover": {
-                        backgroundColor: "#808080",
-                      },
-                      
+                      "&:hover": { backgroundColor: "#808080" },
                     }}
                   >
-                    {option}
+                    {opt}
                   </Button>
                 ))}
               </Box>
@@ -362,7 +526,7 @@ const AiBot = () => {
               backgroundColor: "black",
               color: "white",
               opacity: loading ? 0.5 : 1,
-              "&:hover": { backgroundColor: "black" }, 
+              "&:hover": { backgroundColor: "black" },
             }}
           >
             <SendIcon />
