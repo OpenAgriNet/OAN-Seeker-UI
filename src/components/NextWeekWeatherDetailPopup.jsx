@@ -6,7 +6,7 @@ import {
   IconButton,
   Select,
   MenuItem,
-  Divider
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -39,7 +39,6 @@ function getDaySuffix(day) {
 
 // Convert "HH:MM" (24-hour) to 12-hour format with AM/PM
 function convertTo12HourFormat(timeStr) {
-  // e.g. "06:00"
   const [hourStr, minuteStr] = timeStr.split(":");
   let hour = parseInt(hourStr, 10);
   const ampm = hour >= 12 ? "PM" : "AM";
@@ -135,7 +134,7 @@ const NextWeekWeatherDetailPopup = ({
       };
     });
 
-    // Sort by time ascending, comparing the raw hour if needed
+    // Sort by time ascending
     dataForChart.sort((a, b) => {
       // Convert e.g. "6:00 AM" -> numeric hour
       const parseHour = (timeString) => {
@@ -187,11 +186,11 @@ const NextWeekWeatherDetailPopup = ({
 
     const summary = {
       readableDate,
-      minTemp: minTemp.toFixed(1),
-      maxTemp: maxTemp.toFixed(1),
-      minHum,
-      maxHum,
-      maxWind: maxWind.toFixed(1),
+      minTemp: minTemp.toFixed(0), // whole number
+      maxTemp: maxTemp.toFixed(0), // whole number
+      minHum: Math.round(minHum), // rounded
+      maxHum: Math.round(maxHum), // rounded
+      maxWind: maxWind.toFixed(0), // whole number
     };
 
     return { chartData: dataForChart, dailySummary: summary };
@@ -249,8 +248,8 @@ const NextWeekWeatherDetailPopup = ({
                   textAlign: "center",
                   borderRadius: 2,
                   p: 1,
-                  backgroundColor: isActive ? "#004d8a" : "#f5f5f5",
-                  color: isActive ? "#fff" : "#333",
+                  backgroundColor: isActive ? "rgb(178, 210, 53)" : "#f5f5f5",
+                  color: isActive ? "rgb(0, 0, 0)" : "#333",
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -263,7 +262,9 @@ const NextWeekWeatherDetailPopup = ({
         </Box>
 
         {/* Metric Selector */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, mt: 2 }}>
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, mt: 2 }}
+        >
           <Select
             size="small"
             value={selectedMetric}
@@ -301,10 +302,11 @@ const NextWeekWeatherDetailPopup = ({
                     name,
                   ]}
                 />
+                {/* Changed stroke color to black (#000000) */}
                 <Line
                   type="monotone"
                   dataKey={selectedMetric}
-                  stroke="#004d8a"
+                  stroke="#000000"
                   strokeWidth={2}
                   dot={true}
                 />
@@ -321,8 +323,7 @@ const NextWeekWeatherDetailPopup = ({
         {dailySummary && (
           <Box
             sx={{
-              background:
-                "linear-gradient(171.86deg, #CCE1FD -107.4%, #FAFBFE 104.96%)",
+              background: "#f2f8de",
               p: 3,
               borderRadius: 5,
             }}
@@ -344,7 +345,7 @@ const NextWeekWeatherDetailPopup = ({
               </Typography>
               <Typography variant="body2">
                 <strong>{t("weatherDetail.windSpeed", "Wind Speed:")}</strong>{" "}
-                {t("weatherDetail.upTo", "up to")} {dailySummary.maxWind}{" "}
+                {t("weatherDetail.upTo", "Up to")} {dailySummary.maxWind}{" "}
                 {unitMapping.wind}.
               </Typography>
             </Typography>
