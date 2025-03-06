@@ -302,13 +302,14 @@ const AiBot = () => {
                     size="small"
                     onClick={() => handleOptionClick(option)}
                     sx={{
-                      border: "1px solid #00000069",
-                      backgroundColor: "rgb(255, 255, 255)",
+                      border: "none",
+                      backgroundColor: "#808080",
                       boxShadow: "none",
-                      color: "#000",
+                      color: "white",
                       "&:hover": {
-                        backgroundColor: "rgb(255, 255, 255)",
+                        backgroundColor: "#808080",
                       },
+                      
                     }}
                   >
                     {option}
