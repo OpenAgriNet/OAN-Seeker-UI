@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 import WeatherDetailPopup from "./NextWeekWeatherDetailPopup";
 import { useTranslation } from "react-i18next";
 
@@ -8,6 +8,7 @@ const NextWeekWeather = ({ weatherData }) => {
   const [selectedForecast, setSelectedForecast] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(5); // default to next 5 days
 
   if (!weatherData || weatherData.length === 0) return null;
 
@@ -58,6 +59,9 @@ const NextWeekWeather = ({ weatherData }) => {
     return { date: dateKey, forecast: bestForecast };
   });
 
+  // Display forecasts based on selected tab (first 5 or first 3 days)
+  const displayForecasts = dailyForecasts.slice(0, selectedTab);
+
   return (
     <Box
       sx={{
@@ -67,15 +71,29 @@ const NextWeekWeather = ({ weatherData }) => {
         mt: 3,
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{ mb: 2, fontSize: "14px" }}
-        fontWeight={500}
+      <Tabs
+        value={selectedTab}
+        onChange={(event, newValue) => setSelectedTab(newValue)}
+        textColor="inherit"
+        indicatorColor="inherit"
+        TabIndicatorProps={{
+          style: { backgroundColor: "#000000" },
+        }}
+        sx={{ color: "#000000" }}
       >
-        {t("nextWeekWeather.nextDays", "Next 5 days")}
-      </Typography>
+        <Tab
+          label={t("nextWeekWeather.next5Days", "Next 5 days")}
+          value={5}
+          sx={{ textTransform: "none", color: "#000000" }}
+        />
+        <Tab
+          label={t("nextWeekWeather.next3Days", "Next 3 days")}
+          value={3}
+          sx={{ textTransform: "none", color: "#000000" }}
+        />
+      </Tabs>
 
-      {dailyForecasts.map((item, index) => {
+      {displayForecasts.map((item, index) => {
         const temperatureObj = item.forecast.tags?.[0]?.list.find(
           (t) => t.descriptor.code === "temperature"
         );
