@@ -28,8 +28,8 @@ const Home = () => {
 
   // Load previously stored location values
   useEffect(() => {
-    const storedState = localStorage.getItem("selectedState");
-    const storedDistrict = localStorage.getItem("selectedDistrict");
+    const storedState = sessionStorage.getItem("selectedState");
+    const storedDistrict = sessionStorage.getItem("selectedDistrict");
 
     if (storedState) {
       setSelectedState({ value: storedState, label: storedState });
@@ -80,17 +80,17 @@ const Home = () => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      localStorage.setItem("selectedState", selectedState.value);
-      localStorage.setItem("selectedDistrict", selectedDistrict);
+      sessionStorage.setItem("selectedState", selectedState.value);
+      sessionStorage.setItem("selectedDistrict", selectedDistrict);
       navigate("/weather");
     }
   };
 
-  // Clear localStorage when the tab is closed
+  // Clear sessionStorage when the tab is closed
   useEffect(() => {
     const handleTabClose = () => {
-      localStorage.removeItem("selectedState");
-      localStorage.removeItem("selectedDistrict");
+      sessionStorage.removeItem("selectedState");
+      sessionStorage.removeItem("selectedDistrict");
     };
 
     window.addEventListener("beforeunload", handleTabClose);

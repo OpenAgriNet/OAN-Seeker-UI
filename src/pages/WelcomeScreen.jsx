@@ -9,9 +9,9 @@ const WelcomeScreen = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Initialize language from localStorage (or default "en")
+  // Initialize language from sessionStorage (or default "en")
   const [language, setLanguage] = React.useState(
-    localStorage.getItem("preferredLanguage") || "en"
+    sessionStorage.getItem("preferredLanguage") || "en"
   );
 
   const handleChange = (event) => {
@@ -19,14 +19,14 @@ const WelcomeScreen = () => {
     setLanguage(newLanguage);
     // Change language in i18next immediately
     i18n.changeLanguage(newLanguage);
-    // Save the preference in localStorage
-    localStorage.setItem("preferredLanguage", newLanguage);
+    // Save the preference in sessionStorage
+    sessionStorage.setItem("preferredLanguage", newLanguage);
   };
 
   const handleButtonClick = () => {
-    // Ensure the latest language is saved in localStorage
-    localStorage.setItem("preferredLanguage", language);
-    const selectedDistrict = localStorage.getItem("selectedDistrict");
+    // Ensure the latest language is saved in sessionStorage
+    sessionStorage.setItem("preferredLanguage", language);
+    const selectedDistrict = sessionStorage.getItem("selectedDistrict");
     if (selectedDistrict) {
       navigate("/weather");
     } else {

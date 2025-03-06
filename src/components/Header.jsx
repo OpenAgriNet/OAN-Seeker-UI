@@ -16,14 +16,13 @@ import InfoIcon from "@mui/icons-material/Info";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import GTranslateIcon from "@mui/icons-material/GTranslate";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
 import siteLogo from "../assets/siteLogo.png";
 import LocationPopup from "./LocationPopup";
 import LanguagePopup from "../components/LanguagePopup";
 import { useTranslation } from "react-i18next";
+import { LocationContext } from '../contexts/LocationContext';
 
 const Header = () => {
   const { t } = useTranslation();
@@ -32,12 +31,13 @@ const Header = () => {
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  
   const [language, setLanguage] = useState(
-    localStorage.getItem("preferredLanguage") || "en"
+    sessionStorage.getItem("preferredLanguage") || "en"
   );
 
   useEffect(() => {
-    const storedDistrict = localStorage.getItem("selectedDistrict");
+    const storedDistrict = sessionStorage.getItem("selectedDistrict");
     if (storedDistrict) {
       setSelectedDistrict(storedDistrict);
     }
@@ -69,7 +69,7 @@ const Header = () => {
 
   const handleLanguageChange = (newLanguage) => {
     setLanguage(newLanguage);
-    localStorage.setItem("preferredLanguage", newLanguage);
+    sessionStorage.setItem("preferredLanguage", newLanguage);
   };
 
   return (

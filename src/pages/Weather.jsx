@@ -14,7 +14,7 @@ const Weather = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const location = localStorage.getItem("selectedDistrict");
+      const location = sessionStorage.getItem("selectedDistrict");
       if (!location) {
         setError(t("weather.noLocation", "No location selected"));
         return;

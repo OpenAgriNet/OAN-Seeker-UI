@@ -55,18 +55,30 @@ const formatForecastData = (forecastItems) => {
       const { time, item } = entry;
       // Format the time into a simpler format. E.g., "03:00:00" becomes "3 AM"
       const hour = parseInt(time.split(":")[0], 10);
-      const formattedTime = hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : `${hour - 12} PM`;
-      
+      const formattedTime =
+        hour === 0
+          ? "12 AM"
+          : hour === 12
+          ? "12 PM"
+          : hour < 12
+          ? `${hour} AM`
+          : `${hour - 12} PM`;
+
       // Extract forecast details from the tags if available
       const tags = item.tags && item.tags[0] && item.tags[0].list;
       let temperature = "N/A";
       let windSpeed = "N/A";
       let humidity = "N/A";
       if (tags) {
-        const tempTag = tags.find(tag => tag.descriptor.code === "temperature") ||
-                        tags.find(tag => tag.descriptor.code === "min-temp"); // fallback
-        const windTag = tags.find(tag => tag.descriptor.code === "wind-speed");
-        const humidityTag = tags.find(tag => tag.descriptor.code === "humidity");
+        const tempTag =
+          tags.find((tag) => tag.descriptor.code === "temperature") ||
+          tags.find((tag) => tag.descriptor.code === "min-temp"); // fallback
+        const windTag = tags.find(
+          (tag) => tag.descriptor.code === "wind-speed"
+        );
+        const humidityTag = tags.find(
+          (tag) => tag.descriptor.code === "humidity"
+        );
         if (tempTag) temperature = tempTag.value;
         if (windTag) windSpeed = windTag.value;
         if (humidityTag) humidity = humidityTag.value;
@@ -90,8 +102,7 @@ const AiBot = () => {
 
   const [messages, setMessages] = useState([
     {
-      text:
-        "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
+      text: "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
       sender: "bot",
       options: ["English", "Hindi", "Marathi"],
     },
@@ -141,13 +152,6 @@ const AiBot = () => {
       setUserSubmitted(false);
     }
   }, [messages, userSubmitted]);
-
-  /**
-   * Helper that returns a Promise so messages can be chained.
-   *  1) Adds a temporary "Typing" message
-   *  2) Waits for `delay` ms
-   *  3) Removes the "Typing" message and adds the real bot message
-   */
   const simulateTypingThenAddMessage = (newBotMessage, delay = 1500) => {
     return new Promise((resolve) => {
       setMessages((prev) => [...prev, { text: "Typing", sender: "bot" }]);
@@ -224,11 +228,14 @@ const AiBot = () => {
       });
     } else if (option === "Weather") {
       const selectedDistrict =
-        localStorage.getItem("selectedDistrict") || "your location";
+        sessionStorage.getItem("selectedDistrict") || "your location";
       await simulateTypingThenAddMessage({
         text: `I see you are interested in weather updates. Please confirm if this is your location: ${selectedDistrict}`,
         sender: "bot",
-        options: ["Yes, this is my location", "No, I want to change my location"],
+        options: [
+          "Yes, this is my location",
+          "No, I want to change my location",
+        ],
       });
     } else if (option === "Yes, this is my location") {
       await simulateTypingThenAddMessage({
@@ -238,7 +245,7 @@ const AiBot = () => {
       setTimeout(async () => {
         try {
           const selectedDistrict =
-            localStorage.getItem("selectedDistrict") || "your location";
+            sessionStorage.getItem("selectedDistrict") || "your location";
           const weatherItems = await fetchWeather(selectedDistrict);
           setWeatherData(weatherItems);
           if (weatherItems && weatherItems.length > 0) {
@@ -246,14 +253,27 @@ const AiBot = () => {
             // Instead of just showing the short description,
             // we can build a more detailed message for the current weather.
             // Here we extract values from the tags (if available).
-            const tags = currentWeather.tags && currentWeather.tags[0] && currentWeather.tags[0].list;
-            const location = tags ? tags.find(tag => tag.descriptor.code === "location")?.value : "N/A";
-            const minTemp = tags ? tags.find(tag => tag.descriptor.code === "min-temp")?.value : "N/A";
-            const maxTemp = tags ? tags.find(tag => tag.descriptor.code === "max-temp")?.value : "N/A";
-            const humidity = tags ? tags.find(tag => tag.descriptor.code === "humidity")?.value : "N/A";
-            const windSpeed = tags ? tags.find(tag => tag.descriptor.code === "wind-speed")?.value : "N/A";
+            const tags =
+              currentWeather.tags &&
+              currentWeather.tags[0] &&
+              currentWeather.tags[0].list;
+            const location = tags
+              ? tags.find((tag) => tag.descriptor.code === "location")?.value
+              : "N/A";
+            const minTemp = tags
+              ? tags.find((tag) => tag.descriptor.code === "min-temp")?.value
+              : "N/A";
+            const maxTemp = tags
+              ? tags.find((tag) => tag.descriptor.code === "max-temp")?.value
+              : "N/A";
+            const humidity = tags
+              ? tags.find((tag) => tag.descriptor.code === "humidity")?.value
+              : "N/A";
+            const windSpeed = tags
+              ? tags.find((tag) => tag.descriptor.code === "wind-speed")?.value
+              : "N/A";
 
-            const currentWeatherMsg = 
+            const currentWeatherMsg =
               `Current Weather for ${location}:\n` +
               `🌡️ Temperature: ${minTemp} (Min) / ${maxTemp} (Max)\n` +
               `💧 Humidity: ${humidity}\n` +
@@ -270,7 +290,6 @@ const AiBot = () => {
               sender: "bot",
               options: [
                 "Yes, show forecast for 5 days",
-                "Yes, show forecast for 15 days",
                 "No, that’s all for now",
               ],
             });
@@ -319,33 +338,9 @@ const AiBot = () => {
           sender: "bot",
         });
       }
-    } else if (option === "Yes, show forecast for 15 days") {
-      if (weatherData) {
-        // Use all forecast items beyond the current weather
-        const forecastItems = weatherData.slice(1);
-        // Group by date and take the first 15 distinct dates
-        const grouped = groupForecastByDate(forecastItems);
-        const dates = Object.keys(grouped).sort();
-        const first15Dates = dates.slice(0, 15);
-        const filteredForecast = forecastItems.filter((item) => {
-          const namePart = item.descriptor.name.split("Forecast for ")[1];
-          const datePart = namePart.split(" ")[0];
-          return first15Dates.includes(datePart);
-        });
-        const formattedForecast = formatForecastData(filteredForecast);
-        await simulateTypingThenAddMessage({
-          text: formattedForecast,
-          sender: "bot",
-        });
-      } else {
-        await simulateTypingThenAddMessage({
-          text: "Weather data is not available. Please try again.",
-          sender: "bot",
-        });
-      }
-    } else if (option === "No, that’s all for now") {
+    }  else if (option === "No, that’s all for now") {
       await simulateTypingThenAddMessage({
-        text: "Okay, let me know if you need anything else.",
+        text: "Thank you so much for conversing with AgriNet. 🌾.",
         sender: "bot",
       });
     } else {

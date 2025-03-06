@@ -28,8 +28,8 @@ const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => 
   const handleSave = () => {
     // Update i18next language
     i18n.changeLanguage(language);
-    // Update localStorage so that on next load the correct language is used
-    localStorage.setItem("preferredLanguage", language);
+    // Update sessionStorage so that on next load the correct language is used
+    sessionStorage.setItem("preferredLanguage", language);
     // Notify parent if needed
     onLanguageChange(language);
     onClose();

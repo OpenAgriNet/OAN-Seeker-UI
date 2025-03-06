@@ -30,8 +30,8 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const [data, setData] = useState({});
 
   useEffect(() => {
-    const storedState = localStorage.getItem("selectedState");
-    const storedDistrict = localStorage.getItem("selectedDistrict");
+    const storedState = sessionStorage.getItem("selectedState");
+    const storedDistrict = sessionStorage.getItem("selectedDistrict");
 
     if (storedState) {
       setSelectedState({ value: storedState, label: storedState });
@@ -79,17 +79,13 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      localStorage.setItem("selectedState", selectedState.value);
-      localStorage.setItem("selectedDistrict", selectedDistrict);
+      sessionStorage.setItem("selectedState", selectedState.value);
+      sessionStorage.setItem("selectedDistrict", selectedDistrict);
+
       if (onLocationSelect) {
         onLocationSelect(selectedDistrict);
       }
       onClose();
-      if (window.location.pathname === "/weather") {
-        window.location.reload();
-      } else {
-        navigate("/weather");
-      }
     }
   };
 
@@ -185,10 +181,10 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
           disabled={!selectedState || !selectedDistrict}
           sx={{
             backgroundColor: "#b2d235",
-            color:'#000',
+            color: "#000",
             textTransform: "none",
             marginTop: 2,
-            boxShadow:'none'
+            boxShadow: "none",
           }}
         >
           {t("locationPopup.submit", "Submit")}
