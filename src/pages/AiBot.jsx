@@ -209,7 +209,7 @@ const AiBot = () => {
           fontSize: "22px",
         }}
       >
-        AI Chatbot
+        Chatbot
       </Box>
 
       {/* Messages Container */}

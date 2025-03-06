@@ -13,19 +13,23 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from "@mui/icons-material/Info";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import ContactSupportIcon from "@mui/icons-material/ContactSupport";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import GTranslateIcon from "@mui/icons-material/GTranslate"; // New language icon
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import siteLogo from "../assets/siteLogo.png";
 import LocationPopup from "./LocationPopup";
+import LanguagePopup from "../components/LanguagePopup"; // Import the new popup
 
 const Header = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
+  const [showLanguagePopup, setShowLanguagePopup] = useState(false); // For language popup
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [language, setLanguage] = useState("en");
 
   // On mount, load district from localStorage (if available)
   useEffect(() => {
@@ -47,9 +51,23 @@ const Header = () => {
     setShowLocationPopup(false);
   };
 
+  const handleOpenLanguage = () => {
+    setShowLanguagePopup(true);
+  };
+
+  const handleCloseLanguage = () => {
+    setShowLanguagePopup(false);
+  };
+
   // Callback to update district when user selects a location in the popup
   const handleLocationSelect = (district) => {
     setSelectedDistrict(district);
+  };
+
+  // Callback to update language when user selects a new language
+  const handleLanguageChange = (newLanguage) => {
+    setLanguage(newLanguage);
+    // Optionally, save the language preference in localStorage or context
   };
 
   return (
@@ -57,12 +75,12 @@ const Header = () => {
       position="sticky"
       sx={{
         top: 0,
-        backgroundColor: "rgba(0, 0, 0, 1)",
+        backgroundColor: "#000",
         boxShadow: "none",
+        color: "white",
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        {/* Left: Logo */}
         <Box
           component="img"
           src={siteLogo}
@@ -71,7 +89,7 @@ const Header = () => {
           onClick={() => navigate("/weather")}
         />
 
-        {/* Right: Location button and Hamburger Menu */}
+        {/* Right: Location button, Language Icon, and Hamburger Menu */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Button
             color="inherit"
@@ -85,6 +103,10 @@ const Header = () => {
           >
             {selectedDistrict ? selectedDistrict : "Location"}
           </Button>
+
+          <IconButton onClick={handleOpenLanguage} color="inherit" sx={{ mr: 1 }}>
+            <GTranslateIcon />
+          </IconButton>
 
           <IconButton onClick={handleMenuToggle} color="inherit">
             {open ? <CloseIcon /> : <MenuIcon />}
@@ -104,53 +126,58 @@ const Header = () => {
             <Box
               sx={{
                 position: "absolute",
-                top: "56px", // Adjust if necessary based on AppBar height
+                top: "56px",
                 left: 0,
                 width: "100%",
-                backgroundColor: "white",
+                backgroundColor: "#000000de",
                 boxShadow: 2,
-                color: "black",
+                color: "white",
                 textAlign: "left",
                 py: 2,
               }}
             >
               <MenuItem
-                onClick={handleMenuToggle}
+                onClick={() => {
+                  handleMenuToggle();
+                  navigate("/aboutus");
+                }}
                 sx={{ display: "flex", alignItems: "center" }}
               >
-                <ListItemIcon sx={{ minWidth: "40px" }}>
+                <ListItemIcon sx={{ minWidth: "40px", color: "white" }}>
                   <InfoIcon />
                 </ListItemIcon>
                 <ListItemText primary="About Us" />
               </MenuItem>
               <MenuItem
-                onClick={handleMenuToggle}
+                onClick={() => {
+                  handleMenuToggle();
+                  navigate("/contactus");
+                }}
                 sx={{ display: "flex", alignItems: "center" }}
               >
-                <ListItemIcon sx={{ minWidth: "40px" }}>
+                <ListItemIcon sx={{ minWidth: "40px", color: "white" }}>
                   <AlternateEmailIcon />
                 </ListItemIcon>
                 <ListItemText primary="Contact Us" />
-              </MenuItem>
-              <MenuItem
-                onClick={handleMenuToggle}
-                sx={{ display: "flex", alignItems: "center" }}
-              >
-                <ListItemIcon sx={{ minWidth: "40px" }}>
-                  <ContactSupportIcon />
-                </ListItemIcon>
-                <ListItemText primary="Terms & Conditions" />
               </MenuItem>
             </Box>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Pass the onLocationSelect callback */}
+      {/* Location Popup */}
       <LocationPopup
         open={showLocationPopup}
         onClose={handleCloseLocation}
         onLocationSelect={handleLocationSelect}
+      />
+
+      {/* Language Selection Popup */}
+      <LanguagePopup
+        open={showLanguagePopup}
+        onClose={handleCloseLanguage}
+        currentLanguage={language}
+        onLanguageChange={handleLanguageChange}
       />
     </AppBar>
   );

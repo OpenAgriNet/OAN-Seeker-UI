@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   TextField,
@@ -22,7 +22,7 @@ const Home = () => {
   const [loadingStates, setLoadingStates] = useState(true);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [data, setData] = useState({});
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   // Load data from localStorage when the component mounts
   useEffect(() => {
@@ -76,12 +76,12 @@ const Home = () => {
     }
   };
 
-  // Store selected values in localStorage & navigate to "/schemes"
+  // Store selected values in localStorage & navigate to "/weather"
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
       localStorage.setItem("selectedState", selectedState.value);
       localStorage.setItem("selectedDistrict", selectedDistrict);
-      navigate("/schemes");
+      navigate("/weather");
     }
   };
 
@@ -101,6 +101,9 @@ const Home = () => {
   return (
     <Container maxWidth="xs">
       <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          Please select your location
+        </Typography>
         <Typography variant="h6" sx={{ textAlign: "left", fontSize: "14px" }}>
           State <span style={{ color: "red" }}>*</span>
         </Typography>
@@ -116,6 +119,7 @@ const Home = () => {
           loading={loadingStates}
           renderInput={(params) => (
             <TextField
+              sx={{ mt: "7px" }}
               {...params}
               variant="outlined"
               size="small"
@@ -124,7 +128,9 @@ const Home = () => {
                 ...params.InputProps,
                 endAdornment: (
                   <>
-                    {loadingStates ? <CircularProgress color="inherit" size={20} /> : null}
+                    {loadingStates ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : null}
                     {params.InputProps.endAdornment}
                   </>
                 ),
@@ -133,7 +139,10 @@ const Home = () => {
           )}
         />
 
-        <Typography variant="h6" sx={{ textAlign: "left", fontSize: "14px" }}>
+        <Typography
+          variant="h6"
+          sx={{ textAlign: "left", fontSize: "14px", marginTop: "1rem" }}
+        >
           District <span style={{ color: "red" }}>*</span>
         </Typography>
         <Autocomplete
@@ -145,6 +154,7 @@ const Home = () => {
           loading={loadingDistricts}
           renderInput={(params) => (
             <TextField
+              sx={{ mt: "7px" }}
               {...params}
               variant="outlined"
               size="small"
@@ -153,7 +163,9 @@ const Home = () => {
                 ...params.InputProps,
                 endAdornment: (
                   <>
-                    {loadingDistricts ? <CircularProgress color="inherit" size={20} /> : null}
+                    {loadingDistricts ? (
+                      <CircularProgress color="inherit" size={20} />
+                    ) : null}
                     {params.InputProps.endAdornment}
                   </>
                 ),
@@ -167,8 +179,8 @@ const Home = () => {
           fullWidth
           sx={{
             mt: 2,
-            backgroundColor: "rgba(11, 85, 138, 1)",
-            color: "white",
+            backgroundColor: "#b2d235",
+            color: "rgba(0, 0, 0, 1)",
             fontSize: "16px",
             borderRadius: "8px",
           }}
