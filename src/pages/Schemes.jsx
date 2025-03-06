@@ -119,7 +119,8 @@ const Schemes = () => {
                 padding: "10px 20px",
                 fontWeight: "500",
                 textTransform: "none",
-                marginTop:'1rem'
+                marginTop:'1rem',
+                boxShadow:'none'
               }}
               onClick={handleLoadMore}
             >

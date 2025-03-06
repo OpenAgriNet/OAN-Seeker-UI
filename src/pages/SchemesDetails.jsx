@@ -218,6 +218,7 @@ const SchemesDetails = () => {
                   padding: "10px 20px",
                   fontWeight: "500",
                   textTransform: "none", 
+                  boxShadow:'none'
                 }}
                 onClick={handleOpenMedia}
                 endIcon={<OpenInNewIcon />}

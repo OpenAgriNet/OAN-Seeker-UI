@@ -62,11 +62,12 @@ const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => 
           variant="contained"
           size="small"
           sx={{
-            backgroundColor: "rgb(178,210,53)",
+            backgroundColor: "#b2d235",
             color: "rgb(0,0,0)",
             textTransform: "none",
             fontSize: "0.8rem",
             padding: "6px 12px",
+            boxShadow:'none'
           }}
         >
           {t("languagePopup.save", "Save")}

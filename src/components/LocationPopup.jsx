@@ -184,9 +184,11 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
           onClick={handleSubmit}
           disabled={!selectedState || !selectedDistrict}
           sx={{
-            backgroundColor: "rgba(11, 85, 138, 1)",
+            backgroundColor: "#b2d235",
+            color:'#000',
             textTransform: "none",
             marginTop: 2,
+            boxShadow:'none'
           }}
         >
           {t("locationPopup.submit", "Submit")}

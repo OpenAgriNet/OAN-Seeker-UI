@@ -29,7 +29,7 @@ const BottomBar = () => {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(178,210,53,1)",
+    backgroundColor: "#b2d235",
     width: "117px",
     height: "39px",
     gap: "6px",

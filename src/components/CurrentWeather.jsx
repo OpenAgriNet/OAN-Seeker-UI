@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, Divider, Grid } from "@mui/material";
 import windIcon from "../assets/air.svg";
-import cloudIcon from "../assets/weather_hail.svg";
 import humidityIcon from "../assets/humidity.svg";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import CurrentWeatherPopup from "./CurrentWeatherPopup";
