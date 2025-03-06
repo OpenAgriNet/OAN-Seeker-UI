@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { sendQueryToBot } from "../api/apiService";
 
 const AiBot = () => {
-  // Map the display label to the actual language code
   const languageMap = {
     English: "en",
     Hindi: "hi",
@@ -19,19 +18,19 @@ const AiBot = () => {
     },
   ]);
 
-  // Track user input in the TextField
+
   const [input, setInput] = useState("");
 
-  // Will store the language code (e.g., 'en', 'hi', 'mr')
+
   const [language, setLanguage] = useState("");
 
-  // For typing animation and scrolling
+
   const [loading, setLoading] = useState(false);
   const [typingDots, setTypingDots] = useState("");
   const [userSubmitted, setUserSubmitted] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Typing animation effect (displays "...")
+
   useEffect(() => {
     let interval;
     if (loading) {
@@ -44,9 +43,8 @@ const AiBot = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // On first load, show "Typing..." for a short delay, then show the initial message
+
   useEffect(() => {
-    // Only do this if our first message is the bot's welcome
     if (messages.length === 1 && messages[0].sender === "bot") {
       const originalMessage = messages[0]; // Keep the original
       // Temporarily replace it with "Typing..."
@@ -173,18 +171,21 @@ const AiBot = () => {
       setUserSubmitted(true);
 
       if (option === "Government Schemes") {
-        // Show "Ask me anything..." after typing
         simulateTypingThenAddMessage({
           text: "Ask me anything related to farming.",
           sender: "bot",
         });
       } else {
-        // Weather
+
+        const selectedDistrict = localStorage.getItem("selectedDistrict") || "your location";
+        
         simulateTypingThenAddMessage({
-          text: "Sure, let's talk about the weather. Ask me anything related to weather.",
+          text: `I see you are interested in weather updates. Please confirm if this is your location: ${selectedDistrict}`,
           sender: "bot",
+          options: ["Yes, this is my location", "No, I want to change my location"],
         });
       }
+      
     }
   };
 
