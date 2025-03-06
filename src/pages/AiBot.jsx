@@ -354,10 +354,14 @@ const AiBot = () => {
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
           />
           <IconButton
-            color="primary"
             onClick={handleSend}
             disabled={loading}
-            sx={{ opacity: loading ? 0.5 : 1 }}
+            sx={{
+              backgroundColor: "black",
+              color: "white",
+              opacity: loading ? 0.5 : 1,
+              "&:hover": { backgroundColor: "black" }, 
+            }}
           >
             <SendIcon />
           </IconButton>
