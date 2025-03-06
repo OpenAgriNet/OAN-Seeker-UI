@@ -209,7 +209,7 @@ const AiBot = () => {
           fontSize: "22px",
         }}
       >
-        AgriNet Chatbot
+        AI Chatbot
       </Box>
 
       {/* Messages Container */}
@@ -240,8 +240,8 @@ const AiBot = () => {
                 marginBottom: msg.options ? 1 : 2,
                 backgroundColor:
                   msg.sender === "bot"
-                    ? "rgba(243, 255, 194, 1)"
-                    : "rgba(209, 209, 209, 1)",
+                    ? "rgba(242, 248, 222, 1)"
+                    : "rgba(240, 240, 240, 1)",
                 alignSelf: msg.sender === "bot" ? "flex-start" : "flex-end",
                 position: "relative",
                 borderTopLeftRadius: msg.sender === "bot" ? 0 : 10,
@@ -273,8 +273,8 @@ const AiBot = () => {
                       : "10px 0 10px 10px",
                   borderColor:
                     msg.sender === "bot"
-                      ? "transparent rgba(243, 255, 194, 1) transparent transparent"
-                      : "transparent transparent transparent rgba(209, 209, 209, 1)",
+                      ? "transparent rgba(242, 248, 222, 1) transparent transparent"
+                      : "transparent transparent transparent rgba(240, 240, 240, 1)",
                 }}
               />
               <Typography
@@ -354,10 +354,14 @@ const AiBot = () => {
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
           />
           <IconButton
-            color="primary"
             onClick={handleSend}
             disabled={loading}
-            sx={{ opacity: loading ? 0.5 : 1 }}
+            sx={{
+              backgroundColor: "black",
+              color: "white",
+              opacity: loading ? 0.5 : 1,
+              "&:hover": { backgroundColor: "black" }, 
+            }}
           >
             <SendIcon />
           </IconButton>

@@ -6,15 +6,11 @@ const SEARCH_API_URL = import.meta.env.VITE_SEARCH_API_URL;
 const AIBOT_API_URL = import.meta.env.VITE_AIBOT_API_URL;
 const AUTH_TOKEN = import.meta.env.VITE_AUTH_TOKEN;
 
-// Helper to clean redundant code blocks and markers from the response text
 const cleanResponseText = (text) => {
-  // Split text into lines and filter out any lines that are only code block markers or stray brackets.
   const lines = text.split("\n");
   const filtered = lines.filter((line) => {
     const trimmed = line.trim();
-    // Remove lines that are exactly a bracket
     if (trimmed === "[" || trimmed === "]") return false;
-    // Remove lines that start with triple backticks and contain only optional language text
     if (/^```[a-zA-Z]*$/.test(trimmed)) return false;
     return true;
   });
@@ -28,7 +24,7 @@ export const fetchWeather = async (selectedDistrict) => {
 
   try {
     const response = await axios.post(
-      WEATHER_API_URL, // Use import.meta.env.VITE_*
+      WEATHER_API_URL,
       { location: selectedDistrict },
       { headers: { "Content-Type": "application/json" } }
     );
@@ -42,7 +38,7 @@ export const fetchWeather = async (selectedDistrict) => {
 export const fetchSchemes = async () => {
   try {
     const response = await axios.post(
-      SEARCH_API_URL, // Use import.meta.env.VITE_*
+      SEARCH_API_URL, 
       {},
       { headers: { "Content-Type": "application/json" } }
     );
@@ -61,7 +57,6 @@ export const sendQueryToBot = async (
   typingDots
 ) => {
   setLoading(true);
-  // Only add a "Typing" placeholder if the last message isn't already one.
   setMessages((prev) => {
     if (prev.length > 0 && prev[prev.length - 1].text.startsWith("Typing")) {
       return prev;
