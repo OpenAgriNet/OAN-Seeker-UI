@@ -14,24 +14,27 @@ import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from "@mui/icons-material/Info";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import GTranslateIcon from "@mui/icons-material/GTranslate"; // New language icon
+import GTranslateIcon from "@mui/icons-material/GTranslate";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 import siteLogo from "../assets/siteLogo.png";
 import LocationPopup from "./LocationPopup";
-import LanguagePopup from "../components/LanguagePopup"; // Import the new popup
+import LanguagePopup from "../components/LanguagePopup";
+import { useTranslation } from "react-i18next";
 
 const Header = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
-  const [showLanguagePopup, setShowLanguagePopup] = useState(false); // For language popup
+  const [showLanguagePopup, setShowLanguagePopup] = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState(
+    localStorage.getItem("preferredLanguage") || "en"
+  );
 
-  // On mount, load district from localStorage (if available)
   useEffect(() => {
     const storedDistrict = localStorage.getItem("selectedDistrict");
     if (storedDistrict) {
@@ -59,15 +62,13 @@ const Header = () => {
     setShowLanguagePopup(false);
   };
 
-  // Callback to update district when user selects a location in the popup
   const handleLocationSelect = (district) => {
     setSelectedDistrict(district);
   };
 
-  // Callback to update language when user selects a new language
   const handleLanguageChange = (newLanguage) => {
     setLanguage(newLanguage);
-    // Optionally, save the language preference in localStorage or context
+    localStorage.setItem("preferredLanguage", newLanguage);
   };
 
   return (
@@ -89,7 +90,6 @@ const Header = () => {
           onClick={() => navigate("/weather")}
         />
 
-        {/* Right: Location button, Language Icon, and Hamburger Menu */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Button
             color="inherit"
@@ -101,7 +101,7 @@ const Header = () => {
               mr: 1,
             }}
           >
-            {selectedDistrict ? selectedDistrict : "Location"}
+            {selectedDistrict ? selectedDistrict : t("header.location", "Location")}
           </Button>
 
           <IconButton onClick={handleOpenLanguage} color="inherit" sx={{ mr: 1 }}>
@@ -146,7 +146,7 @@ const Header = () => {
                 <ListItemIcon sx={{ minWidth: "40px", color: "white" }}>
                   <InfoIcon />
                 </ListItemIcon>
-                <ListItemText primary="About Us" />
+                <ListItemText primary={t("header.aboutUs", "About Us")} />
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -158,21 +158,19 @@ const Header = () => {
                 <ListItemIcon sx={{ minWidth: "40px", color: "white" }}>
                   <AlternateEmailIcon />
                 </ListItemIcon>
-                <ListItemText primary="Contact Us" />
+                <ListItemText primary={t("header.contactUs", "Contact Us")} />
               </MenuItem>
             </Box>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Location Popup */}
       <LocationPopup
         open={showLocationPopup}
         onClose={handleCloseLocation}
         onLocationSelect={handleLocationSelect}
       />
 
-      {/* Language Selection Popup */}
       <LanguagePopup
         open={showLanguagePopup}
         onClose={handleCloseLanguage}

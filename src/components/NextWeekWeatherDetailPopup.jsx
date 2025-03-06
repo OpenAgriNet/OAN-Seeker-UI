@@ -6,10 +6,9 @@ import {
   IconButton,
   Select,
   MenuItem,
-  Divider,
+  Divider
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-// Recharts
 import {
   ResponsiveContainer,
   LineChart,
@@ -19,10 +18,10 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
-// Helper function to add "st", "nd", "rd", "th"
+// Helper to add "st", "nd", "rd", "th"
 function getDaySuffix(day) {
-  // handle special case for 11th, 12th, 13th
   if (day % 100 >= 11 && day % 100 <= 13) {
     return "th";
   }
@@ -38,38 +37,52 @@ function getDaySuffix(day) {
   }
 }
 
+// Convert "HH:MM" (24-hour) to 12-hour format with AM/PM
+function convertTo12HourFormat(timeStr) {
+  // e.g. "06:00"
+  const [hourStr, minuteStr] = timeStr.split(":");
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  if (hour === 0) {
+    hour = 12; // midnight is 12:XX AM
+  } else if (hour > 12) {
+    hour = hour - 12; // e.g. 13 -> 1 PM
+  }
+  return `${hour}:${minuteStr} ${ampm}`;
+}
+
+const unitMapping = {
+  temperature: "°C",
+  humidity: "%",
+  wind: "m/s",
+};
+
 const NextWeekWeatherDetailPopup = ({
   open,
   onClose,
   forecast,
   allForecastData,
-  initialDate, // date from NextWeekWeather
+  initialDate,
 }) => {
+  const { t } = useTranslation();
   const [selectedMetric, setSelectedMetric] = useState("temperature");
   const [selectedDate, setSelectedDate] = useState("");
-
-  // For clarity, let's define units for each metric
-  const unitMapping = {
-    temperature: "°C",
-    humidity: "%",
-    wind: "m/s",
-  };
 
   // Gather unique dates from allForecastData
   const dateList = useMemo(() => {
     if (!allForecastData) return [];
     const uniqueDates = new Set();
     allForecastData.forEach((item) => {
-      const nameParts = item.descriptor?.name?.split(" ");
-      // e.g. "Forecast for 2025-03-06 06:00:00" => nameParts[2] = "2025-03-06"
-      if (nameParts?.length >= 4 && nameParts[2]) {
-        uniqueDates.add(nameParts[2]);
+      const parts = item.descriptor?.name?.split(" ");
+      // e.g. "Forecast for 2025-03-06 06:00:00" => parts[2] = "2025-03-06"
+      if (parts?.length >= 4 && parts[2]) {
+        uniqueDates.add(parts[2]);
       }
     });
     return [...uniqueDates].sort();
   }, [allForecastData]);
 
-  // When popup opens or initialDate changes, set the selected date
+  // Set selected date when popup opens or initialDate changes
   useEffect(() => {
     if (initialDate && dateList.includes(initialDate)) {
       setSelectedDate(initialDate);
@@ -84,19 +97,22 @@ const NextWeekWeatherDetailPopup = ({
       return { chartData: [], dailySummary: null };
     }
 
-    // 1) Filter out forecasts for the selected day
+    // Filter forecasts for the selected day
     const dailyForecasts = allForecastData.filter((item) => {
       const parts = item.descriptor?.name?.split(" ");
       return parts?.[2] === selectedDate;
     });
 
-    // 2) Build chart data from these forecasts
+    // Build chart data
     const dataForChart = dailyForecasts.map((item) => {
-      const nameParts = item.descriptor.name.split(" ");
-      // e.g. nameParts[3] = "06:00:00"
-      const timeStr = nameParts[3] || "";
+      const parts = item.descriptor.name.split(" ");
+      // parts[3] might be "06:00:00"
+      const timeStr = parts[3] || "";
+      // Convert "06:00" to "6:00 AM"
       const hourMinute = timeStr.slice(0, 5); // "06:00"
+      const time12 = convertTo12HourFormat(hourMinute);
 
+      // Retrieve tags for temperature/humidity/wind
       const tempTag = item.tags?.[0]?.list?.find(
         (t) => t.descriptor.code === "temperature"
       );
@@ -112,25 +128,34 @@ const NextWeekWeatherDetailPopup = ({
       const windValue = windTag ? parseFloat(windTag.value) : null;
 
       return {
-        time: hourMinute,
+        time: time12, // store 12-hour format
         temperature: temperatureValue,
         humidity: humidityValue,
         wind: windValue,
       };
     });
 
-    // Sort by hour ascending
+    // Sort by time ascending, comparing the raw hour if needed
     dataForChart.sort((a, b) => {
-      const aHour = parseInt(a.time.split(":")[0], 10);
-      const bHour = parseInt(b.time.split(":")[0], 10);
+      // Convert e.g. "6:00 AM" -> numeric hour
+      const parseHour = (timeString) => {
+        const [hourMin, ampm] = timeString.split(" ");
+        const [hrStr] = hourMin.split(":");
+        let hr = parseInt(hrStr, 10);
+        if (ampm === "PM" && hr < 12) hr += 12;
+        if (ampm === "AM" && hr === 12) hr = 0;
+        return hr;
+      };
+      const aHour = parseHour(a.time);
+      const bHour = parseHour(b.time);
       return aHour - bHour;
     });
 
-    // 3) Compute daily summary (min/max temp, min/max humidity, max wind, etc.)
     if (dataForChart.length === 0) {
       return { chartData: [], dailySummary: null };
     }
 
+    // Compute daily min/max for temperature/humidity/wind
     let minTemp = Infinity,
       maxTemp = -Infinity,
       minHum = Infinity,
@@ -138,33 +163,28 @@ const NextWeekWeatherDetailPopup = ({
       maxWind = -Infinity;
 
     dataForChart.forEach((d) => {
-      // Temperature
       if (d.temperature !== null) {
         if (d.temperature < minTemp) minTemp = d.temperature;
         if (d.temperature > maxTemp) maxTemp = d.temperature;
       }
-      // Humidity
       if (d.humidity !== null) {
         if (d.humidity < minHum) minHum = d.humidity;
         if (d.humidity > maxHum) maxHum = d.humidity;
       }
-      // Wind
       if (d.wind !== null) {
         if (d.wind > maxWind) maxWind = d.wind;
       }
     });
 
-    // Format date to a nice readable format: e.g. "Friday, 7th March 2025"
+    // Format the date for daily summary
     const dateObj = new Date(selectedDate);
     const weekday = dateObj.toLocaleDateString("en-US", { weekday: "long" });
     const monthName = dateObj.toLocaleDateString("en-US", { month: "long" });
     const day = dateObj.getDate();
     const suffix = getDaySuffix(day);
     const year = dateObj.getFullYear();
-
     const readableDate = `${weekday}, ${day}${suffix} ${monthName} ${year}`;
 
-    // Build a more readable summary (multiple lines for clarity)
     const summary = {
       readableDate,
       minTemp: minTemp.toFixed(1),
@@ -183,7 +203,6 @@ const NextWeekWeatherDetailPopup = ({
       open={open}
       onClose={onClose}
       sx={{
-        // This targets the Paper component inside the drawer
         "& .MuiPaper-root": {
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
@@ -209,14 +228,7 @@ const NextWeekWeatherDetailPopup = ({
         </Box>
 
         {/* Calendar / Date Row */}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 1,
-            overflowX: "auto",
-            mb: 2,
-          }}
-        >
+        <Box sx={{ display: "flex", gap: 1, overflowX: "auto", mb: 2 }}>
           {dateList.map((dateStr) => {
             const dateObj = new Date(dateStr);
             const dayName = dateObj.toLocaleDateString("en-US", {
@@ -227,7 +239,6 @@ const NextWeekWeatherDetailPopup = ({
               month: "short",
             });
             const isActive = dateStr === selectedDate;
-
             return (
               <Box
                 key={dateStr}
@@ -252,17 +263,21 @@ const NextWeekWeatherDetailPopup = ({
         </Box>
 
         {/* Metric Selector */}
-        <Box
-          sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, mt: 2 }}
-        >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, mt: 2 }}>
           <Select
             size="small"
             value={selectedMetric}
             onChange={(e) => setSelectedMetric(e.target.value)}
           >
-            <MenuItem value="temperature">Temperature</MenuItem>
-            <MenuItem value="humidity">Humidity</MenuItem>
-            <MenuItem value="wind">Wind Speed</MenuItem>
+            <MenuItem value="temperature">
+              {t("weatherDetail.temperature", "Temperature")}
+            </MenuItem>
+            <MenuItem value="humidity">
+              {t("weatherDetail.humidity", "Humidity")}
+            </MenuItem>
+            <MenuItem value="wind">
+              {t("weatherDetail.windSpeed", "Wind Speed")}
+            </MenuItem>
           </Select>
         </Box>
 
@@ -297,12 +312,12 @@ const NextWeekWeatherDetailPopup = ({
             </ResponsiveContainer>
           ) : (
             <Typography variant="body2" color="textSecondary">
-              No data available for this date.
+              {t("weatherDetail.noData", "No data available for this date.")}
             </Typography>
           )}
         </Box>
 
-        {/* Farmer-Friendly Daily Summary */}
+        {/* Daily Summary */}
         {dailySummary && (
           <Box
             sx={{
@@ -314,21 +329,24 @@ const NextWeekWeatherDetailPopup = ({
           >
             <Typography variant="body1">
               <Typography sx={{ mb: 1, fontWeight: 600 }}>
-                Forecast for {dailySummary.readableDate}
+                {t("weatherDetail.forecastFor", "Forecast for")}{" "}
+                {dailySummary.readableDate}
               </Typography>
-              <p>
-                {" "}
-                <strong>Temperature:</strong> {dailySummary.minTemp}°C –{" "}
-                {dailySummary.maxTemp}°C.{" "}
-              </p>
-              <p>
-                {" "}
-                <strong>Humidity: </strong>
+              <Typography variant="body2">
+                <strong>
+                  {t("weatherDetail.temperature", "Temperature:")}
+                </strong>{" "}
+                {dailySummary.minTemp}°C – {dailySummary.maxTemp}°C.
+              </Typography>
+              <Typography variant="body2">
+                <strong>{t("weatherDetail.humidity", "Humidity:")}</strong>{" "}
                 {dailySummary.minHum}% – {dailySummary.maxHum}%.
-              </p>
-              <p>
-                <strong>Wind Speed:</strong> up to {dailySummary.maxWind} m/s.
-              </p>
+              </Typography>
+              <Typography variant="body2">
+                <strong>{t("weatherDetail.windSpeed", "Wind Speed:")}</strong>{" "}
+                {t("weatherDetail.upTo", "up to")} {dailySummary.maxWind}{" "}
+                {unitMapping.wind}.
+              </Typography>
             </Typography>
           </Box>
         )}

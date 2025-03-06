@@ -1,7 +1,10 @@
 import { TextField, InputAdornment, Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
 
-const SearchBar = ({ searchQuery, setSearchQuery }) => {
+const SearchBar = ({ searchQuery, onSearchChange }) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -14,17 +17,17 @@ const SearchBar = ({ searchQuery, setSearchQuery }) => {
     >
       <TextField
         fullWidth
-        placeholder="Search By Name"
+        placeholder={t("searchBar.placeholder", "Search By Name")}
         variant="outlined"
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)} 
+        onChange={onSearchChange}
         InputProps={{
           sx: {
             backgroundColor: "rgba(233, 231, 239, 1)",
             borderRadius: "28px",
             height: "50px",
             paddingRight: "15px",
-            "& .MuiOutlinedInput-notchedOutline": { border: "none" }, 
+            "& .MuiOutlinedInput-notchedOutline": { border: "none" },
           },
           endAdornment: (
             <InputAdornment position="end">

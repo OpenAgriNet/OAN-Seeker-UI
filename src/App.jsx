@@ -10,7 +10,8 @@ import AiBot from "./pages/AiBot";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
-
+import "./i18n"; // Initializes i18next
+  
 
 const Layout = ({ children }) => {
   const location = useLocation();

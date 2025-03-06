@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-
-// MUI Icons
-import ArticleIcon from "@mui/icons-material/Article";   // Schemes
-import CloudIcon from "@mui/icons-material/Cloud";       // Weather
-import SmartToyIcon from "@mui/icons-material/SmartToy"; // AI Bot
+import ArticleIcon from "@mui/icons-material/Article";
+import CloudIcon from "@mui/icons-material/Cloud";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
+import { useTranslation } from "react-i18next";
 
 const BottomBar = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [value, setValue] = useState(0);
 
-  // Keep tab value in sync with current route
   useEffect(() => {
     if (location.pathname === "/schemes") setValue(0);
     else if (location.pathname === "/weather") setValue(1);
     else if (location.pathname === "/aibot") setValue(2);
   }, [location.pathname]);
 
-  // Handle tab change
   const handleChange = (event, newValue) => {
     setValue(newValue);
     if (newValue === 0) navigate("/schemes");
@@ -27,7 +25,6 @@ const BottomBar = () => {
     if (newValue === 2) navigate("/aibot");
   };
 
-  // Styles for the active green rectangle
   const activeStyle = {
     display: "flex",
     alignItems: "center",
@@ -38,15 +35,14 @@ const BottomBar = () => {
     gap: "6px",
     padding: "10px 20px",
     borderRadius: "8px",
-    color: "#000", // Icon and text color when active
+    color: "#000",
   };
 
-  // Styles for the inactive icon
   const inactiveStyle = {
     display: "flex",
     alignItems: "center",
     backgroundColor: "transparent",
-    color: "#fff", // Icon color when inactive
+    color: "#fff",
   };
 
   return (
@@ -63,46 +59,49 @@ const BottomBar = () => {
       <BottomNavigation
         value={value}
         onChange={handleChange}
-        showLabels={false} // We'll manually render text for the active tab
+        showLabels={false}
         sx={{
           backgroundColor: "#000",
           "& .MuiBottomNavigationAction-root": {
-            minWidth: 0, // Remove extra spacing around icons
+            minWidth: 0,
             padding: 0,
           },
         }}
       >
-        {/* Schemes */}
         <BottomNavigationAction
           icon={
             <div style={value === 0 ? activeStyle : inactiveStyle}>
               <ArticleIcon sx={{ color: "inherit", fontSize: 24 }} />
               {value === 0 && (
-                <span style={{ fontSize: 14, fontWeight: 500 }}>Schemes</span>
+                <span style={{ fontSize: 14, fontWeight: 500 }}>
+                  {t("bottomBar.schemes", "Schemes")}
+                </span>
               )}
             </div>
           }
         />
 
-        {/* Weather */}
         <BottomNavigationAction
           icon={
             <div style={value === 1 ? activeStyle : inactiveStyle}>
               <CloudIcon sx={{ color: "inherit", fontSize: 24 }} />
               {value === 1 && (
-                <span style={{ fontSize: 14, fontWeight: 500 }}>Weather</span>
+                <span style={{ fontSize: 14, fontWeight: 500 }}>
+                  {t("bottomBar.weather", "Weather")}
+                </span>
               )}
             </div>
           }
         />
 
-        {/* AI Bot */}
         <BottomNavigationAction
           icon={
             <div style={value === 2 ? activeStyle : inactiveStyle}>
               <SmartToyIcon sx={{ color: "inherit", fontSize: 24 }} />
               {value === 2 && (
-                <span style={{ fontSize: 14, fontWeight: 500 }}>Chatbot</span>
+                <span style={{ fontSize: 14, fontWeight: 500 }}>
+                  {t("bottomBar.chatbot", "Chatbot")}
+                </span>
               )}
             </div>
           }

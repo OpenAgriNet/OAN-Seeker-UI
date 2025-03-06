@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import LocationOffIcon from "@mui/icons-material/LocationOff";
 import WeatherWidget from "../components/CurrentWeather";
 import Loading from "../components/Loading";
 import { fetchWeather } from "../api/apiService";
 import NextWeekWeather from "../components/NextWeekWeather";
+import { useTranslation } from "react-i18next";
 
 const Weather = () => {
+  const { t } = useTranslation();
   const [weatherData, setWeatherData] = useState(null);
   const [error, setError] = useState(null);
   const [date, setDate] = useState(new Date());
@@ -15,7 +16,7 @@ const Weather = () => {
     const fetchData = async () => {
       const location = localStorage.getItem("selectedDistrict");
       if (!location) {
-        setError("No location selected");
+        setError(t("weather.noLocation", "No location selected"));
         return;
       }
       try {
@@ -27,13 +28,15 @@ const Weather = () => {
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
   const getGreetingTime = (d = new Date()) => {
     const currentHour = d.getHours();
-    if (currentHour < 12) return "Good morning";
-    if (currentHour < 18) return "Good afternoon";
-    return "Good evening";
+    if (currentHour < 12)
+      return t("weather.greeting.morning", "Good morning");
+    if (currentHour < 18)
+      return t("weather.greeting.afternoon", "Good afternoon");
+    return t("weather.greeting.evening", "Good evening");
   };
 
   const formatDate = (d = new Date()) => {
@@ -44,7 +47,7 @@ const Weather = () => {
     });
   };
 
-  if (error === "No location selected") {
+  if (error === t("weather.noLocation", "No location selected")) {
     return (
       <Box
         sx={{
@@ -57,14 +60,16 @@ const Weather = () => {
           px: 2,
         }}
       >
-        {/* <LocationOffIcon sx={{ fontSize: 80, color: "#004d8a", mb: 2 }} /> */}
         <Typography variant="h6" sx={{ mb: 1 }}>
-          Please select your location
+          {t("weather.noLocationTitle", "Please select your location")}
         </Typography>
         <Typography variant="body2">
-          We need your location to provide accurate weather information. Tap on
-          the <strong>Location</strong> button in the header above to get
-          started.
+          {t(
+            "weather.noLocationDescription",
+            "We need your location to provide accurate weather information. Tap on the"
+          )}{" "}
+          <strong>{t("weather.location", "Location")}</strong>{" "}
+          {t("weather.toGetStarted", "button in the header above to get started.")}
         </Typography>
       </Box>
     );

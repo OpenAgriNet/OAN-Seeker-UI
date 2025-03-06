@@ -1,0 +1,115 @@
+{
+  "welcomeScreen": {
+    "title": "AgriNet:",
+    "subtitle": "An Open Network for Global Agriculture",
+    "selectLanguage": "Select your preferred language",
+    "getStarted": "Get Started"
+  },
+  "language": {
+    "english": "English",
+    "hindi": "Hindi",
+    "marathi": "Marathi"
+  },
+  "home": {
+    "selectLocation": "Please select your location",
+    "state": "State",
+    "district": "District",
+    "submit": "Submit"
+  },
+  "weather": {
+    "noLocation": "No location selected",
+    "noLocationTitle": "Please select your location",
+    "noLocationDescription": "We need your location to provide accurate weather information. Tap on the",
+    "location": "Location",
+    "toGetStarted": "button in the header above to get started",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    }
+  },
+  "currentWeather": {
+    "noData": "No data available",
+    "humidity": "Humidity",
+    "wind": "Wind"
+  },
+  "header": {
+    "location": "Location",
+    "aboutUs": "About Us",
+    "contactUs": "Contact Us"
+  },
+  "bottomBar": {
+    "schemes": "Schemes",
+    "weather": "Weather",
+    "chatbot": "Chatbot"
+  },
+  "languagePopup": {
+    "title": "Select Language",
+    "label": "Language",
+    "save": "Save"
+  },
+  "locationPopup": {
+    "title": "Select Your Location",
+    "state": "State",
+    "district": "District",
+    "submit": "Submit"
+  },
+  "schemes": {
+    "discover": "Discover Schemes",
+    "noSchemes": "No schemes found for",
+    "loadMore": "Load More"
+  },
+  "schemesCard": {
+    "benefitDetail": "Benefit Detail",
+    "viewDetails": "View Details"
+  },
+  "schemesDetails": {
+    "noDetails": "No scheme details found.",
+    "provider": "Provider",
+    "categories": "Categories",
+    "fulfillments": "Fulfillments",
+    "locations": "Locations",
+    "eligibilityTitle": "Eligibility & Required Documents",
+    "requiredDocuments": "Required Documents",
+    "additionalEligibility": "Additional Eligibility",
+    "demographicEligibility": "Demographic Eligibility",
+    "details": "Details",
+    "viewDocument": "View Scheme Document"
+  },
+  "searchBar": {
+    "placeholder": "Search By Name"
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "weatherDetail": {
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "windSpeed": "Wind Speed",
+    "forecastFor": "Forecast for",
+    "noData": "No data available for this date."
+  },
+  "nextWeekWeather": {
+    "nextDays": "Next 5 days"
+  },
+  "monthsShort": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  }
+}

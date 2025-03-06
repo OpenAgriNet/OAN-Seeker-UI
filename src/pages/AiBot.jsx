@@ -209,7 +209,7 @@ const AiBot = () => {
           fontSize: "22px",
         }}
       >
-        Chatbot
+        AgriNet Chatbot
       </Box>
 
       {/* Messages Container */}

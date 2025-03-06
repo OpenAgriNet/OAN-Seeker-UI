@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import WeatherDetailPopup from "./NextWeekWeatherDetailPopup";
+import { useTranslation } from "react-i18next";
 
 const NextWeekWeather = ({ weatherData }) => {
+  const { t } = useTranslation();
   const [selectedForecast, setSelectedForecast] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -53,7 +55,6 @@ const NextWeekWeather = ({ weatherData }) => {
         bestForecast = fc;
       }
     });
-
     return { date: dateKey, forecast: bestForecast };
   });
 
@@ -71,7 +72,7 @@ const NextWeekWeather = ({ weatherData }) => {
         sx={{ mb: 2, fontSize: "14px" }}
         fontWeight={500}
       >
-        Next 5 days
+        {t("nextWeekWeather.nextDays", "Next 5 days")}
       </Typography>
 
       {dailyForecasts.map((item, index) => {
@@ -83,13 +84,26 @@ const NextWeekWeather = ({ weatherData }) => {
           : null;
 
         const dateObj = new Date(item.date);
-        const dayName = dateObj.toLocaleDateString("en-US", {
+
+        // 1) Translate weekday
+        const dayNameEnglish = dateObj.toLocaleDateString("en-US", {
           weekday: "long",
         });
-        const formattedDate = dateObj.toLocaleDateString("en-US", {
-          day: "numeric",
+        const translatedDayName = t(
+          `days.${dayNameEnglish.toLowerCase()}`,
+          dayNameEnglish
+        );
+
+        // 2) Translate short month
+        const monthShortEnglish = dateObj.toLocaleDateString("en-US", {
           month: "short",
-        });
+        }); // e.g. "Mar"
+        const translatedMonthShort = t(
+          `monthsShort.${monthShortEnglish.toLowerCase()}`,
+          monthShortEnglish
+        );
+
+        const dayOfMonth = dateObj.getDate(); // numeric day
         const iconUrl = item.forecast.descriptor.images?.[0]?.url;
 
         return (
@@ -102,9 +116,7 @@ const NextWeekWeather = ({ weatherData }) => {
               cursor: "pointer",
             }}
             onClick={() => {
-              // Set the forecast to show in the detail popup
               setSelectedForecast(item.forecast);
-              // Also set the date so that the popup can highlight it
               setSelectedDate(item.date);
               setPopupOpen(true);
             }}
@@ -150,16 +162,16 @@ const NextWeekWeather = ({ weatherData }) => {
                 )}
               </Typography>
             </Box>
+
             <Box>
               <Typography sx={{ fontSize: "14px", color: "#555" }}>
-                {dayName} {formattedDate}
+                {translatedDayName} {dayOfMonth} {translatedMonthShort}
               </Typography>
             </Box>
           </Box>
         );
       })}
 
-      {/* Pass selectedDate as initialDate to the popup */}
       <WeatherDetailPopup
         open={popupOpen}
         onClose={() => setPopupOpen(false)}

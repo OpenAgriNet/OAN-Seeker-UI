@@ -10,11 +10,13 @@ import {
   CircularProgress,
 } from "@mui/material";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const GIST_URL =
   "https://gist.githubusercontent.com/anubhavshrimal/4aeb195a743d0cdd1c3806c9c222ed45/raw";
 
 const Home = () => {
+  const { t } = useTranslation();
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [selectedState, setSelectedState] = useState(null);
@@ -24,7 +26,7 @@ const Home = () => {
   const [data, setData] = useState({});
   const navigate = useNavigate();
 
-  // Load data from localStorage when the component mounts
+  // Load previously stored location values
   useEffect(() => {
     const storedState = localStorage.getItem("selectedState");
     const storedDistrict = localStorage.getItem("selectedDistrict");
@@ -76,7 +78,6 @@ const Home = () => {
     }
   };
 
-  // Store selected values in localStorage & navigate to "/weather"
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
       localStorage.setItem("selectedState", selectedState.value);
@@ -102,10 +103,10 @@ const Home = () => {
     <Container maxWidth="xs">
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" gutterBottom>
-          Please select your location
+          {t("home.selectLocation", "Please select your location")}
         </Typography>
         <Typography variant="h6" sx={{ textAlign: "left", fontSize: "14px" }}>
-          State <span style={{ color: "red" }}>*</span>
+          {t("home.state", "State")} <span style={{ color: "red" }}>*</span>
         </Typography>
         <Autocomplete
           options={states}
@@ -143,7 +144,7 @@ const Home = () => {
           variant="h6"
           sx={{ textAlign: "left", fontSize: "14px", marginTop: "1rem" }}
         >
-          District <span style={{ color: "red" }}>*</span>
+          {t("home.district", "District")} <span style={{ color: "red" }}>*</span>
         </Typography>
         <Autocomplete
           options={districts}
@@ -187,7 +188,7 @@ const Home = () => {
           onClick={handleSubmit}
           disabled={!selectedState || !selectedDistrict}
         >
-          Submit
+          {t("home.submit", "Submit")}
         </Button>
       </Box>
     </Container>

@@ -10,11 +10,13 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 
 const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => {
+  const { t } = useTranslation();
   const [language, setLanguage] = useState(currentLanguage || "en");
 
-  // Update local state when currentLanguage changes
   useEffect(() => {
     setLanguage(currentLanguage);
   }, [currentLanguage]);
@@ -24,28 +26,33 @@ const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => 
   };
 
   const handleSave = () => {
+    // Update i18next language
+    i18n.changeLanguage(language);
+    // Update localStorage so that on next load the correct language is used
     localStorage.setItem("preferredLanguage", language);
+    // Notify parent if needed
     onLanguageChange(language);
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Select Language</DialogTitle>
+      <DialogTitle>{t("languagePopup.title", "Select Language")}</DialogTitle>
       <DialogContent>
         <FormControl fullWidth variant="outlined" sx={{ mt: 1 }} size="small">
-          <InputLabel id="language-select-label">Language</InputLabel>
+          <InputLabel id="language-select-label">
+            {t("languagePopup.label", "Language")}
+          </InputLabel>
           <Select
             labelId="language-select-label"
             id="language-select"
             value={language}
             onChange={handleChange}
-            label="Language"
+            label={t("languagePopup.label", "Language")}
           >
-            <MenuItem value="en">English</MenuItem>
-            <MenuItem value="hi">Hindi</MenuItem>
-            <MenuItem value="mr">Marathi</MenuItem>
-            {/* Add more language options here if needed */}
+            <MenuItem value="en">{t("language.english", "English")}</MenuItem>
+            <MenuItem value="hi">{t("language.hindi", "Hindi")}</MenuItem>
+            <MenuItem value="mr">{t("language.marathi", "Marathi")}</MenuItem>
           </Select>
         </FormControl>
       </DialogContent>
@@ -62,7 +69,7 @@ const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => 
             padding: "6px 12px",
           }}
         >
-          Save
+          {t("languagePopup.save", "Save")}
         </Button>
       </DialogActions>
     </Dialog>
