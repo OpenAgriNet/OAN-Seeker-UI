@@ -1,0 +1,116 @@
+{
+  "welcomeScreen": {
+    "title": "एग्रीनेट:",
+    "subtitle": "जागतिक कृषीसाठी एक मुक्त नेटवर्क",
+    "selectLanguage": "आपली पसंतीची भाषा निवडा",
+    "getStarted": "सुरू करा"
+  },
+  "language": {
+    "english": "इंग्रजी",
+    "hindi": "हिंदी",
+    "marathi": "मराठी"
+  },
+  "home": {
+    "selectLocation": "कृपया आपले स्थान निवडा",
+    "state": "राज्य",
+    "district": "जिल्हा",
+    "submit": "सबमिट करा"
+  },
+  "weather": {
+    "noLocation": "कोणतेही स्थान निवडलेले नाही",
+    "noLocationTitle": "कृपया आपले स्थान निवडा",
+    "noLocationDescription": "योग्य हवामान माहिती पुरवण्यासाठी आपले स्थान आवश्यक आहे. वर दिलेल्या बटणावर टॅप करा",
+    "location": "स्थान",
+    "toGetStarted": "बटणावर टॅप करा",
+    "greeting": {
+      "morning": "शुभ सकाळ",
+      "afternoon": "नमस्कार",
+      "evening": "शुभ संध्याकाळ"
+    }
+  },
+  "currentWeather": {
+    "noData": "कोणतेही डेटा उपलब्ध नाही",
+    "humidity": "आर्द्रता",
+    "wind": "हवा"
+  },
+  "header": {
+    "location": "स्थान",
+    "aboutUs": "आमच्याबद्दल",
+    "contactUs": "संपर्क करा"
+  },
+  "bottomBar": {
+    "schemes": "योजना",
+    "weather": "हवामान",
+    "chatbot": "एग्रीनेट चॅटबॉट"
+  },
+  "languagePopup": {
+    "title": "भाषा निवडा",
+    "label": "भाषा",
+    "save": "जतन करा"
+  },
+  "locationPopup": {
+    "title": "आपले स्थान निवडा",
+    "state": "राज्य",
+    "district": "जिल्हा",
+    "submit": "सबमिट करा"
+  },
+  "schemes": {
+    "discover": "योजना शोधा",
+    "noSchemes": "साठी कोणतीही योजना सापडली नाही",
+    "loadMore": "अधिक लोड करा"
+  },
+  "schemesCard": {
+    "benefitDetail": "लाभ तपशील",
+    "viewDetails": "तपशील पहा"
+  },
+  "schemesDetails": {
+    "noDetails": "कोणतीही योजना माहिती सापडली नाही.",
+    "provider": "प्रदाता",
+    "categories": "श्रेणी",
+    "fulfillments": "पूर्ती",
+    "locations": "स्थान",
+    "eligibilityTitle": "पात्रता आणि आवश्यक कागदपत्रे",
+    "requiredDocuments": "आवश्यक कागदपत्रे",
+    "additionalEligibility": "अतिरिक्त पात्रता",
+    "demographicEligibility": "लोकसंख्याशास्त्रीय पात्रता",
+    "details": "तपशील",
+    "viewDocument": "योजना दस्तऐवज पहा"
+  },
+  "searchBar": {
+    "placeholder": "नावानुसार शोधा"
+  },
+  "days": {
+    "monday": "सोमवार",
+    "tuesday": "मंगळवार",
+    "wednesday": "बुधवार",
+    "thursday": "गुरुवार",
+    "friday": "शुक्रवार",
+    "saturday": "शनिवार",
+    "sunday": "रविवार"
+  },
+  "nextWeekWeather": {
+    "nextDays": "पुढील 5 दिवस"
+  },
+  "weatherDetail": {
+    "temperature": "तापमान",
+    "humidity": "आर्द्रता",
+    "windSpeed": "हवा ची गती",
+    "forecastFor": "पूर्वानुमान",
+    "noData": "या तारखेसाठी कोणतीही माहिती उपलब्ध नाही."
+  },
+  "monthsShort": {
+    "jan": "जाने",
+    "feb": "फेब",
+    "mar": "मार्च",
+    "apr": "एप्रि",
+    "may": "मे",
+    "jun": "जून",
+    "jul": "जुलै",
+    "aug": "ऑग",
+    "sep": "सप्ट",
+    "oct": "ऑक्टो",
+    "nov": "नोव्हे",
+    "dec": "डिसें"
+  }
+
+}

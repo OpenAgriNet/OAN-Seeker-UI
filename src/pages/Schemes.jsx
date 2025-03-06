@@ -4,16 +4,27 @@ import { fetchSchemes } from "../api/apiService";
 import SearchBar from "../components/SearchBar";
 import SchemeCard from "../components/SchemeCard";
 import Loading from "../components/Loading";
+import { useTranslation } from "react-i18next";
 
 const ITEMS_PER_PAGE = 5;
+const LOCAL_STORAGE_KEY = "schemesSearchQuery";
 
 const Schemes = () => {
+  const { t } = useTranslation();
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleSchemes, setVisibleSchemes] = useState(ITEMS_PER_PAGE);
   const [searchQuery, setSearchQuery] = useState("");
-  // const selectedDistrict = localStorage.getItem("selectedDistrict");
 
+  // 1) On mount, restore search query from localStorage (if it exists)
+  useEffect(() => {
+    const storedQuery = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (storedQuery) {
+      setSearchQuery(storedQuery);
+    }
+  }, []);
+
+  // 2) Fetch schemes from API
   useEffect(() => {
     const loadSchemes = async () => {
       setLoading(true);
@@ -21,14 +32,21 @@ const Schemes = () => {
       setSchemes(data);
       setLoading(false);
     };
-
     loadSchemes();
   }, []);
+
+  const handleSearchChange = (e) => {
+    const newQuery = e.target.value;
+    setSearchQuery(newQuery);
+    // Update localStorage so we can restore on next mount
+    localStorage.setItem(LOCAL_STORAGE_KEY, newQuery);
+  };
 
   const handleLoadMore = () => {
     setVisibleSchemes((prev) => prev + ITEMS_PER_PAGE);
   };
 
+  // Filter schemes based on search query
   const filteredSchemes = schemes.filter((scheme) =>
     scheme.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -53,14 +71,16 @@ const Schemes = () => {
             fontWeight="bold"
             sx={{ mb: 2, mt: 2, fontSize: "14px" }}
           >
-            Discover Schemes
+            {t("schemes.discover", "Discover Schemes")}
           </Typography>
 
+          {/* 3) Pass handleSearchChange to SearchBar */}
           <SearchBar
             searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
+            onSearchChange={handleSearchChange}
           />
 
+          {/* 4) Render filtered results */}
           {filteredSchemes.length > 0 ? (
             filteredSchemes
               .slice(0, visibleSchemes)
@@ -78,7 +98,8 @@ const Schemes = () => {
               }}
             >
               <Typography mt={2}>
-                No schemes found for "{searchQuery}".
+                {t("schemes.noSchemes", "No schemes found for")} "{searchQuery}
+                ".
               </Typography>
             </Box>
           )}
@@ -88,15 +109,21 @@ const Schemes = () => {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: "rgba(0, 0, 0, 1)",
-                color: "white",
+                backgroundColor: "#b2d235",
+                color: "rgba(0, 0, 0, 1)",
                 fontSize: "16px",
                 borderRadius: "8px",
-                marginTop: "20px", 
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                padding: "10px 20px",
+                fontWeight: "500",
+                textTransform: "none",
+                marginTop:'1rem'
               }}
               onClick={handleLoadMore}
             >
-              Load More
+              {t("schemes.loadMore", "Load More")}
             </Button>
           )}
         </>

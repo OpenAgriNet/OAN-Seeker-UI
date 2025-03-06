@@ -8,9 +8,11 @@ import {
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const SchemeCard = ({ scheme }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleViewDetails = () => {
     navigate(`/schemes/details/${scheme.id}`, { state: { scheme } });
@@ -30,22 +32,6 @@ const SchemeCard = ({ scheme }) => {
       }}
       onClick={handleViewDetails}
     >
-      {/* <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          backgroundColor: "#914c1b",
-          color: "white",
-          padding: "4px 10px",
-          borderRadius: "0px 10px ",
-          fontSize: "14px",
-          fontWeight: "500",
-        }}
-      >
-        Application Deadline
-      </Box> */}
-
       <CardContent sx={{ padding: "10px 16px", pb: "4px !important" }}>
         <Typography variant="h6" fontWeight="500">
           {scheme.title}
@@ -60,7 +46,7 @@ const SchemeCard = ({ scheme }) => {
           fontWeight="500"
           sx={{ mt: 1, display: "flex", alignItems: "center" }}
         >
-          {scheme.categories?.join(", ") || "Benefit Detail"}
+          {scheme.categories?.join(", ") || t("schemesCard.benefitDetail", "Benefit Detail")}
         </Typography>
 
         <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
@@ -70,11 +56,12 @@ const SchemeCard = ({ scheme }) => {
               label={tag}
               variant="outlined"
               sx={{
-                borderRadius: "5px",
+                borderRadius: "15px",
+                backgroundColor:'#f3ffc3',
                 fontSize: "12px",
                 height: "26px",
                 color: "rgba(0, 0, 0, 1)",
-                borderColor: "rgba(0, 0, 0, 1)",
+                border: "1px solid #0000001f",
               }}
             />
           ))}
@@ -96,7 +83,7 @@ const SchemeCard = ({ scheme }) => {
             }}
             endIcon={<ArrowForwardIcon fontSize="small" />}
           >
-            View Details
+            {t("schemesCard.viewDetails", "View Details")}
           </Button>
         </Box>
       </CardContent>

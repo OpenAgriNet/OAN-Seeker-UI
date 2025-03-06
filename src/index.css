@@ -57,7 +57,7 @@ body {
 /* Logo styling */
 .logo {
   width: 80px; /* Adjust as needed */
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /* Main heading styling */
@@ -103,7 +103,7 @@ body {
 /* Text Section */
 .text-container {
   position: absolute;
-  top: 30%;
+  /* top: 30%; */
   /* left: 10%; */
   width: 90%;
   text-align: left;
@@ -133,8 +133,8 @@ body {
 .button {
   /* position: absolute; */ /* Remove absolute so it flows under the select */
   /* bottom: 10%; */
-  background-color: rgba(0, 0, 0, 1);
-  color: white;
+  background-color: rgba(178, 210, 53, 1);
+  color: rgba(0, 0, 0, 1);
   font-size: 1rem;
   padding: 12px 20px;
   border: none;
@@ -147,7 +147,7 @@ body {
 }
 
 .button:hover {
-  background-color: rgba(0, 0, 0, 1);
+  background-color: rgba(178, 210, 53, 1);
 }
 
 /* MUI Style change */

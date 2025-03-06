@@ -1,39 +1,66 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/siteLogo.png";
-
-// MUI imports
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { FormControl, Select, MenuItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 
 const WelcomeScreen = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  // State to hold the selected language
-  const [language, setLanguage] = React.useState("en");
+  // Initialize language from localStorage (or default "en")
+  const [language, setLanguage] = React.useState(
+    localStorage.getItem("preferredLanguage") || "en"
+  );
 
   const handleChange = (event) => {
-    setLanguage(event.target.value);
+    const newLanguage = event.target.value;
+    setLanguage(newLanguage);
+    // Change language in i18next immediately
+    i18n.changeLanguage(newLanguage);
+    // Save the preference in localStorage
+    localStorage.setItem("preferredLanguage", newLanguage);
+  };
+
+  const handleButtonClick = () => {
+    // Ensure the latest language is saved in localStorage
+    localStorage.setItem("preferredLanguage", language);
+    const selectedDistrict = localStorage.getItem("selectedDistrict");
+    if (selectedDistrict) {
+      navigate("/weather");
+    } else {
+      navigate("/home");
+    }
   };
 
   return (
     <div className="landing-page">
-      {/* Dark overlay */}
       <div className="overlay" />
-     
-
-      {/* Text Container */}
       <div className="text-container">
-        {/* Logo */}
         <img src={Logo} alt="Site Logo" className="logo" />
-
-        {/* Heading */}
-        <h1>
-          AgriNet: <br />
-          Your Farm, Our Weather, Better Harvests
+        <h1 style={{ marginBottom: "2rem" }}>
+          {t("welcomeScreen.title", "AgriNet:")}
         </h1>
-
-        {/* MUI Language Dropdown (white background, small size) */}
-        <p style={{marginBottom:'1rem', fontWeight:500 , fontSize:'1rem', color:''}}>Select your preferred language</p>
+        <h1>
+          {t(
+            "welcomeScreen.subtitle",
+            "An Open Network for Global Agriculture"
+          )}
+        </h1>
+        <p
+          style={{
+            marginBottom: "1rem",
+            fontWeight: 500,
+            fontSize: "1rem",
+            color: "rgba(225, 225, 225, 1)",
+          }}
+        >
+          {t(
+            "welcomeScreen.selectLanguage",
+            "Select your preferred language"
+          )}
+        </p>
         <FormControl
           variant="outlined"
           size="small"
@@ -42,8 +69,8 @@ const WelcomeScreen = () => {
           sx={{
             minWidth: 150,
             marginBottom: "20px",
-            backgroundColor: "#fff",    // White background
-            borderRadius: "4px",        // Rounded corners (optional)
+            backgroundColor: "#fff",
+            borderRadius: "4px",
           }}
         >
           <Select
@@ -51,18 +78,16 @@ const WelcomeScreen = () => {
             id="language-select"
             value={language}
             onChange={handleChange}
-            small
             fullWidth
           >
-            <MenuItem value="en">English</MenuItem>
-            <MenuItem value="hi">Hindi</MenuItem>
-            <MenuItem value="mr">Marathi</MenuItem>
+            <MenuItem value="en">{t("language.english", "English")}</MenuItem>
+            <MenuItem value="hi">{t("language.hindi", "Hindi")}</MenuItem>
+            <MenuItem value="mr">{t("language.marathi", "Marathi")}</MenuItem>
           </Select>
         </FormControl>
 
-        {/* CTA Button */}
-        <button className="button" onClick={() => navigate("/weather")}>
-          Get Started
+        <button className="button" onClick={handleButtonClick}>
+          {t("welcomeScreen.getStarted", "Get Started")}
         </button>
       </div>
     </div>

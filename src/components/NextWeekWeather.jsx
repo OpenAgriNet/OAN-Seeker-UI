@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 import WeatherDetailPopup from "./NextWeekWeatherDetailPopup";
+import { useTranslation } from "react-i18next";
 
 const NextWeekWeather = ({ weatherData }) => {
+  const { t } = useTranslation();
   const [selectedForecast, setSelectedForecast] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(5); // default to next 5 days
 
   if (!weatherData || weatherData.length === 0) return null;
 
@@ -53,9 +56,11 @@ const NextWeekWeather = ({ weatherData }) => {
         bestForecast = fc;
       }
     });
-
     return { date: dateKey, forecast: bestForecast };
   });
+
+  // Display forecasts based on selected tab (first 5 or first 3 days)
+  const displayForecasts = dailyForecasts.slice(0, selectedTab);
 
   return (
     <Box
@@ -66,15 +71,29 @@ const NextWeekWeather = ({ weatherData }) => {
         mt: 3,
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{ mb: 2, fontSize: "14px" }}
-        fontWeight={500}
+      <Tabs
+        value={selectedTab}
+        onChange={(event, newValue) => setSelectedTab(newValue)}
+        textColor="inherit"
+        indicatorColor="inherit"
+        TabIndicatorProps={{
+          style: { backgroundColor: "#000000" },
+        }}
+        sx={{ color: "#000000" }}
       >
-        Next 5 days
-      </Typography>
+        <Tab
+          label={t("nextWeekWeather.next5Days", "Next 5 days")}
+          value={5}
+          sx={{ textTransform: "none", color: "#000000" }}
+        />
+        <Tab
+          label={t("nextWeekWeather.next3Days", "Next 3 days")}
+          value={3}
+          sx={{ textTransform: "none", color: "#000000" }}
+        />
+      </Tabs>
 
-      {dailyForecasts.map((item, index) => {
+      {displayForecasts.map((item, index) => {
         const temperatureObj = item.forecast.tags?.[0]?.list.find(
           (t) => t.descriptor.code === "temperature"
         );
@@ -83,13 +102,26 @@ const NextWeekWeather = ({ weatherData }) => {
           : null;
 
         const dateObj = new Date(item.date);
-        const dayName = dateObj.toLocaleDateString("en-US", {
+
+        // 1) Translate weekday
+        const dayNameEnglish = dateObj.toLocaleDateString("en-US", {
           weekday: "long",
         });
-        const formattedDate = dateObj.toLocaleDateString("en-US", {
-          day: "numeric",
+        const translatedDayName = t(
+          `days.${dayNameEnglish.toLowerCase()}`,
+          dayNameEnglish
+        );
+
+        // 2) Translate short month
+        const monthShortEnglish = dateObj.toLocaleDateString("en-US", {
           month: "short",
-        });
+        }); // e.g. "Mar"
+        const translatedMonthShort = t(
+          `monthsShort.${monthShortEnglish.toLowerCase()}`,
+          monthShortEnglish
+        );
+
+        const dayOfMonth = dateObj.getDate(); // numeric day
         const iconUrl = item.forecast.descriptor.images?.[0]?.url;
 
         return (
@@ -102,9 +134,7 @@ const NextWeekWeather = ({ weatherData }) => {
               cursor: "pointer",
             }}
             onClick={() => {
-              // Set the forecast to show in the detail popup
               setSelectedForecast(item.forecast);
-              // Also set the date so that the popup can highlight it
               setSelectedDate(item.date);
               setPopupOpen(true);
             }}
@@ -150,16 +180,16 @@ const NextWeekWeather = ({ weatherData }) => {
                 )}
               </Typography>
             </Box>
+
             <Box>
               <Typography sx={{ fontSize: "14px", color: "#555" }}>
-                {dayName} {formattedDate}
+                {translatedDayName} {dayOfMonth} {translatedMonthShort}
               </Typography>
             </Box>
           </Box>
         );
       })}
 
-      {/* Pass selectedDate as initialDate to the popup */}
       <WeatherDetailPopup
         open={popupOpen}
         onClose={() => setPopupOpen(false)}
