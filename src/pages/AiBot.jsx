@@ -1,5 +1,8 @@
 import { Box, TextField, IconButton, Typography, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import { useState, useRef, useEffect } from "react";
 import { sendQueryToBot } from "../api/apiService";
 
@@ -20,6 +23,13 @@ const AiBot = () => {
 
 
   const [input, setInput] = useState("");
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const audioChunksRef = useRef([]);
+  const [micOn, setMicOn] = useState(false);
+  const [isAudioPlaying,setIsAudioPlaying] = useState(false)
+  const [responseAudio, setResponseAudio] = useState(null);
+
+
 
 
   const [language, setLanguage] = useState("");
@@ -189,6 +199,109 @@ const AiBot = () => {
     }
   };
 
+
+  // Start recording
+  const startMic = async () => {
+    setMicOn(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstart = () => {
+        console.log("Recording started...");
+      };
+
+      recorder.start();
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  // Stop recording
+  const stopMic = async () => {
+    setMicOn(false);
+    if (mediaRecorder) {
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        console.log("Recording stopped. Blob:", audioBlob);
+        const base64Audio = await convertBlobToBase64(audioBlob);
+        const cleanBase64Audio = removeBase64Prefix(base64Audio);
+       const response = await sendQueryToBot(
+          "",
+          language,
+          setMessages,
+          setLoading,
+          typingDots,
+          cleanBase64Audio
+        );
+        setResponseAudio(response?.output?.audio);
+        playResponseAudio(response?.output?.audio);
+      };
+      mediaRecorder.stop();
+    }
+  };
+
+  const convertBlobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob); // This will give you a Base64 string with data type
+    });
+  };
+  const removeBase64Prefix = (base64String) => {
+    return base64String.replace(/^data:audio\/webm;base64,/, '');
+  };
+
+  const playResponseAudio = (audioUrl) => {
+    if (!audioUrl) {
+      console.warn("No audio URL provided.");
+      return;
+    }
+
+    // Stop previous audio if playing
+    if (responseAudio) {
+      responseAudio.pause();
+      responseAudio.currentTime = 0;
+    }
+
+    const audio = new Audio(audioUrl);
+    setResponseAudio(audio);
+    setIsAudioPlaying(true);
+
+    audio.play()
+      .then(() => console.log("Audio playing."))
+      .catch((error) => {
+        console.error("Error playing audio:", error);
+        setIsAudioPlaying(false);
+      });
+
+    // Optional: auto set isAudioPlaying to false when it ends
+    audio.onended = () => {
+      setIsAudioPlaying(false);
+    };
+  };
+
+  const stopResponseAudio = () => {
+    if (responseAudio) {
+      responseAudio.pause();
+      responseAudio.currentTime = 0;
+      setIsAudioPlaying(false);
+      console.log("Audio stopped.");
+    } else {
+      console.warn("No audio is currently playing.");
+    }
+  };
+
+
   return (
     <Box
       sx={{
@@ -290,6 +403,11 @@ const AiBot = () => {
               >
                 {msg.text === "Typing" ? `Typing ${typingDots}` : msg.text}
               </Typography>
+              {responseAudio &&
+              <>
+                {isAudioPlaying ? <StopCircleIcon onClick={stopResponseAudio} /> : <PlayCircleFilledWhiteIcon onClick={() => playResponseAudio(responseAudio?.src)} />}
+              </>}
+
             </Box>
 
             {/* Render "tabs" (buttons) if this bot message has options, BELOW the bubble */}
@@ -366,6 +484,13 @@ const AiBot = () => {
             }}
           >
             <SendIcon />
+          </IconButton>
+          <IconButton
+            color="primary"
+            disabled={loading}
+            sx={{ opacity: loading ? 0.5 : 1 }}
+          >
+            {micOn ? <StopCircleIcon onClick={stopMic} /> : <KeyboardVoiceIcon onClick={startMic} />}
           </IconButton>
         </Box>
       </Box>
