@@ -85,7 +85,7 @@ const CurrentWeather = ({ widgetData, allForecastData }) => {
           borderRadius: "16px",
           padding: "14px 18px",
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-          cursor: "pointer",
+          // cursor: "pointer",
         }}
       >
         <Box
