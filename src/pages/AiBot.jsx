@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { Box, TextField, IconButton, Typography, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import { sendQueryToBot, fetchWeather } from "../api/apiService";
 import { LocationContext } from "../context/LocationContext";
 
@@ -238,6 +241,15 @@ const AiBot = () => {
     },
   ]);
   const [input, setInput] = useState("");
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const audioChunksRef = useRef([]);
+  const [micOn, setMicOn] = useState(false);
+  const [isAudioPlaying,setIsAudioPlaying] = useState(false)
+  const [responseAudio, setResponseAudio] = useState(null);
+
+
+
+
   const [language, setLanguage] = useState("");
   const [loading, setLoading] = useState(false);
   const [typingDots, setTypingDots] = useState("");
@@ -487,52 +499,115 @@ const AiBot = () => {
         await simulateTypingThenAddMessage({
           text: responses[language].noWeatherData,
           sender: "bot",
+          options: ["Yes, this is my location", "No, I want to change my location"],
         });
       }
-    } else if (option === responses[language].optionNoForecast) {
-      // When user selects "No, that's all for now", display thank you and feedback prompt
-      await simulateTypingThenAddMessage({
-        text: responses[language].thankYou,
-        sender: "bot",
-      });
-      await simulateTypingThenAddMessage({
-        text: responses[language].feedbackPrompt,
-        sender: "bot",
-        options: [
-          responses[language].optionGiveFeedback,
-          responses[language].optionGoBack
-        ],
-      });
-    } else if (option === responses[language].optionGiveFeedback) {
-      await simulateTypingThenAddMessage({
-        text: "Thank you for your feedback. How else can I assist you?",
-        sender: "bot",
-      });
-      await simulateTypingThenAddMessage({
-        text: responses[language].feedbackPrompt,
-        sender: "bot",
-        options: [
-          responses[language].optionGiveFeedback,
-          responses[language].optionGoBack
-        ],
-      });
-    } else if (option === responses[language].optionGoBack) {
-      // Reset conversation: show welcome message with language options
-      setSelectedService("");
-      setWeatherData(null);
-      setLanguage("");
-      await simulateTypingThenAddMessage({
-        text: responses["en"].welcomeMessage, // Default welcome in English; update as needed.
-        sender: "bot",
-        options: ["English", "हिंदी", "मराठी"]
-      });
-    } else {
-      await simulateTypingThenAddMessage({
-        text: responses[language].unknownOption,
-        sender: "bot",
-      });
+      
     }
   };
+
+
+  // Start recording
+  const startMic = async () => {
+    setMicOn(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstart = () => {
+        console.log("Recording started...");
+      };
+
+      recorder.start();
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  // Stop recording
+  const stopMic = async () => {
+    setMicOn(false);
+    if (mediaRecorder) {
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        console.log("Recording stopped. Blob:", audioBlob);
+        const base64Audio = await convertBlobToBase64(audioBlob);
+        const cleanBase64Audio = removeBase64Prefix(base64Audio);
+       const response = await sendQueryToBot(
+          "",
+          language,
+          setMessages,
+          setLoading,
+          typingDots,
+          cleanBase64Audio
+        );
+        setResponseAudio(response?.output?.audio);
+        playResponseAudio(response?.output?.audio);
+      };
+      mediaRecorder.stop();
+    }
+  };
+
+  const convertBlobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob); // This will give you a Base64 string with data type
+    });
+  };
+  const removeBase64Prefix = (base64String) => {
+    return base64String.replace(/^data:audio\/webm;base64,/, '');
+  };
+
+  const playResponseAudio = (audioUrl) => {
+    if (!audioUrl) {
+      console.warn("No audio URL provided.");
+      return;
+    }
+
+    // Stop previous audio if playing
+    if (responseAudio) {
+      responseAudio.pause();
+      responseAudio.currentTime = 0;
+    }
+
+    const audio = new Audio(audioUrl);
+    setResponseAudio(audio);
+    setIsAudioPlaying(true);
+
+    audio.play()
+      .then(() => console.log("Audio playing."))
+      .catch((error) => {
+        console.error("Error playing audio:", error);
+        setIsAudioPlaying(false);
+      });
+
+    // Optional: auto set isAudioPlaying to false when it ends
+    audio.onended = () => {
+      setIsAudioPlaying(false);
+    };
+  };
+
+  const stopResponseAudio = () => {
+    if (responseAudio) {
+      responseAudio.pause();
+      responseAudio.currentTime = 0;
+      setIsAudioPlaying(false);
+      console.log("Audio stopped.");
+    } else {
+      console.warn("No audio is currently playing.");
+    }
+  };
+
 
   return (
     <Box
@@ -634,6 +709,11 @@ const AiBot = () => {
                   __html: msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
                 }}
               />
+              {responseAudio &&
+              <>
+                {isAudioPlaying ? <StopCircleIcon onClick={stopResponseAudio} /> : <PlayCircleFilledWhiteIcon onClick={() => playResponseAudio(responseAudio?.src)} />}
+              </>}
+
             </Box>
             {msg.sender === "bot" && msg.options && (
               <Box sx={{ display: "flex", gap: 1, marginBottom: 2 }}>
@@ -709,6 +789,13 @@ const AiBot = () => {
             }}
           >
             <SendIcon />
+          </IconButton>
+          <IconButton
+            color="primary"
+            disabled={loading}
+            sx={{ opacity: loading ? 0.5 : 1 }}
+          >
+            {micOn ? <StopCircleIcon onClick={stopMic} /> : <KeyboardVoiceIcon onClick={startMic} />}
           </IconButton>
         </Box>
       </Box>

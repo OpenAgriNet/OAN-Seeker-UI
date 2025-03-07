@@ -58,7 +58,8 @@ export const sendQueryToBot = async (
   lang,
   setMessages,
   setLoading,
-  typingDots
+  typingDots,
+  audio
 ) => {
   setLoading(true);
   setMessages((prev) => {
@@ -83,13 +84,12 @@ export const sendQueryToBot = async (
         input: {
           language: lang,
           text: query,
-          audio: "",
+          audio: audio ? audio:"",
           context: "kisan_sahayak",
         },
         output: { format: "text" },
       }),
     });
-
     const data = await response.json();
 
     // Clean the API response text to remove code block markers, .pdf, and page# references
@@ -107,6 +107,7 @@ export const sendQueryToBot = async (
         },
       ];
     });
+    return data;
   } catch (error) {
     setMessages((prev) => {
       const updatedMessages = prev.slice(0, -1);
