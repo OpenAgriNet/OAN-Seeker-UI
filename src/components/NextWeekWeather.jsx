@@ -8,7 +8,7 @@ const NextWeekWeather = ({ weatherData }) => {
   const [selectedForecast, setSelectedForecast] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(5); // default to next 5 days
+  const [selectedTab, setSelectedTab] = useState(3); 
 
   if (!weatherData || weatherData.length === 0) return null;
 
@@ -82,15 +82,16 @@ const NextWeekWeather = ({ weatherData }) => {
         sx={{ color: "#000000" }}
       >
         <Tab
-          label={t("nextWeekWeather.next5Days", "Next 5 days")}
-          value={5}
-          sx={{ textTransform: "none", color: "#000000" }}
-        />
-        <Tab
           label={t("nextWeekWeather.next3Days", "Next 3 days")}
           value={3}
           sx={{ textTransform: "none", color: "#000000" }}
         />
+        <Tab
+          label={t("nextWeekWeather.next5Days", "Next 5 days")}
+          value={5}
+          sx={{ textTransform: "none", color: "#000000" }}
+        />
+        
       </Tabs>
 
       {displayForecasts.map((item, index) => {
