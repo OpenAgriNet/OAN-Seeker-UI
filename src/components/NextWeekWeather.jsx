@@ -2,22 +2,22 @@ import React, { useState } from "react";
 import { Box, Typography, Tabs, Tab } from "@mui/material";
 import WeatherDetailPopup from "./NextWeekWeatherDetailPopup";
 import { useTranslation } from "react-i18next";
+import SunnyIcon from "../assets/Sunny.svg";
+import ClearWeatherIcon from "../assets/clearweather.svg";
+import RainyWeatherIcon from "../assets/rainyweather.svg";
 
 const NextWeekWeather = ({ weatherData }) => {
   const { t } = useTranslation();
   const [selectedForecast, setSelectedForecast] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(3); 
+  const [selectedTab, setSelectedTab] = useState(3);
 
   if (!weatherData || weatherData.length === 0) return null;
 
-  // Assume the first item is current weather.
   const currentWeather = weatherData[0];
-  // Example: "2025-03-05"
   const currentDate = currentWeather?.tags?.[0]?.descriptor?.code;
 
-  // Filter out current weather and forecasts for the *same* date as current weather
   const forecastItems = weatherData.filter((item) => {
     if (!item.descriptor.name.startsWith("Forecast")) return false;
     const parts = item.descriptor.name.split(" ");
@@ -26,21 +26,16 @@ const NextWeekWeather = ({ weatherData }) => {
     return forecastDate !== currentDate;
   });
 
-  // Group forecasts by day
   const groupedForecasts = forecastItems.reduce((acc, forecast) => {
     const parts = forecast.descriptor.name.split(" ");
-    const forecastDate = parts[2]; // e.g. "2025-03-06"
-    if (!acc[forecastDate]) {
-      acc[forecastDate] = [];
-    }
+    const forecastDate = parts[2];
+    if (!acc[forecastDate]) acc[forecastDate] = [];
     acc[forecastDate].push(forecast);
     return acc;
   }, {});
 
-  // Sort the dates
   const forecastDates = Object.keys(groupedForecasts).sort();
 
-  // For each day, pick one forecast (closest to noon)
   const dailyForecasts = forecastDates.map((dateKey) => {
     const forecasts = groupedForecasts[dateKey];
     let bestForecast = forecasts[0];
@@ -48,7 +43,6 @@ const NextWeekWeather = ({ weatherData }) => {
 
     forecasts.forEach((fc) => {
       const parts = fc.descriptor.name.split(" ");
-      // parts[3] = "06:00:00"
       const hour = parseInt(parts[3]?.split(":")[0], 10) || 0;
       const diff = Math.abs(hour - 12);
       if (diff < minDiff) {
@@ -59,8 +53,33 @@ const NextWeekWeather = ({ weatherData }) => {
     return { date: dateKey, forecast: bestForecast };
   });
 
-  // Display forecasts based on selected tab (first 5 or first 3 days)
   const displayForecasts = dailyForecasts.slice(0, selectedTab);
+
+  const getWeatherIcon = (weatherDescription, temperature) => {
+    const description = weatherDescription.toLowerCase();
+
+    if (
+      description.includes("rain") ||
+      description.includes("shower") ||
+      description.includes("thunderstorm")
+    ) {
+      return RainyWeatherIcon;
+    }
+
+    if (description.includes("cloud") || description.includes("clear")) {
+      return ClearWeatherIcon;
+    }
+
+    if (description.includes("snow") || description.includes("mist")) {
+      return ClearWeatherIcon; // Adjust if needed
+    }
+
+    if (description.includes("sunny") || temperature >= 30) {
+      return SunnyIcon;
+    }
+
+    return ClearWeatherIcon; // Default icon
+  };
 
   return (
     <Box
@@ -76,9 +95,7 @@ const NextWeekWeather = ({ weatherData }) => {
         onChange={(event, newValue) => setSelectedTab(newValue)}
         textColor="inherit"
         indicatorColor="inherit"
-        TabIndicatorProps={{
-          style: { backgroundColor: "#000000" },
-        }}
+        TabIndicatorProps={{ style: { backgroundColor: "#000000" } }}
         sx={{ color: "#000000" }}
       >
         <Tab
@@ -91,7 +108,6 @@ const NextWeekWeather = ({ weatherData }) => {
           value={5}
           sx={{ textTransform: "none", color: "#000000" }}
         />
-        
       </Tabs>
 
       {displayForecasts.map((item, index) => {
@@ -101,10 +117,8 @@ const NextWeekWeather = ({ weatherData }) => {
         const temperature = temperatureObj
           ? parseFloat(temperatureObj.value)
           : null;
-
         const dateObj = new Date(item.date);
 
-        // 1) Translate weekday
         const dayNameEnglish = dateObj.toLocaleDateString("en-US", {
           weekday: "long",
         });
@@ -113,17 +127,18 @@ const NextWeekWeather = ({ weatherData }) => {
           dayNameEnglish
         );
 
-        // 2) Translate short month
         const monthShortEnglish = dateObj.toLocaleDateString("en-US", {
           month: "short",
-        }); // e.g. "Mar"
+        });
         const translatedMonthShort = t(
           `monthsShort.${monthShortEnglish.toLowerCase()}`,
           monthShortEnglish
         );
 
-        const dayOfMonth = dateObj.getDate(); // numeric day
-        const iconUrl = item.forecast.descriptor.images?.[0]?.url;
+        const dayOfMonth = dateObj.getDate();
+
+        const weatherDescription = item.forecast.descriptor.short_desc;
+        const iconUrl = getWeatherIcon(weatherDescription, temperature);
 
         return (
           <Box
@@ -153,15 +168,12 @@ const NextWeekWeather = ({ weatherData }) => {
                 mr: 2,
               }}
             >
-              {iconUrl && (
-                <img
-                  src={iconUrl}
-                  alt={item.forecast.descriptor.short_desc}
-                  style={{ width: "40px", height: "40px" }}
-                />
-              )}
+              <img
+                src={iconUrl}
+                alt={weatherDescription}
+                style={{ width: "40px", height: "40px" }}
+              />
             </Box>
-
             <Box>
               <Typography
                 sx={{
@@ -171,17 +183,11 @@ const NextWeekWeather = ({ weatherData }) => {
                   marginRight: 3,
                 }}
               >
-                {temperature !== null ? (
-                  <>
-                    {temperature.toFixed(0)}
-                    <sup style={{ fontSize: "0.8em", marginLeft: 1 }}>°</sup>C
-                  </>
-                ) : (
-                  item.forecast.descriptor.short_desc
-                )}
+                {temperature !== null
+                  ? `${temperature.toFixed(0)}°C`
+                  : weatherDescription}
               </Typography>
             </Box>
-
             <Box>
               <Typography sx={{ fontSize: "14px", color: "#555" }}>
                 {translatedDayName} {dayOfMonth} {translatedMonthShort}
