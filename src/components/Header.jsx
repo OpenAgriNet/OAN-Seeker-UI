@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -22,7 +22,8 @@ import siteLogo from "../assets/siteLogo.png";
 import LocationPopup from "./LocationPopup";
 import LanguagePopup from "../components/LanguagePopup";
 import { useTranslation } from "react-i18next";
-import { LocationContext } from '../contexts/LocationContext';
+import { LocationContext } from "../context/LocationContext";
+import { LanguageContext } from "../context/LanguageContext";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -30,18 +31,10 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
   
-  const [language, setLanguage] = useState(
-    sessionStorage.getItem("preferredLanguage") || "en"
-  );
-
-  useEffect(() => {
-    const storedDistrict = sessionStorage.getItem("selectedDistrict");
-    if (storedDistrict) {
-      setSelectedDistrict(storedDistrict);
-    }
-  }, []);
+  // Use the shared location and language from context
+  const { location, updateLocation } = useContext(LocationContext);
+  const { language, updateLanguage } = useContext(LanguageContext);
 
   const handleMenuToggle = () => {
     setOpen(!open);
@@ -63,13 +56,15 @@ const Header = () => {
     setShowLanguagePopup(false);
   };
 
+  // When a new district is selected, update the context
   const handleLocationSelect = (district) => {
-    setSelectedDistrict(district);
+    updateLocation(location.selectedState, district);
   };
 
+  // The header now simply opens the LanguagePopup.
+  // The LanguagePopup will use the context to update the language.
   const handleLanguageChange = (newLanguage) => {
-    setLanguage(newLanguage);
-    sessionStorage.setItem("preferredLanguage", newLanguage);
+    updateLanguage(newLanguage);
   };
 
   return (
@@ -102,11 +97,11 @@ const Header = () => {
               mr: 1,
             }}
           >
-            {selectedDistrict ? selectedDistrict : t("header.location", "Location")}
+            {location.selectedDistrict ? location.selectedDistrict : t("header.location", "Location")}
           </Button>
 
           <IconButton onClick={handleOpenLanguage} color="inherit" sx={{ mr: 1 }}>
-            <GTranslateIcon /><Typography sx={{fontSize:'1rem' , marginLeft:'1rem'}}>En</Typography>
+            <GTranslateIcon />
           </IconButton>
 
           <IconButton onClick={handleMenuToggle} color="inherit">
@@ -175,8 +170,6 @@ const Header = () => {
       <LanguagePopup
         open={showLanguagePopup}
         onClose={handleCloseLanguage}
-        currentLanguage={language}
-        onLanguageChange={handleLanguageChange}
       />
     </AppBar>
   );

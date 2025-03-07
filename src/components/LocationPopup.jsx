@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { LocationContext } from "../context/LocationContext"; // new import
 
 const GIST_URL =
   "https://gist.githubusercontent.com/anubhavshrimal/4aeb195a743d0cdd1c3806c9c222ed45/raw";
@@ -20,6 +21,7 @@ const GIST_URL =
 const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { updateLocation } = useContext(LocationContext); // new
 
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -81,7 +83,7 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
     if (selectedState && selectedDistrict) {
       sessionStorage.setItem("selectedState", selectedState.value);
       sessionStorage.setItem("selectedDistrict", selectedDistrict);
-
+      updateLocation(selectedState.value, selectedDistrict); // update shared context
       if (onLocationSelect) {
         onLocationSelect(selectedDistrict);
       }

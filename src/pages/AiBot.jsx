@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Box, TextField, IconButton, Typography, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-
-// Import both sendQueryToBot and fetchWeather
 import { sendQueryToBot, fetchWeather } from "../api/apiService";
+import { LocationContext } from "../context/LocationContext"; // new import
 
 // Helper to get ordinal suffix for dates (e.g., 7th, 1st, etc.)
 const getOrdinalSuffix = (i) => {
@@ -94,6 +93,8 @@ const formatForecastData = (forecastItems) => {
 };
 
 const AiBot = () => {
+  // Consume location context for updated location values
+  const { location } = useContext(LocationContext);
   const languageMap = {
     English: "en",
     Hindi: "hi",
@@ -104,7 +105,7 @@ const AiBot = () => {
     {
       text: "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
       sender: "bot",
-      options: ["English", "Hindi", "Marathi"],
+      options: ["English", "हिंदी", "मराठी"],
     },
   ]);
   const [input, setInput] = useState("");
@@ -114,6 +115,10 @@ const AiBot = () => {
   const [userSubmitted, setUserSubmitted] = useState(false);
   // New state: store the complete weather data response so we can show forecasts later
   const [weatherData, setWeatherData] = useState(null);
+  // New state: track if we are awaiting a location change confirmation
+  const [awaitLocationChange, setAwaitLocationChange] = useState(false);
+  // New state: store the confirmed location (initially set to current context value)
+  const [confirmedLocation, setConfirmedLocation] = useState(location.selectedDistrict || "");
 
   const messagesEndRef = useRef(null);
 
@@ -152,6 +157,27 @@ const AiBot = () => {
       setUserSubmitted(false);
     }
   }, [messages, userSubmitted]);
+
+  // When waiting for a location change and the context has updated with a new value,
+  // simulate a user message with the updated location and re-confirm it.
+  useEffect(() => {
+    if (awaitLocationChange && location.selectedDistrict && location.selectedDistrict !== confirmedLocation) {
+      setMessages((prev) => [
+        ...prev,
+        { text: location.selectedDistrict, sender: "user" },
+      ]);
+      (async () => {
+        await simulateTypingThenAddMessage({
+          text: `I see you are interested in weather updates. Please confirm if this is your location: ${location.selectedDistrict}`,
+          sender: "bot",
+          options: ["Yes, this is my location", "No, I want to change my location"],
+        });
+      })();
+      setConfirmedLocation(location.selectedDistrict);
+      setAwaitLocationChange(false);
+    }
+  }, [awaitLocationChange, location.selectedDistrict, confirmedLocation]);
+
   const simulateTypingThenAddMessage = (newBotMessage, delay = 1500) => {
     return new Promise((resolve) => {
       setMessages((prev) => [...prev, { text: "Typing", sender: "bot" }]);
@@ -227,8 +253,8 @@ const AiBot = () => {
         sender: "bot",
       });
     } else if (option === "Weather") {
-      const selectedDistrict =
-        sessionStorage.getItem("selectedDistrict") || "your location";
+      // Use current location from context for initial confirmation
+      const selectedDistrict = location.selectedDistrict || "your location";
       await simulateTypingThenAddMessage({
         text: `I see you are interested in weather updates. Please confirm if this is your location: ${selectedDistrict}`,
         sender: "bot",
@@ -238,26 +264,24 @@ const AiBot = () => {
         ],
       });
     } else if (option === "Yes, this is my location") {
+      // Update the confirmed location to current context value
+      setConfirmedLocation(location.selectedDistrict);
       await simulateTypingThenAddMessage({
         text: "Great! Fetching the latest weather update for your area...",
         sender: "bot",
       });
       setTimeout(async () => {
         try {
-          const selectedDistrict =
-            sessionStorage.getItem("selectedDistrict") || "your location";
+          const selectedDistrict = location.selectedDistrict || "your location";
           const weatherItems = await fetchWeather(selectedDistrict);
           setWeatherData(weatherItems);
           if (weatherItems && weatherItems.length > 0) {
             const currentWeather = weatherItems[0];
-            // Instead of just showing the short description,
-            // we can build a more detailed message for the current weather.
-            // Here we extract values from the tags (if available).
             const tags =
               currentWeather.tags &&
               currentWeather.tags[0] &&
               currentWeather.tags[0].list;
-            const location = tags
+            const loc = tags
               ? tags.find((tag) => tag.descriptor.code === "location")?.value
               : "N/A";
             const minTemp = tags
@@ -274,7 +298,7 @@ const AiBot = () => {
               : "N/A";
 
             const currentWeatherMsg =
-              `Current Weather for ${location}:\n` +
+              `Current Weather for ${loc}:\n` +
               `🌡️ Temperature: ${minTemp} (Min) / ${maxTemp} (Max)\n` +
               `💧 Humidity: ${humidity}\n` +
               `💨 Wind Speed: ${windSpeed}`;
@@ -284,7 +308,6 @@ const AiBot = () => {
               sender: "bot",
             });
 
-            // Then ask if the user wants a forecast
             await simulateTypingThenAddMessage({
               text: "Would you like to see a weather forecast for the next few days?",
               sender: "bot",
@@ -308,20 +331,19 @@ const AiBot = () => {
       }, 1500);
     } else if (option === "No, I want to change my location") {
       await simulateTypingThenAddMessage({
-        text: "Sure! Please type in the new location you'd like to set.",
+        text: "Please select your preferred location from the Header..",
         sender: "bot",
       });
+      // Set flag to wait for the location change from the Header
+      setAwaitLocationChange(true);
     }
     // Forecast options handling:
     else if (option === "Yes, show forecast for 5 days") {
       if (weatherData) {
-        // Get all forecast items (assumed to be from index 1 onward)
         const forecastItems = weatherData.slice(1);
-        // Group by date and then take the first 5 distinct dates
         const grouped = groupForecastByDate(forecastItems);
         const dates = Object.keys(grouped).sort();
         const first5Dates = dates.slice(0, 5);
-        // Filter forecast items to only include those in the first 5 dates
         const filteredForecast = forecastItems.filter((item) => {
           const namePart = item.descriptor.name.split("Forecast for ")[1];
           const datePart = namePart.split(" ")[0];
@@ -338,7 +360,7 @@ const AiBot = () => {
           sender: "bot",
         });
       }
-    }  else if (option === "No, that’s all for now") {
+    } else if (option === "No, that’s all for now") {
       await simulateTypingThenAddMessage({
         text: "Thank you so much for conversing with AgriNet. 🌾.",
         sender: "bot",
@@ -469,7 +491,9 @@ const AiBot = () => {
                       boxShadow: "none",
                       color: "white",
                       "&:hover": { backgroundColor: "#808080" },
-                    }}
+                      textTransform : 'none',
+                      fontSize: '0.9rem',
+                      fontWeight: '500'                    }}
                   >
                     {opt}
                   </Button>

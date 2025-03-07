@@ -1,31 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/siteLogo.png";
 import { FormControl, Select, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import i18n from "../i18n";
+import { LanguageContext } from "../context/LanguageContext";
 
 const WelcomeScreen = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  // Initialize language from sessionStorage (or default "en")
-  const [language, setLanguage] = React.useState(
-    sessionStorage.getItem("preferredLanguage") || "en"
-  );
+  const { language, updateLanguage } = useContext(LanguageContext);
 
   const handleChange = (event) => {
     const newLanguage = event.target.value;
-    setLanguage(newLanguage);
-    // Change language in i18next immediately
-    i18n.changeLanguage(newLanguage);
-    // Save the preference in sessionStorage
-    sessionStorage.setItem("preferredLanguage", newLanguage);
+    updateLanguage(newLanguage);
   };
 
   const handleButtonClick = () => {
-    // Ensure the latest language is saved in sessionStorage
-    sessionStorage.setItem("preferredLanguage", language);
+    // Ensure the latest language is saved in sessionStorage via context
     const selectedDistrict = sessionStorage.getItem("selectedDistrict");
     if (selectedDistrict) {
       navigate("/weather");
