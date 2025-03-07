@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { LocationContext } from "../context/LocationContext"; // new import
+import { LocationContext } from "../context/LocationContext";
 
-const GIST_URL =
-  "https://gist.githubusercontent.com/anubhavshrimal/4aeb195a743d0cdd1c3806c9c222ed45/raw";
+const STATES_API = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
+const DISTRICTS_API = "https://cdn-api.co-vin.in/api/v2/admin/location/districts"; // append /:state_id
 
 const Home = () => {
   const { t } = useTranslation();
@@ -24,37 +24,37 @@ const Home = () => {
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [loadingStates, setLoadingStates] = useState(true);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
-  const [data, setData] = useState({});
   const navigate = useNavigate();
-  const { updateLocation } = useContext(LocationContext); // new
+  const { updateLocation } = useContext(LocationContext);
 
-  // Load previously stored location values
+  // Load previously stored location values from sessionStorage
   useEffect(() => {
     const storedState = sessionStorage.getItem("selectedState");
     const storedDistrict = sessionStorage.getItem("selectedDistrict");
 
     if (storedState) {
-      setSelectedState({ value: storedState, label: storedState });
-      fetchDistricts(storedState);
+      const parsedState = JSON.parse(storedState);
+      setSelectedState(parsedState);
+      // Fetch districts using the stored state's id
+      fetchDistricts(parsedState.value);
     }
     if (storedDistrict) {
-      setSelectedDistrict(storedDistrict);
+      setSelectedDistrict(JSON.parse(storedDistrict));
     }
   }, []);
 
-  // Fetch states data
+  // Fetch states data from the Co-Win API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStates = async () => {
       try {
-        const response = await axios.get(GIST_URL);
-        const jsonData = response.data;
-        setData(jsonData);
-
-        const stateList = Object.keys(jsonData).map((stateName) => ({
-          value: stateName,
-          label: stateName,
+        const response = await axios.get(STATES_API, {
+          headers: { accept: "application/json" },
+        });
+        // Map the returned state objects to the format needed by Autocomplete
+        const stateList = response.data.states.map((state) => ({
+          value: state.state_id, // state id used for district lookup
+          label: state.state_name,
         }));
-
         setStates(stateList);
       } catch (error) {
         console.error("Error fetching states:", error);
@@ -63,15 +63,18 @@ const Home = () => {
       }
     };
 
-    fetchData();
+    fetchStates();
   }, []);
 
-  // Fetch districts for a selected state
-  const fetchDistricts = (stateName) => {
+  // Fetch districts for a selected state using its state_id
+  const fetchDistricts = async (stateId) => {
     setLoadingDistricts(true);
     try {
-      const stateDistricts = data[stateName] || [];
-      setDistricts(stateDistricts);
+      const response = await axios.get(`${DISTRICTS_API}/${stateId}`, {
+        headers: { accept: "application/json" },
+      });
+      // The API returns an array of district objects
+      setDistricts(response.data.districts);
     } catch (error) {
       console.error("Error fetching districts:", error);
       setDistricts([]);
@@ -82,9 +85,11 @@ const Home = () => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      sessionStorage.setItem("selectedState", selectedState.value);
-      sessionStorage.setItem("selectedDistrict", selectedDistrict);
-      updateLocation(selectedState.value, selectedDistrict); // update shared context
+      // Save the selected values as JSON strings in sessionStorage
+      sessionStorage.setItem("selectedState", JSON.stringify(selectedState));
+      sessionStorage.setItem("selectedDistrict", JSON.stringify(selectedDistrict));
+      // Update the shared context (using state name and district name)
+      updateLocation(selectedState.label, selectedDistrict.district_name);
       navigate("/weather");
     }
   };
@@ -118,7 +123,9 @@ const Home = () => {
           onChange={(_, newValue) => {
             setSelectedState(newValue);
             setSelectedDistrict(null);
-            if (newValue) fetchDistricts(newValue.value);
+            if (newValue) {
+              fetchDistricts(newValue.value);
+            }
           }}
           loading={loadingStates}
           renderInput={(params) => (
@@ -151,7 +158,7 @@ const Home = () => {
         </Typography>
         <Autocomplete
           options={districts}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option.district_name}
           value={selectedDistrict}
           onChange={(_, newValue) => setSelectedDistrict(newValue)}
           disabled={!selectedState || loadingDistricts}

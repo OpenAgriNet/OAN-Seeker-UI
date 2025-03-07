@@ -13,15 +13,15 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LocationContext } from "../context/LocationContext"; // new import
+import { LocationContext } from "../context/LocationContext";
 
-const GIST_URL =
-  "https://gist.githubusercontent.com/anubhavshrimal/4aeb195a743d0cdd1c3806c9c222ed45/raw";
+const STATES_API = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
+const DISTRICTS_API = "https://cdn-api.co-vin.in/api/v2/admin/location/districts"; // Append /:state_id
 
 const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { updateLocation } = useContext(LocationContext); // new
+  const { updateLocation } = useContext(LocationContext);
 
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -29,32 +29,34 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [loadingStates, setLoadingStates] = useState(true);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
-  const [data, setData] = useState({});
 
+  // Load previously stored location values from sessionStorage
   useEffect(() => {
     const storedState = sessionStorage.getItem("selectedState");
     const storedDistrict = sessionStorage.getItem("selectedDistrict");
 
     if (storedState) {
-      setSelectedState({ value: storedState, label: storedState });
+      const parsedState = JSON.parse(storedState);
+      setSelectedState(parsedState);
+      // Fetch districts for the stored state using its value (state_id)
+      fetchDistricts(parsedState.value);
     }
     if (storedDistrict) {
-      setSelectedDistrict(storedDistrict);
+      setSelectedDistrict(JSON.parse(storedDistrict));
     }
   }, []);
 
+  // Fetch states data from the Co-Win API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchStates = async () => {
       try {
-        const response = await axios.get(GIST_URL);
-        const jsonData = response.data;
-        setData(jsonData);
-
-        const stateList = Object.keys(jsonData).map((stateName) => ({
-          value: stateName,
-          label: stateName,
+        const response = await axios.get(STATES_API, {
+          headers: { accept: "application/json" },
+        });
+        const stateList = response.data.states.map((state) => ({
+          value: state.state_id,
+          label: state.state_name,
         }));
-
         setStates(stateList);
       } catch (error) {
         console.error("Error fetching states:", error);
@@ -63,14 +65,17 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
       }
     };
 
-    fetchData();
+    fetchStates();
   }, []);
 
-  const fetchDistricts = (stateName) => {
+  // Fetch districts for a selected state using its state_id
+  const fetchDistricts = async (stateId) => {
     setLoadingDistricts(true);
     try {
-      const stateDistricts = data[stateName] || [];
-      setDistricts(stateDistricts);
+      const response = await axios.get(`${DISTRICTS_API}/${stateId}`, {
+        headers: { accept: "application/json" },
+      });
+      setDistricts(response.data.districts);
     } catch (error) {
       console.error("Error fetching districts:", error);
       setDistricts([]);
@@ -81,9 +86,9 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      sessionStorage.setItem("selectedState", selectedState.value);
-      sessionStorage.setItem("selectedDistrict", selectedDistrict);
-      updateLocation(selectedState.value, selectedDistrict); // update shared context
+      sessionStorage.setItem("selectedState", JSON.stringify(selectedState));
+      sessionStorage.setItem("selectedDistrict", JSON.stringify(selectedDistrict));
+      updateLocation(selectedState.label, selectedDistrict.district_name);
       if (onLocationSelect) {
         onLocationSelect(selectedDistrict);
       }
@@ -149,7 +154,7 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
           <Autocomplete
             sx={{ marginTop: "0px" }}
             options={districts}
-            getOptionLabel={(option) => option}
+            getOptionLabel={(option) => option.district_name}
             value={selectedDistrict}
             onChange={(_, newValue) => setSelectedDistrict(newValue)}
             disabled={!selectedState || loadingDistricts}
