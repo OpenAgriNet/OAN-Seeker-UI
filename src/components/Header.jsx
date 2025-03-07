@@ -22,13 +22,14 @@ import siteLogo from "../assets/siteLogo.png";
 import { useTranslation } from "react-i18next";
 import { LocationContext } from "../context/LocationContext";
 import { LanguageContext } from "../context/LanguageContext";
+import LocationPopup from "../components/LocationPopup";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
-  
+
   // Use the shared location and language from context
   const { location } = useContext(LocationContext);
   const { language, updateLanguage } = useContext(LanguageContext);
@@ -85,7 +86,7 @@ const Header = () => {
             {location.selectedDistrict ? location.selectedDistrict : t("header.location", "Location")}
           </Button>
 
-          {/* Language Dropdown - Replaces Popup */}
+          {/* Language Dropdown */}
           <Select
             value={language}
             onChange={handleLanguageChange}
@@ -93,8 +94,8 @@ const Header = () => {
             sx={{
               color: "white",
               borderColor: "white",
-              "& .MuiSelect-icon": { color: "white" }, // Make the dropdown arrow white
-              "& .MuiOutlinedInput-notchedOutline": { border: "none" }, // Remove outline
+              "& .MuiSelect-icon": { color: "white" },
+              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
             }}
           >
             <MenuItem value="en">En</MenuItem>
@@ -158,6 +159,9 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Render the LocationPopup component */}
+      <LocationPopup open={showLocationPopup} onClose={handleCloseLocation} />
     </AppBar>
   );
 };
