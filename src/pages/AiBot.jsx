@@ -4,9 +4,10 @@ import SendIcon from "@mui/icons-material/Send";
 import { sendQueryToBot, fetchWeather } from "../api/apiService";
 import { LocationContext } from "../context/LocationContext";
 
-// ----- Extended responses dictionary (including option translations and HTML formatting) -----
+// ----- Extended responses dictionary (including new keys for welcome, feedback, etc.) -----
 const responses = {
   en: {
+    welcomeMessage: "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
     servicePrompt: "Please select the service you need help with",
     farmingPrompt: "Ask me anything related to farming.",
     weatherConfirm: (district) =>
@@ -18,15 +19,19 @@ const responses = {
     changeLocation: "Please select your preferred location from the Header..",
     unknownOption: "I'm not sure how to handle that option yet.",
     thankYou: "Thank you so much for conversing with AgriNet. 🌾.",
+    feedbackPrompt: "Let me know if you need anything else.",
     // Options
     optionWeather: "Weather",
     optionGovtSchemes: "Government Schemes",
     optionYesLocation: "Yes, this is my location",
     optionNoChangeLocation: "No, I want to change my location",
     optionYesForecast: "Yes, show forecast for 5 days",
-    optionNoForecast: "No, that’s all for now"
+    optionNoForecast: "No, that’s all for now",
+    optionGiveFeedback: "Give Feedback",
+    optionGoBack: "Go Back to Main Menu"
   },
   hi: {
+    welcomeMessage: "नमस्ते, मैं एग्रीनेट हूं, आपकी कृषि आवश्यकताओं के लिए आपका विश्वसनीय सहायक। कृपया अपनी पसंदीदा भाषा चुनें।",
     servicePrompt: "कृपया बताएं कि आपको किस सेवा की आवश्यकता है।",
     farmingPrompt: "कृषि से संबंधित कोई भी सवाल पूछें।",
     weatherConfirm: (district) =>
@@ -38,15 +43,19 @@ const responses = {
     changeLocation: "कृपया हेडर से अपना पसंदीदा स्थान चुनें।",
     unknownOption: "मुझे अभी तक यह विकल्प संभालने का तरीका नहीं पता है।",
     thankYou: "एग्रीनेट के साथ बातचीत करने के लिए आपका बहुत धन्यवाद।",
+    feedbackPrompt: "अगर आपको कुछ और चाहिए तो बताएं।",
     // Options
     optionWeather: "मौसम",
     optionGovtSchemes: "सरकारी योजनाएँ",
     optionYesLocation: "हाँ, यही मेरा स्थान है",
     optionNoChangeLocation: "नहीं, मैं अपना स्थान बदलना चाहता हूँ",
     optionYesForecast: "हाँ, अगले 5 दिनों का पूर्वानुमान दिखाएँ",
-    optionNoForecast: "नहीं, बस इतना ही"
+    optionNoForecast: "नहीं, बस इतना ही",
+    optionGiveFeedback: "प्रतिक्रिया दें",
+    optionGoBack: "मुख्य मेनू पर वापस जाएँ"
   },
   mr: {
+    welcomeMessage: "नमस्कार, मी एग्रीनेट आहे, तुमच्या शेतीसंबंधी गरजांसाठी तुमचा विश्वासू सहायक. कृपया तुमची प्राधान्यकृत भाषा निवडा.",
     servicePrompt: "कृपया आपल्याला कोणत्या सेवेमध्ये मदत हवी आहे ते निवडा.",
     farmingPrompt: "कृषीशी संबंधित काहीही प्रश्न विचारा.",
     weatherConfirm: (district) =>
@@ -58,13 +67,16 @@ const responses = {
     changeLocation: "कृपया हेडरमधून तुमचा आवडता स्थान निवडा.",
     unknownOption: "मला अजून कळलेलं नाही की हा पर्याय कसा हाताळायचा.",
     thankYou: "एग्रीनेटशी बोलल्याबद्दल तुमचे मनापासून आभार.",
+    feedbackPrompt: "जर तुम्हाला आणखी काही हवे असल्यास कळवा.",
     // Options
     optionWeather: "हवामान",
     optionGovtSchemes: "सरकारी योजना",
     optionYesLocation: "होय, हेच माझं स्थान आहे",
     optionNoChangeLocation: "नाही, मला माझं स्थान बदलायचं आहे",
     optionYesForecast: "होय, पुढील 5 दिवसांचं पूर्वानुमान दाखवा",
-    optionNoForecast: "नाही, सध्या इतकंच"
+    optionNoForecast: "नाही, सध्या इतकंच",
+    optionGiveFeedback: "प्रतिक्रिया द्या",
+    optionGoBack: "मुख्य मेनूमध्ये परत जा"
   }
 };
 // -----------------------------------------------------------------------------
@@ -97,7 +109,7 @@ const weatherLabels = {
   }
 };
 
-// Helper function to round numeric values while preserving any units (like °C, m/s)
+// Helper function to round numeric values while preserving units (like °C, m/s)
 const formatValue = (val) => {
   if (typeof val === "string") {
     const match = val.match(/^([\d.]+)(.*)$/);
@@ -137,7 +149,7 @@ const groupForecastByDate = (forecastItems) => {
   return grouped;
 };
 
-// Updated formatForecastData to accept a language parameter, add icons, bold headers and round numbers
+// Updated formatForecastData to accept a language parameter, add icons, bold headers, and round numbers
 const formatForecastData = (forecastItems, lang = "en") => {
   const forecastLabels = {
     en: {
@@ -220,8 +232,7 @@ const AiBot = () => {
   
   const [messages, setMessages] = useState([
     {
-      text:
-        "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
+      text: responses.en.welcomeMessage,
       sender: "bot",
       options: ["English", "हिंदी", "मराठी"],
     },
@@ -463,6 +474,15 @@ const AiBot = () => {
           text: formattedForecast,
           sender: "bot",
         });
+        // NEW: After forecast delivery, prompt feedback message.
+        await simulateTypingThenAddMessage({
+          text: responses[language].feedbackPrompt,
+          sender: "bot",
+          options: [
+            responses[language].optionGiveFeedback,
+            responses[language].optionGoBack
+          ],
+        });
       } else {
         await simulateTypingThenAddMessage({
           text: responses[language].noWeatherData,
@@ -470,9 +490,41 @@ const AiBot = () => {
         });
       }
     } else if (option === responses[language].optionNoForecast) {
+      // When user selects "No, that's all for now", display thank you and feedback prompt
       await simulateTypingThenAddMessage({
         text: responses[language].thankYou,
         sender: "bot",
+      });
+      await simulateTypingThenAddMessage({
+        text: responses[language].feedbackPrompt,
+        sender: "bot",
+        options: [
+          responses[language].optionGiveFeedback,
+          responses[language].optionGoBack
+        ],
+      });
+    } else if (option === responses[language].optionGiveFeedback) {
+      await simulateTypingThenAddMessage({
+        text: "Thank you for your feedback. How else can I assist you?",
+        sender: "bot",
+      });
+      await simulateTypingThenAddMessage({
+        text: responses[language].feedbackPrompt,
+        sender: "bot",
+        options: [
+          responses[language].optionGiveFeedback,
+          responses[language].optionGoBack
+        ],
+      });
+    } else if (option === responses[language].optionGoBack) {
+      // Reset conversation: show welcome message with language options
+      setSelectedService("");
+      setWeatherData(null);
+      setLanguage("");
+      await simulateTypingThenAddMessage({
+        text: responses["en"].welcomeMessage, // Default welcome in English; update as needed.
+        sender: "bot",
+        options: ["English", "हिंदी", "मराठी"]
       });
     } else {
       await simulateTypingThenAddMessage({
