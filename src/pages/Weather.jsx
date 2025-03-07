@@ -1,26 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box, Typography } from "@mui/material";
 import WeatherWidget from "../components/CurrentWeather";
 import Loading from "../components/Loading";
 import { fetchWeather } from "../api/apiService";
 import NextWeekWeather from "../components/NextWeekWeather";
 import { useTranslation } from "react-i18next";
+import { LocationContext } from "../context/LocationContext";
 
 const Weather = () => {
   const { t } = useTranslation();
+  const { location } = useContext(LocationContext); // use context here
   const [weatherData, setWeatherData] = useState(null);
   const [error, setError] = useState(null);
   const [date, setDate] = useState(new Date());
 
   useEffect(() => {
     const fetchData = async () => {
-      const location = localStorage.getItem("selectedDistrict");
-      if (!location) {
+      // use the updated location from context
+      const selectedDistrict = location.selectedDistrict;
+      if (!selectedDistrict) {
         setError(t("weather.noLocation", "No location selected"));
         return;
       }
+      // reset weatherData to show loading
+      setWeatherData(null);
+      setError(null);
       try {
-        const items = await fetchWeather(location);
+        const items = await fetchWeather(selectedDistrict);
         setWeatherData(items);
       } catch (err) {
         setError(err.message);
@@ -28,7 +34,7 @@ const Weather = () => {
     };
 
     fetchData();
-  }, [t]);
+  }, [t, location.selectedDistrict]); // re-run effect when selectedDistrict changes
 
   const getGreetingTime = (d = new Date()) => {
     const currentHour = d.getHours();

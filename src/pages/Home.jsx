@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { LocationContext } from "../context/LocationContext"; // new import
 
 const GIST_URL =
   "https://gist.githubusercontent.com/anubhavshrimal/4aeb195a743d0cdd1c3806c9c222ed45/raw";
@@ -25,11 +26,12 @@ const Home = () => {
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [data, setData] = useState({});
   const navigate = useNavigate();
+  const { updateLocation } = useContext(LocationContext); // new
 
   // Load previously stored location values
   useEffect(() => {
-    const storedState = localStorage.getItem("selectedState");
-    const storedDistrict = localStorage.getItem("selectedDistrict");
+    const storedState = sessionStorage.getItem("selectedState");
+    const storedDistrict = sessionStorage.getItem("selectedDistrict");
 
     if (storedState) {
       setSelectedState({ value: storedState, label: storedState });
@@ -80,17 +82,18 @@ const Home = () => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      localStorage.setItem("selectedState", selectedState.value);
-      localStorage.setItem("selectedDistrict", selectedDistrict);
+      sessionStorage.setItem("selectedState", selectedState.value);
+      sessionStorage.setItem("selectedDistrict", selectedDistrict);
+      updateLocation(selectedState.value, selectedDistrict); // update shared context
       navigate("/weather");
     }
   };
 
-  // Clear localStorage when the tab is closed
+  // Clear sessionStorage when the tab is closed
   useEffect(() => {
     const handleTabClose = () => {
-      localStorage.removeItem("selectedState");
-      localStorage.removeItem("selectedDistrict");
+      sessionStorage.removeItem("selectedState");
+      sessionStorage.removeItem("selectedDistrict");
     };
 
     window.addEventListener("beforeunload", handleTabClose);

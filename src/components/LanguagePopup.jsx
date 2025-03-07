@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,27 +11,23 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import i18n from "../i18n";
+import { LanguageContext } from "../context/LanguageContext";
 
-const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => {
+const LanguagePopup = ({ open, onClose }) => {
   const { t } = useTranslation();
-  const [language, setLanguage] = useState(currentLanguage || "en");
+  const { language, updateLanguage } = useContext(LanguageContext);
+  const [localLanguage, setLocalLanguage] = useState(language);
 
   useEffect(() => {
-    setLanguage(currentLanguage);
-  }, [currentLanguage]);
+    setLocalLanguage(language);
+  }, [language]);
 
   const handleChange = (event) => {
-    setLanguage(event.target.value);
+    setLocalLanguage(event.target.value);
   };
 
   const handleSave = () => {
-    // Update i18next language
-    i18n.changeLanguage(language);
-    // Update localStorage so that on next load the correct language is used
-    localStorage.setItem("preferredLanguage", language);
-    // Notify parent if needed
-    onLanguageChange(language);
+    updateLanguage(localLanguage);
     onClose();
   };
 
@@ -46,7 +42,7 @@ const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => 
           <Select
             labelId="language-select-label"
             id="language-select"
-            value={language}
+            value={localLanguage}
             onChange={handleChange}
             label={t("languagePopup.label", "Language")}
           >
@@ -67,7 +63,7 @@ const LanguagePopup = ({ open, onClose, currentLanguage, onLanguageChange }) => 
             textTransform: "none",
             fontSize: "0.8rem",
             padding: "6px 12px",
-            boxShadow:'none'
+            boxShadow: "none",
           }}
         >
           {t("languagePopup.save", "Save")}

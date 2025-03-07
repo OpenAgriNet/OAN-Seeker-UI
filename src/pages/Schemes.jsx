@@ -16,9 +16,9 @@ const Schemes = () => {
   const [visibleSchemes, setVisibleSchemes] = useState(ITEMS_PER_PAGE);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 1) On mount, restore search query from localStorage (if it exists)
+  // 1) On mount, restore search query from sessionStorage (if it exists)
   useEffect(() => {
-    const storedQuery = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const storedQuery = sessionStorage.getItem(LOCAL_STORAGE_KEY);
     if (storedQuery) {
       setSearchQuery(storedQuery);
     }
@@ -38,8 +38,8 @@ const Schemes = () => {
   const handleSearchChange = (e) => {
     const newQuery = e.target.value;
     setSearchQuery(newQuery);
-    // Update localStorage so we can restore on next mount
-    localStorage.setItem(LOCAL_STORAGE_KEY, newQuery);
+    // Update sessionStorage so we can restore on next mount
+    sessionStorage.setItem(LOCAL_STORAGE_KEY, newQuery);
   };
 
   const handleLoadMore = () => {

@@ -1,4 +1,3 @@
-// apiService.js
 import axios from "axios";
 
 const WEATHER_API_URL = import.meta.env.VITE_WEATHER_API_URL;
@@ -14,7 +13,12 @@ const cleanResponseText = (text) => {
     if (/^```[a-zA-Z]*$/.test(trimmed)) return false;
     return true;
   });
-  return filtered.join("\n").trim();
+  let cleaned = filtered.join("\n").trim();
+  // Remove any .pdf occurrences (case-insensitive)
+  cleaned = cleaned.replace(/\.pdf/gi, "");
+  // Remove any "page# <number>" text
+  cleaned = cleaned.replace(/page#\s*\d+/gi, "");
+  return cleaned;
 };
 
 export const fetchWeather = async (selectedDistrict) => {
@@ -73,7 +77,7 @@ export const sendQueryToBot = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH_TOKEN}`, // Use import.meta.env.VITE_*
+        Authorization: `Bearer ${AUTH_TOKEN}`,
         "x-preferred-language": lang,
       },
       body: JSON.stringify({
@@ -88,7 +92,7 @@ export const sendQueryToBot = async (
     });
     const data = await response.json();
 
-    // Clean the API response text to remove redundant code block markers
+    // Clean the API response text to remove code block markers, .pdf, and page# references
     const cleanedText = cleanResponseText(
       data.output.text || "Sorry, I couldn't fetch a response."
     );

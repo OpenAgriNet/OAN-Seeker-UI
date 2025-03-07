@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,39 +8,31 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
+  Typography,
+  Select,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from "@mui/icons-material/Info";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import GTranslateIcon from "@mui/icons-material/GTranslate";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
 import siteLogo from "../assets/siteLogo.png";
-import LocationPopup from "./LocationPopup";
-import LanguagePopup from "../components/LanguagePopup";
 import { useTranslation } from "react-i18next";
+import { LocationContext } from "../context/LocationContext";
+import { LanguageContext } from "../context/LanguageContext";
+import LocationPopup from "../components/LocationPopup";
 
 const Header = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
-  const [showLanguagePopup, setShowLanguagePopup] = useState(false);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [language, setLanguage] = useState(
-    localStorage.getItem("preferredLanguage") || "en"
-  );
 
-  useEffect(() => {
-    const storedDistrict = localStorage.getItem("selectedDistrict");
-    if (storedDistrict) {
-      setSelectedDistrict(storedDistrict);
-    }
-  }, []);
+  // Use the shared location and language from context
+  const { location } = useContext(LocationContext);
+  const { language, updateLanguage } = useContext(LanguageContext);
 
   const handleMenuToggle = () => {
     setOpen(!open);
@@ -54,21 +46,11 @@ const Header = () => {
     setShowLocationPopup(false);
   };
 
-  const handleOpenLanguage = () => {
-    setShowLanguagePopup(true);
-  };
-
-  const handleCloseLanguage = () => {
-    setShowLanguagePopup(false);
-  };
-
-  const handleLocationSelect = (district) => {
-    setSelectedDistrict(district);
-  };
-
-  const handleLanguageChange = (newLanguage) => {
-    setLanguage(newLanguage);
-    localStorage.setItem("preferredLanguage", newLanguage);
+  // Directly update language when user selects from dropdown
+  const handleLanguageChange = (event) => {
+    const newLanguage = event.target.value;
+    updateLanguage(newLanguage);
+    i18n.changeLanguage(newLanguage); // Update site language
   };
 
   return (
@@ -101,12 +83,25 @@ const Header = () => {
               mr: 1,
             }}
           >
-            {selectedDistrict ? selectedDistrict : t("header.location", "Location")}
+            {location.selectedDistrict ? location.selectedDistrict : t("header.location", "Location")}
           </Button>
 
-          <IconButton onClick={handleOpenLanguage} color="inherit" sx={{ mr: 1 }}>
-            <GTranslateIcon />
-          </IconButton>
+          {/* Language Dropdown */}
+          <Select
+            value={language}
+            onChange={handleLanguageChange}
+            size="small"
+            sx={{
+              color: "white",
+              borderColor: "white",
+              "& .MuiSelect-icon": { color: "white" },
+              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+            }}
+          >
+            <MenuItem value="en">En</MenuItem>
+            <MenuItem value="hi">Hi</MenuItem>
+            <MenuItem value="mr">Mr</MenuItem>
+          </Select>
 
           <IconButton onClick={handleMenuToggle} color="inherit">
             {open ? <CloseIcon /> : <MenuIcon />}
@@ -165,18 +160,8 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      <LocationPopup
-        open={showLocationPopup}
-        onClose={handleCloseLocation}
-        onLocationSelect={handleLocationSelect}
-      />
-
-      <LanguagePopup
-        open={showLanguagePopup}
-        onClose={handleCloseLanguage}
-        currentLanguage={language}
-        onLanguageChange={handleLanguageChange}
-      />
+      {/* Render the LocationPopup component */}
+      <LocationPopup open={showLocationPopup} onClose={handleCloseLocation} />
     </AppBar>
   );
 };

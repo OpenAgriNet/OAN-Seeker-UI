@@ -7,7 +7,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    lng: localStorage.getItem("preferredLanguage") || "en", // initial load
+    lng: sessionStorage.getItem("preferredLanguage") || "en", 
     debug: false,
     backend: {
       loadPath: "/locales/{{lng}}/translation.json",
