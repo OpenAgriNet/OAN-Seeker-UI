@@ -1,17 +1,12 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 
 export const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
   const [location, setLocation] = useState({
-    selectedState: sessionStorage.getItem("selectedState") || "",
-    selectedDistrict: sessionStorage.getItem("selectedDistrict") || "",
+    selectedState: "",
+    selectedDistrict: "",
   });
-
-  useEffect(() => {
-    sessionStorage.setItem("selectedState", location.selectedState);
-    sessionStorage.setItem("selectedDistrict", location.selectedDistrict);
-  }, [location]);
 
   const updateLocation = (state, district) => {
     setLocation({ selectedState: state, selectedDistrict: district });
