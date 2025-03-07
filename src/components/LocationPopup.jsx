@@ -14,14 +14,18 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LocationContext } from "../context/LocationContext";
+import { LanguageContext } from "../context/LanguageContext";
 
-const STATES_API = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
-const DISTRICTS_API = "https://cdn-api.co-vin.in/api/v2/admin/location/districts"; // Append /:state_id
+const STATES_API = "https://oan-weather-seeker-api.tekdinext.com/location/states";
+const DISTRICTS_API = "https://oan-weather-seeker-api.tekdinext.com/location/districts";
 
 const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const { t } = useTranslation();
+  const { language } = useContext(LanguageContext);
+  // Consume the location context (assuming it holds a value like locationId or coordinates)
+  const { updateLocation, location } = useContext(LocationContext);
+
   const navigate = useNavigate();
-  const { updateLocation } = useContext(LocationContext);
 
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -30,7 +34,6 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const [loadingStates, setLoadingStates] = useState(true);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
 
-  // Load previously stored location values from sessionStorage
   useEffect(() => {
     const storedState = sessionStorage.getItem("selectedState");
     const storedDistrict = sessionStorage.getItem("selectedDistrict");
@@ -38,7 +41,7 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
     if (storedState) {
       const parsedState = JSON.parse(storedState);
       setSelectedState(parsedState);
-      // Fetch districts for the stored state using its value (state_id)
+      // Fetch districts using the stored state's id
       fetchDistricts(parsedState.value);
     }
     if (storedDistrict) {
@@ -46,13 +49,16 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
     }
   }, []);
 
-  // Fetch states data from the Co-Win API
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await axios.get(STATES_API, {
-          headers: { accept: "application/json" },
-        });
+        // Pass both language and location context value (if available) as query parameters.
+        // Adjust the query parameter name "loc" to match your API’s requirements.
+        const response = await axios.get(
+          `${STATES_API}?lang=${language}&loc=${location || ""}`,
+          { headers: { accept: "application/json" } }
+        );
+        // Map the returned state objects to the format needed by Autocomplete
         const stateList = response.data.states.map((state) => ({
           value: state.state_id,
           label: state.state_name,
@@ -66,15 +72,16 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
     };
 
     fetchStates();
-  }, []);
+  }, [language, location]);
 
-  // Fetch districts for a selected state using its state_id
   const fetchDistricts = async (stateId) => {
     setLoadingDistricts(true);
     try {
-      const response = await axios.get(`${DISTRICTS_API}/${stateId}`, {
-        headers: { accept: "application/json" },
-      });
+      // Similarly pass the location value to the districts API
+      const response = await axios.get(
+        `${DISTRICTS_API}/${stateId}?lang=${language}&loc=${location || ""}`,
+        { headers: { accept: "application/json" } }
+      );
       setDistricts(response.data.districts);
     } catch (error) {
       console.error("Error fetching districts:", error);

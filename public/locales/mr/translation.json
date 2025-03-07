@@ -1,8 +1,8 @@
 {
   "welcomeScreen": {
     "title": "एग्रीनेट",
-    "subtitle": "जागतिक कृषीसाठी एक मुक्त नेटवर्क",
-    "selectLanguage": "आपली पसंतीची भाषा निवडा",
+    "subtitle": "जागतिक कृषीसाठी एक ओपन नेटवर्क",
+    "selectLanguage": "तुमची आवडती भाषा निवडा",
     "getStarted": "सुरू करा"
   },
   "language": {
@@ -11,16 +11,16 @@
     "marathi": "मराठी"
   },
   "home": {
-    "selectLocation": "कृपया आपले स्थान निवडा",
+    "selectLocation": "कृपया तुमचे लोकेशन निवडा",
     "state": "राज्य",
     "district": "जिल्हा",
     "submit": "सबमिट करा"
   },
   "weather": {
-    "noLocation": "कोणतेही स्थान निवडलेले नाही",
-    "noLocationTitle": "कृपया आपले स्थान निवडा",
-    "noLocationDescription": "योग्य हवामान माहिती पुरवण्यासाठी आपले स्थान आवश्यक आहे. वर दिलेल्या बटणावर टॅप करा",
-    "location": "स्थान",
+    "noLocation": "लोकेशन निवडलेले नाही",
+    "noLocationTitle": "कृपया तुमचे लोकेशन निवडा",
+    "noLocationDescription": "योग्य हवामान माहितीसाठी तुमचे लोकेशन आवश्यक आहे. वर दिलेल्या",
+    "location": "लोकेशन",
     "toGetStarted": "बटणावर टॅप करा",
     "greeting": {
       "morning": "शुभ सकाळ",
@@ -29,12 +29,12 @@
     }
   },
   "currentWeather": {
-    "noData": "कोणतेही डेटा उपलब्ध नाही",
+    "noData": "डेटा उपलब्ध नाही",
     "humidity": "आर्द्रता",
     "wind": "हवा"
   },
   "header": {
-    "location": "स्थान",
+    "location": "लोकेशन",
     "aboutUs": "आमच्याबद्दल",
     "contactUs": "संपर्क करा"
   },
@@ -46,25 +46,25 @@
   "languagePopup": {
     "title": "भाषा निवडा",
     "label": "भाषा",
-    "save": "जतन करा"
+    "save": "सेव्ह करा"
   },
   "locationPopup": {
-    "title": "आपले स्थान निवडा",
+    "title": "तुमचे लोकेशन निवडा",
     "state": "राज्य",
     "district": "जिल्हा",
     "submit": "सबमिट करा"
   },
   "schemes": {
     "discover": "योजना शोधा",
-    "noSchemes": "साठी कोणतीही योजना सापडली नाही",
+    "noSchemes": "साठी योजना उपलब्ध नाहीत",
     "loadMore": "अधिक लोड करा"
   },
   "schemesCard": {
-    "benefitDetail": "लाभ तपशील",
+    "benefitDetail": "लाभाचा तपशील",
     "viewDetails": "तपशील पहा"
   },
   "schemesDetails": {
-    "noDetails": "कोणतीही योजना माहिती सापडली नाही.",
+    "noDetails": "योजनेचा तपशील उपलब्ध नाही.",
     "provider": "प्रदाता",
     "categories": "श्रेणी",
     "fulfillments": "पूर्ती",
@@ -74,10 +74,10 @@
     "additionalEligibility": "अतिरिक्त पात्रता",
     "demographicEligibility": "लोकसंख्याशास्त्रीय पात्रता",
     "details": "तपशील",
-    "viewDocument": "योजना दस्तऐवज पहा"
+    "viewDocument": "योजनेचे दस्तऐवज पहा"
   },
   "searchBar": {
-    "placeholder": "नावानुसार शोधा"
+    "placeholder": "नावाने शोधा"
   },
   "days": {
     "monday": "सोमवार",
@@ -88,29 +88,28 @@
     "saturday": "शनिवार",
     "sunday": "रविवार"
   },
-  "nextWeekWeather": {
-    "nextDays": "पुढील 5 दिवस"
-  },
   "weatherDetail": {
     "temperature": "तापमान",
     "humidity": "आर्द्रता",
-    "windSpeed": "हवा ची गती",
-    "forecastFor": "पूर्वानुमान",
-    "noData": "या तारखेसाठी कोणतीही माहिती उपलब्ध नाही."
+    "windSpeed": "वाऱ्याचा वेग",
+    "forecastFor": "साठी हवामान अंदाज",
+    "noData": "या तारखेसाठी डेटा उपलब्ध नाही."
+  },
+  "nextWeekWeather": {
+    "nextDays": "पुढील 5 दिवस"
   },
   "monthsShort": {
-    "jan": "जाने",
-    "feb": "फेब",
+    "jan": "जानेवारी",
+    "feb": "फेब्रुवारी",
     "mar": "मार्च",
-    "apr": "एप्रि",
+    "apr": "एप्रिल",
     "may": "मे",
     "jun": "जून",
     "jul": "जुलै",
-    "aug": "ऑग",
-    "sep": "सप्ट",
-    "oct": "ऑक्टो",
-    "nov": "नोव्हे",
-    "dec": "डिसें"
+    "aug": "ऑगस्ट",
+    "sep": "सप्टेंबर",
+    "oct": "ऑक्टोबर",
+    "nov": "नोव्हेंबर",
+    "dec": "डिसेंबर"
   }
-
 }
