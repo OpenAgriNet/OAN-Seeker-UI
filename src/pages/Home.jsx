@@ -29,22 +29,6 @@ const Home = () => {
   const navigate = useNavigate();
   const { updateLocation } = useContext(LocationContext);
 
-  // Load previously stored location values from sessionStorage
-  useEffect(() => {
-    const storedState = sessionStorage.getItem("selectedState");
-    const storedDistrict = sessionStorage.getItem("selectedDistrict");
-
-    if (storedState) {
-      const parsedState = JSON.parse(storedState);
-      setSelectedState(parsedState);
-      // Fetch districts using the stored state's id
-      fetchDistricts(parsedState.value);
-    }
-    if (storedDistrict) {
-      setSelectedDistrict(JSON.parse(storedDistrict));
-    }
-  }, []);
-
   // Fetch states data and pass language preference as query parameter
   useEffect(() => {
     const fetchStates = async () => {
@@ -86,25 +70,10 @@ const Home = () => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      sessionStorage.setItem("selectedState", JSON.stringify(selectedState));
-      sessionStorage.setItem("selectedDistrict", JSON.stringify(selectedDistrict));
       updateLocation(selectedState.label, selectedDistrict.district_name);
       navigate("/weather");
     }
   };
-
-  // Clear sessionStorage when the tab is closed
-  useEffect(() => {
-    const handleTabClose = () => {
-      sessionStorage.removeItem("selectedState");
-      sessionStorage.removeItem("selectedDistrict");
-    };
-
-    window.addEventListener("beforeunload", handleTabClose);
-    return () => {
-      window.removeEventListener("beforeunload", handleTabClose);
-    };
-  }, []);
 
   return (
     <Container maxWidth="xs">
