@@ -2,32 +2,128 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { Box, TextField, IconButton, Typography, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { sendQueryToBot, fetchWeather } from "../api/apiService";
-import { LocationContext } from "../context/LocationContext"; // new import
+import { LocationContext } from "../context/LocationContext";
 
-// Helper to get ordinal suffix for dates (e.g., 7th, 1st, etc.)
-const getOrdinalSuffix = (i) => {
-  const j = i % 10,
-    k = i % 100;
-  if (j === 1 && k !== 11) return i + "st";
-  if (j === 2 && k !== 12) return i + "nd";
-  if (j === 3 && k !== 13) return i + "rd";
-  return i + "th";
+// ----- Extended responses dictionary (including option translations and HTML formatting) -----
+const responses = {
+  en: {
+    servicePrompt: "Please select the service you need help with",
+    farmingPrompt: "Ask me anything related to farming.",
+    weatherConfirm: (district) =>
+      `I see you are interested in weather updates. Please confirm if this is your location: <strong>${district}</strong>`,
+    weatherFetch: "Great! Fetching the latest weather update for your area...",
+    forecastPrompt: "Would you like to see a weather forecast for the next few days?",
+    noWeatherData: "Sorry, no weather data available for your location.",
+    errorWeather: "Sorry, there was an error fetching the weather data.",
+    changeLocation: "Please select your preferred location from the Header..",
+    unknownOption: "I'm not sure how to handle that option yet.",
+    thankYou: "Thank you so much for conversing with AgriNet. 🌾.",
+    // Options
+    optionWeather: "Weather",
+    optionGovtSchemes: "Government Schemes",
+    optionYesLocation: "Yes, this is my location",
+    optionNoChangeLocation: "No, I want to change my location",
+    optionYesForecast: "Yes, show forecast for 5 days",
+    optionNoForecast: "No, that’s all for now"
+  },
+  hi: {
+    servicePrompt: "कृपया बताएं कि आपको किस सेवा की आवश्यकता है।",
+    farmingPrompt: "कृषि से संबंधित कोई भी सवाल पूछें।",
+    weatherConfirm: (district) =>
+      `मुझे दिख रहा है कि आप मौसम अपडेट्स में रुचि रखते हैं। कृपया पुष्टि करें कि क्या यह आपका स्थान है: <strong>${district}</strong>`,
+    weatherFetch: "बहुत बढ़िया! आपके क्षेत्र का नवीनतम मौसम अपडेट प्राप्त किया जा रहा है...",
+    forecastPrompt: "क्या आप आने वाले कुछ दिनों का मौसम पूर्वानुमान देखना चाहेंगे?",
+    noWeatherData: "क्षमा करें, आपके स्थान के लिए कोई मौसम डेटा उपलब्ध नहीं है।",
+    errorWeather: "क्षमा करें, मौसम डेटा प्राप्त करने में त्रुटि हुई।",
+    changeLocation: "कृपया हेडर से अपना पसंदीदा स्थान चुनें।",
+    unknownOption: "मुझे अभी तक यह विकल्प संभालने का तरीका नहीं पता है।",
+    thankYou: "एग्रीनेट के साथ बातचीत करने के लिए आपका बहुत धन्यवाद।",
+    // Options
+    optionWeather: "मौसम",
+    optionGovtSchemes: "सरकारी योजनाएँ",
+    optionYesLocation: "हाँ, यही मेरा स्थान है",
+    optionNoChangeLocation: "नहीं, मैं अपना स्थान बदलना चाहता हूँ",
+    optionYesForecast: "हाँ, अगले 5 दिनों का पूर्वानुमान दिखाएँ",
+    optionNoForecast: "नहीं, बस इतना ही"
+  },
+  mr: {
+    servicePrompt: "कृपया आपल्याला कोणत्या सेवेमध्ये मदत हवी आहे ते निवडा.",
+    farmingPrompt: "कृषीशी संबंधित काहीही प्रश्न विचारा.",
+    weatherConfirm: (district) =>
+      `मला दिसतेय की तुम्ही हवामानाच्या अपडेट्समध्ये रस घेत आहात. कृपया पुष्टी करा की हा तुमचा स्थान आहे: <strong>${district}</strong>`,
+    weatherFetch: "खूप छान! तुमच्या भागाचे ताजे हवामान अपडेट मिळवत आहे...",
+    forecastPrompt: "पुढील काही दिवसांचे हवामान पूर्वानुमान पाहायचे आहे का?",
+    noWeatherData: "क्षमस्व, तुमच्या स्थानासाठी हवामान डेटा उपलब्ध नाही.",
+    errorWeather: "क्षमस्व, हवामान डेटा मिळवण्यात त्रुटी आली आहे.",
+    changeLocation: "कृपया हेडरमधून तुमचा आवडता स्थान निवडा.",
+    unknownOption: "मला अजून कळलेलं नाही की हा पर्याय कसा हाताळायचा.",
+    thankYou: "एग्रीनेटशी बोलल्याबद्दल तुमचे मनापासून आभार.",
+    // Options
+    optionWeather: "हवामान",
+    optionGovtSchemes: "सरकारी योजना",
+    optionYesLocation: "होय, हेच माझं स्थान आहे",
+    optionNoChangeLocation: "नाही, मला माझं स्थान बदलायचं आहे",
+    optionYesForecast: "होय, पुढील 5 दिवसांचं पूर्वानुमान दाखवा",
+    optionNoForecast: "नाही, सध्या इतकंच"
+  }
+};
+// -----------------------------------------------------------------------------
+
+// Weather labels for current weather display
+const weatherLabels = {
+  en: {
+    currentWeatherFor: "Current Weather for",
+    temperature: "Temperature",
+    min: "Min",
+    max: "Max",
+    humidity: "Humidity",
+    windSpeed: "Wind Speed"
+  },
+  hi: {
+    currentWeatherFor: " का वर्तमान मौसम",
+    temperature: "तापमान",
+    min: "न्यूनतम",
+    max: "अधिकतम",
+    humidity: "नमी",
+    windSpeed: "हवा की गति"
+  },
+  mr: {
+    currentWeatherFor: " साठी सध्याचे हवामान",
+    temperature: "तापमान",
+    min: "किमान",
+    max: "कमाल",
+    humidity: "आर्द्रता",
+    windSpeed: "वाऱ्याची गती"
+  }
 };
 
-// Format a date string (YYYY-MM-DD) into "7th March 2025"
+// Helper function to round numeric values while preserving any units (like °C, m/s)
+const formatValue = (val) => {
+  if (typeof val === "string") {
+    const match = val.match(/^([\d.]+)(.*)$/);
+    if (match) {
+      const num = parseFloat(match[1]);
+      const unit = match[2] || "";
+      return Math.round(num) + unit;
+    }
+  }
+  const num = parseFloat(val);
+  return isNaN(num) ? val : Math.round(num);
+};
+
+// Format a date string into "7th March 2025"
 const formatDateOrdinal = (dateString) => {
   const date = new Date(dateString);
-  const day = getOrdinalSuffix(date.getDate());
+  const day = formatValue(date.getDate());
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
 
-// Group forecast items by date (extracted from the "name" field)
+// Group forecast items by date
 const groupForecastByDate = (forecastItems) => {
   const grouped = {};
   forecastItems.forEach((item) => {
-    // Expecting item.descriptor.name to be like "Forecast for 2025-03-07 03:00:00"
     const namePart = item.descriptor.name.split("Forecast for ")[1];
     const [datePart, timePart] = namePart.split(" ");
     if (!grouped[datePart]) {
@@ -35,24 +131,42 @@ const groupForecastByDate = (forecastItems) => {
     }
     grouped[datePart].push({ time: timePart, item });
   });
-  // Sort forecasts within each date by time
   for (let date in grouped) {
     grouped[date].sort((a, b) => a.time.localeCompare(b.time));
   }
   return grouped;
 };
 
-// Format the grouped forecast data into a nice multiline string with emojis
-const formatForecastData = (forecastItems) => {
+// Updated formatForecastData to accept a language parameter, add icons, bold headers and round numbers
+const formatForecastData = (forecastItems, lang = "en") => {
+  const forecastLabels = {
+    en: {
+      forecastFor: "Forecast data for",
+      temperature: "Temperature",
+      windSpeed: "Wind Speed",
+      humidity: "Humidity"
+    },
+    hi: {
+      forecastFor: " के लिए मौसम पूर्वानुमान",
+      temperature: "तापमान",
+      windSpeed: "हवा की गति",
+      humidity: "नमी"
+    },
+    mr: {
+      forecastFor: " साठी हवामान पूर्वानुमान",
+      temperature: "तापमान",
+      windSpeed: "वाऱ्याची गती",
+      humidity: "आर्द्रता"
+    }
+  };
+  const labels = forecastLabels[lang] || forecastLabels.en;
   const grouped = groupForecastByDate(forecastItems);
   let result = "";
-  // Sort the dates
   const dates = Object.keys(grouped).sort();
   dates.forEach((date) => {
-    result += `${formatDateOrdinal(date)}\n\n`;
+    result += `<strong>${formatDateOrdinal(date)}</strong>\n\n`;
     grouped[date].forEach((entry) => {
       const { time, item } = entry;
-      // Format the time into a simpler format. E.g., "03:00:00" becomes "3 AM"
       const hour = parseInt(time.split(":")[0], 10);
       const formattedTime =
         hour === 0
@@ -62,30 +176,29 @@ const formatForecastData = (forecastItems) => {
           : hour < 12
           ? `${hour} AM`
           : `${hour - 12} PM`;
-
-      // Extract forecast details from the tags if available
+      const forecastHeader =
+        lang === "en"
+          ? `${labels.forecastFor} ${formattedTime}:`
+          : `${formattedTime}${labels.forecastFor}:`;
+      // Bold forecast header and add a calendar icon
+      result += `<strong>📅 ${forecastHeader}</strong>\n`;
       const tags = item.tags && item.tags[0] && item.tags[0].list;
-      let temperature = "N/A";
-      let windSpeed = "N/A";
-      let humidity = "N/A";
+      let temperature = "N/A",
+        windSpeed = "N/A",
+        humidity = "N/A";
       if (tags) {
         const tempTag =
           tags.find((tag) => tag.descriptor.code === "temperature") ||
-          tags.find((tag) => tag.descriptor.code === "min-temp"); // fallback
-        const windTag = tags.find(
-          (tag) => tag.descriptor.code === "wind-speed"
-        );
-        const humidityTag = tags.find(
-          (tag) => tag.descriptor.code === "humidity"
-        );
-        if (tempTag) temperature = tempTag.value;
-        if (windTag) windSpeed = windTag.value;
-        if (humidityTag) humidity = humidityTag.value;
+          tags.find((tag) => tag.descriptor.code === "min-temp");
+        const windTag = tags.find((tag) => tag.descriptor.code === "wind-speed");
+        const humidityTag = tags.find((tag) => tag.descriptor.code === "humidity");
+        if (tempTag) temperature = formatValue(tempTag.value);
+        if (windTag) windSpeed = formatValue(windTag.value);
+        if (humidityTag) humidity = formatValue(humidityTag.value);
       }
-      result += `Forecast data for: ${formattedTime}\n`;
-      result += `1. Temperature: ${temperature} 🌡️\n`;
-      result += `2. Wind Speed: ${windSpeed} 💨\n`;
-      result += `3. Humidity: ${humidity} 💧\n\n`;
+      result += `1. 🌡️ ${labels.temperature}: ${temperature}\n`;
+      result += `2. 💨 ${labels.windSpeed}: ${windSpeed}\n`;
+      result += `3. 💧 ${labels.humidity}: ${humidity}\n\n`;
     });
     result += "\n";
   });
@@ -95,15 +208,20 @@ const formatForecastData = (forecastItems) => {
 const AiBot = () => {
   // Consume location context for updated location values
   const { location } = useContext(LocationContext);
+  // languageMap maps the initial option text to language codes
   const languageMap = {
     English: "en",
-    Hindi: "hi",
-    Marathi: "mr",
+    "हिंदी": "hi",
+    "मराठी": "mr"
   };
 
+  // New state to track the selected service
+  const [selectedService, setSelectedService] = useState("");
+  
   const [messages, setMessages] = useState([
     {
-      text: "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
+      text:
+        "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
       sender: "bot",
       options: ["English", "हिंदी", "मराठी"],
     },
@@ -113,16 +231,12 @@ const AiBot = () => {
   const [loading, setLoading] = useState(false);
   const [typingDots, setTypingDots] = useState("");
   const [userSubmitted, setUserSubmitted] = useState(false);
-  // New state: store the complete weather data response so we can show forecasts later
   const [weatherData, setWeatherData] = useState(null);
-  // New state: track if we are awaiting a location change confirmation
   const [awaitLocationChange, setAwaitLocationChange] = useState(false);
-  // New state: store the confirmed location (initially set to current context value)
   const [confirmedLocation, setConfirmedLocation] = useState(location.selectedDistrict || "");
 
   const messagesEndRef = useRef(null);
 
-  // Animate the "Typing..." dots when loading
   useEffect(() => {
     let interval;
     if (loading) {
@@ -135,7 +249,6 @@ const AiBot = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // On initial load, show the welcome message with a typing delay (runs only once)
   useEffect(() => {
     if (messages.length === 1 && messages[0].sender === "bot") {
       const originalMessage = messages[0];
@@ -150,7 +263,6 @@ const AiBot = () => {
     }
   }, []);
 
-  // Always scroll to bottom whenever new messages are added
   useEffect(() => {
     if (userSubmitted && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -158,25 +270,30 @@ const AiBot = () => {
     }
   }, [messages, userSubmitted]);
 
-  // When waiting for a location change and the context has updated with a new value,
-  // simulate a user message with the updated location and re-confirm it.
   useEffect(() => {
-    if (awaitLocationChange && location.selectedDistrict && location.selectedDistrict !== confirmedLocation) {
+    if (
+      awaitLocationChange &&
+      location.selectedDistrict &&
+      location.selectedDistrict !== confirmedLocation
+    ) {
       setMessages((prev) => [
         ...prev,
         { text: location.selectedDistrict, sender: "user" },
       ]);
       (async () => {
         await simulateTypingThenAddMessage({
-          text: `I see you are interested in weather updates. Please confirm if this is your location: ${location.selectedDistrict}`,
+          text: responses[language || "en"].weatherConfirm(location.selectedDistrict),
           sender: "bot",
-          options: ["Yes, this is my location", "No, I want to change my location"],
+          options: [
+            responses[language || "en"].optionYesLocation,
+            responses[language || "en"].optionNoChangeLocation
+          ],
         });
       })();
       setConfirmedLocation(location.selectedDistrict);
       setAwaitLocationChange(false);
     }
-  }, [awaitLocationChange, location.selectedDistrict, confirmedLocation]);
+  }, [awaitLocationChange, location.selectedDistrict, confirmedLocation, language]);
 
   const simulateTypingThenAddMessage = (newBotMessage, delay = 1500) => {
     return new Promise((resolve) => {
@@ -192,7 +309,6 @@ const AiBot = () => {
     });
   };
 
-  // Sends the user-typed query to your AI Bot
   const handleSend = async () => {
     if (input.trim()) {
       setMessages((prev) => [...prev, { text: input, sender: "user" }]);
@@ -206,13 +322,7 @@ const AiBot = () => {
         return [...prev, { text: "Typing", sender: "bot" }];
       });
       setLoading(true);
-      await sendQueryToBot(
-        userQuery,
-        language,
-        setMessages,
-        setLoading,
-        typingDots
-      );
+      await sendQueryToBot(userQuery, language, setMessages, setLoading, typingDots);
       setMessages((prev) => {
         if (prev.length && prev[prev.length - 1].text === "Typing") {
           return prev.slice(0, -1);
@@ -223,9 +333,7 @@ const AiBot = () => {
     }
   };
 
-  // Handles a user clicking on one of the bot's "option" buttons
   const handleOptionClick = async (option) => {
-    // Remove options from the last message
     setMessages((prev) => {
       const newMessages = [...prev];
       for (let i = newMessages.length - 1; i >= 0; i--) {
@@ -243,31 +351,34 @@ const AiBot = () => {
       const selectedLangCode = languageMap[option] || "en";
       setLanguage(selectedLangCode);
       await simulateTypingThenAddMessage({
-        text: "Please select the service you need help with",
-        sender: "bot",
-        options: ["Weather", "Government Schemes"],
-      });
-    } else if (option === "Government Schemes") {
-      await simulateTypingThenAddMessage({
-        text: "Ask me anything related to farming.",
-        sender: "bot",
-      });
-    } else if (option === "Weather") {
-      // Use current location from context for initial confirmation
-      const selectedDistrict = location.selectedDistrict || "your location";
-      await simulateTypingThenAddMessage({
-        text: `I see you are interested in weather updates. Please confirm if this is your location: ${selectedDistrict}`,
+        text: responses[selectedLangCode].servicePrompt,
         sender: "bot",
         options: [
-          "Yes, this is my location",
-          "No, I want to change my location",
+          responses[selectedLangCode].optionWeather,
+          responses[selectedLangCode].optionGovtSchemes
         ],
       });
-    } else if (option === "Yes, this is my location") {
-      // Update the confirmed location to current context value
+    } else if (option === responses[language].optionGovtSchemes) {
+      setSelectedService("govtSchemes");
+      await simulateTypingThenAddMessage({
+        text: responses[language].farmingPrompt,
+        sender: "bot",
+      });
+    } else if (option === responses[language].optionWeather) {
+      setSelectedService("weather");
+      const selectedDistrict = location.selectedDistrict || "your location";
+      await simulateTypingThenAddMessage({
+        text: responses[language].weatherConfirm(selectedDistrict),
+        sender: "bot",
+        options: [
+          responses[language].optionYesLocation,
+          responses[language].optionNoChangeLocation
+        ],
+      });
+    } else if (option === responses[language].optionYesLocation) {
       setConfirmedLocation(location.selectedDistrict);
       await simulateTypingThenAddMessage({
-        text: "Great! Fetching the latest weather update for your area...",
+        text: responses[language].weatherFetch,
         sender: "bot",
       });
       setTimeout(async () => {
@@ -296,78 +407,76 @@ const AiBot = () => {
             const windSpeed = tags
               ? tags.find((tag) => tag.descriptor.code === "wind-speed")?.value
               : "N/A";
-
+            const labels = weatherLabels[language] || weatherLabels.en;
+            const weatherMsgPrefix =
+              language === "en"
+                ? `<strong>${labels.currentWeatherFor} ${loc}:</strong>`
+                : `<strong>${loc}${labels.currentWeatherFor}:</strong>`;
             const currentWeatherMsg =
-              `Current Weather for ${loc}:\n` +
-              `🌡️ Temperature: ${minTemp} (Min) / ${maxTemp} (Max)\n` +
-              `💧 Humidity: ${humidity}\n` +
-              `💨 Wind Speed: ${windSpeed}`;
-
+              `${weatherMsgPrefix}\n` +
+              `🌡️ ${labels.temperature}: ${formatValue(minTemp)} (${labels.min}) / ${formatValue(maxTemp)} (${labels.max})\n` +
+              `💧 ${labels.humidity}: ${formatValue(humidity)}\n` +
+              `💨 ${labels.windSpeed}: ${formatValue(windSpeed)}`;
             await simulateTypingThenAddMessage({
               text: currentWeatherMsg,
               sender: "bot",
             });
-
             await simulateTypingThenAddMessage({
-              text: "Would you like to see a weather forecast for the next few days?",
+              text: responses[language].forecastPrompt,
               sender: "bot",
               options: [
-                "Yes, show forecast for 5 days",
-                "No, that’s all for now",
+                responses[language].optionYesForecast,
+                responses[language].optionNoForecast
               ],
             });
           } else {
             await simulateTypingThenAddMessage({
-              text: "Sorry, no weather data available for your location.",
+              text: responses[language].noWeatherData,
               sender: "bot",
             });
           }
         } catch (error) {
           await simulateTypingThenAddMessage({
-            text: "Sorry, there was an error fetching the weather data.",
+            text: responses[language].errorWeather,
             sender: "bot",
           });
         }
       }, 1500);
-    } else if (option === "No, I want to change my location") {
+    } else if (option === responses[language].optionNoChangeLocation) {
       await simulateTypingThenAddMessage({
-        text: "Please select your preferred location from the Header..",
+        text: responses[language].changeLocation,
         sender: "bot",
       });
-      // Set flag to wait for the location change from the Header
       setAwaitLocationChange(true);
-    }
-    // Forecast options handling:
-    else if (option === "Yes, show forecast for 5 days") {
+    } else if (option === responses[language].optionYesForecast) {
       if (weatherData) {
         const forecastItems = weatherData.slice(1);
-        const grouped = groupForecastByDate(forecastItems);
-        const dates = Object.keys(grouped).sort();
+        const dates = Object.keys(groupForecastByDate(forecastItems)).sort();
         const first5Dates = dates.slice(0, 5);
         const filteredForecast = forecastItems.filter((item) => {
           const namePart = item.descriptor.name.split("Forecast for ")[1];
           const datePart = namePart.split(" ")[0];
           return first5Dates.includes(datePart);
         });
-        const formattedForecast = formatForecastData(filteredForecast);
+        const formattedForecast = formatForecastData(filteredForecast, language);
         await simulateTypingThenAddMessage({
           text: formattedForecast,
           sender: "bot",
         });
       } else {
         await simulateTypingThenAddMessage({
-          text: "Weather data is not available. Please try again.",
+          text: responses[language].noWeatherData,
           sender: "bot",
         });
       }
-    } else if (option === "No, that’s all for now") {
+    } else if (option === responses[language].optionNoForecast) {
       await simulateTypingThenAddMessage({
-        text: "Thank you so much for conversing with AgriNet. 🌾.",
+        text: responses[language].thankYou,
         sender: "bot",
       });
     } else {
       await simulateTypingThenAddMessage({
-        text: "I'm not sure how to handle that option yet.",
+        text: responses[language].unknownOption,
         sender: "bot",
       });
     }
@@ -394,7 +503,7 @@ const AiBot = () => {
           fontSize: "22px",
         }}
       >
-        AI Chatbot
+        AgriNet Chatbot
       </Box>
 
       {/* Messages Container */}
@@ -417,7 +526,6 @@ const AiBot = () => {
               alignItems: msg.sender === "bot" ? "flex-start" : "flex-end",
             }}
           >
-            {/* Chat Bubble */}
             <Box
               sx={{
                 padding: 1.5,
@@ -442,7 +550,6 @@ const AiBot = () => {
                 maxWidth: "90%",
               }}
             >
-              {/* Bubble "arrow" styling */}
               <Box
                 sx={{
                   position: "absolute",
@@ -471,12 +578,11 @@ const AiBot = () => {
                   direction: "ltr",
                   textAlign: "left",
                 }}
-              >
-                {msg.text === "Typing" ? `Typing ${typingDots}` : msg.text}
-              </Typography>
+                dangerouslySetInnerHTML={{
+                  __html: msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
+                }}
+              />
             </Box>
-
-            {/* Option Buttons */}
             {msg.sender === "bot" && msg.options && (
               <Box sx={{ display: "flex", gap: 1, marginBottom: 2 }}>
                 {msg.options.map((opt, idx) => (
@@ -491,9 +597,10 @@ const AiBot = () => {
                       boxShadow: "none",
                       color: "white",
                       "&:hover": { backgroundColor: "#808080" },
-                      textTransform : 'none',
-                      fontSize: '0.9rem',
-                      fontWeight: '500'                    }}
+                      textTransform: "none",
+                      fontSize: "0.9rem",
+                      fontWeight: "500",
+                    }}
                   >
                     {opt}
                   </Button>
@@ -537,10 +644,11 @@ const AiBot = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            disabled={selectedService === "weather"}
           />
           <IconButton
             onClick={handleSend}
-            disabled={loading}
+            disabled={loading || selectedService === "weather"}
             sx={{
               backgroundColor: "black",
               color: "white",
