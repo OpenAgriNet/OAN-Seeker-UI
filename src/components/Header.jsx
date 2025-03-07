@@ -46,11 +46,10 @@ const Header = () => {
     setShowLocationPopup(false);
   };
 
-  // Directly update language when user selects from dropdown
   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
     updateLanguage(newLanguage);
-    i18n.changeLanguage(newLanguage); // Update site language
+    i18n.changeLanguage(newLanguage); 
   };
 
   return (
@@ -86,7 +85,7 @@ const Header = () => {
             {location.selectedDistrict ? location.selectedDistrict : t("header.location", "Location")}
           </Button>
 
-          {/* Language Dropdown */}
+
           <Select
             value={language}
             onChange={handleLanguageChange}
@@ -98,9 +97,9 @@ const Header = () => {
               "& .MuiOutlinedInput-notchedOutline": { border: "none" },
             }}
           >
-            <MenuItem value="en">En</MenuItem>
-            <MenuItem value="hi">Hi</MenuItem>
-            <MenuItem value="mr">Mr</MenuItem>
+            <MenuItem value="en">English</MenuItem>
+            <MenuItem value="hi">हिंदी</MenuItem>
+            <MenuItem value="mr">मराठी</MenuItem>
           </Select>
 
           <IconButton onClick={handleMenuToggle} color="inherit">
@@ -160,7 +159,6 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      {/* Render the LocationPopup component */}
       <LocationPopup open={showLocationPopup} onClose={handleCloseLocation} />
     </AppBar>
   );

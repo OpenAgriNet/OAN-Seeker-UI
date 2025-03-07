@@ -12,12 +12,14 @@ import {
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { LocationContext } from "../context/LocationContext";
+import { LanguageContext } from "../context/LanguageContext";
 
-const STATES_API = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
-const DISTRICTS_API = "https://cdn-api.co-vin.in/api/v2/admin/location/districts"; // append /:state_id
+const STATES_API = "https://oan-weather-seeker-api.tekdinext.com/location/states";
+const DISTRICTS_API = "https://oan-weather-seeker-api.tekdinext.com/location/districts";
 
 const Home = () => {
   const { t } = useTranslation();
+  const { language } = useContext(LanguageContext); // get language from context
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [selectedState, setSelectedState] = useState(null);
@@ -43,16 +45,16 @@ const Home = () => {
     }
   }, []);
 
-  // Fetch states data from the Co-Win API
+  // Fetch states data and pass language preference as query parameter
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await axios.get(STATES_API, {
+        const response = await axios.get(`${STATES_API}?lang=${language}`, {
           headers: { accept: "application/json" },
         });
         // Map the returned state objects to the format needed by Autocomplete
         const stateList = response.data.states.map((state) => ({
-          value: state.state_id, // state id used for district lookup
+          value: state.state_id,
           label: state.state_name,
         }));
         setStates(stateList);
@@ -64,16 +66,15 @@ const Home = () => {
     };
 
     fetchStates();
-  }, []);
+  }, [language]);
 
-  // Fetch districts for a selected state using its state_id
+  // Fetch districts for a selected state and include language preference in the query
   const fetchDistricts = async (stateId) => {
     setLoadingDistricts(true);
     try {
-      const response = await axios.get(`${DISTRICTS_API}/${stateId}`, {
+      const response = await axios.get(`${DISTRICTS_API}/${stateId}?lang=${language}`, {
         headers: { accept: "application/json" },
       });
-      // The API returns an array of district objects
       setDistricts(response.data.districts);
     } catch (error) {
       console.error("Error fetching districts:", error);
@@ -85,10 +86,8 @@ const Home = () => {
 
   const handleSubmit = () => {
     if (selectedState && selectedDistrict) {
-      // Save the selected values as JSON strings in sessionStorage
       sessionStorage.setItem("selectedState", JSON.stringify(selectedState));
       sessionStorage.setItem("selectedDistrict", JSON.stringify(selectedDistrict));
-      // Update the shared context (using state name and district name)
       updateLocation(selectedState.label, selectedDistrict.district_name);
       navigate("/weather");
     }
