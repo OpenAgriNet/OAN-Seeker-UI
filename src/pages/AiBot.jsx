@@ -7,19 +7,24 @@ import { LocationContext } from "../context/LocationContext";
 // ----- Extended responses dictionary (including new keys for welcome, feedback, etc.) -----
 const responses = {
   en: {
-    welcomeMessage: "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
+    welcomeMessage:
+      "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
     servicePrompt: "Please select the service you need help with",
     farmingPrompt: "Ask me anything related to farming.",
     weatherConfirm: (district) =>
       `I see you are interested in weather updates. Please confirm if this is your location: <strong>${district}</strong>`,
     weatherFetch: "Great! Fetching the latest weather update for your area...",
-    forecastPrompt: "Would you like to see a weather forecast for the next few days?",
+    forecastPrompt:
+      "Would you like to see a weather forecast for the next few days?",
     noWeatherData: "Sorry, no weather data available for your location.",
     errorWeather: "Sorry, there was an error fetching the weather data.",
     changeLocation: "Please select your preferred location from the Header..",
     unknownOption: "I'm not sure how to handle that option yet.",
-    thankYou: "Thank you so much for conversing with AgriNet. 🌾.",
+    thankYou: "Thank you so much for conversing with AgriNet 🌾",
     feedbackPrompt: "Let me know if you need anything else.",
+    // NEW: Government schemes specific feedback prompt
+    govtFeedbackPrompt:
+      "Let me know if you need anything else, or to change services or language click on below option, otherwise continue asking queries.",
     // Options
     optionWeather: "Weather",
     optionGovtSchemes: "Government Schemes",
@@ -27,23 +32,30 @@ const responses = {
     optionNoChangeLocation: "No, I want to change my location",
     optionYesForecast: "Yes, show forecast for 5 days",
     optionNoForecast: "No, that’s all for now",
-    optionGiveFeedback: "Give Feedback",
-    optionGoBack: "Go Back to Main Menu"
+    // optionGiveFeedback: "Give Feedback",
+    optionGoBack: "Go Back to Main Menu",
   },
   hi: {
-    welcomeMessage: "नमस्ते, मैं एग्रीनेट हूं, आपकी कृषि आवश्यकताओं के लिए आपका विश्वसनीय सहायक। कृपया अपनी पसंदीदा भाषा चुनें।",
+    welcomeMessage:
+      "नमस्ते, मैं एग्रीनेट हूं, आपकी कृषि आवश्यकताओं के लिए आपका विश्वसनीय सहायक। कृपया अपनी पसंदीदा भाषा चुनें।",
     servicePrompt: "कृपया बताएं कि आपको किस सेवा की आवश्यकता है।",
     farmingPrompt: "कृषि से संबंधित कोई भी सवाल पूछें।",
     weatherConfirm: (district) =>
       `मुझे दिख रहा है कि आप मौसम अपडेट्स में रुचि रखते हैं। कृपया पुष्टि करें कि क्या यह आपका स्थान है: <strong>${district}</strong>`,
-    weatherFetch: "बहुत बढ़िया! आपके क्षेत्र का नवीनतम मौसम अपडेट प्राप्त किया जा रहा है...",
-    forecastPrompt: "क्या आप आने वाले कुछ दिनों का मौसम पूर्वानुमान देखना चाहेंगे?",
-    noWeatherData: "क्षमा करें, आपके स्थान के लिए कोई मौसम डेटा उपलब्ध नहीं है।",
+    weatherFetch:
+      "बहुत बढ़िया! आपके क्षेत्र का नवीनतम मौसम अपडेट प्राप्त किया जा रहा है...",
+    forecastPrompt:
+      "क्या आप आने वाले कुछ दिनों का मौसम पूर्वानुमान देखना चाहेंगे?",
+    noWeatherData:
+      "क्षमा करें, आपके स्थान के लिए कोई मौसम डेटा उपलब्ध नहीं है।",
     errorWeather: "क्षमा करें, मौसम डेटा प्राप्त करने में त्रुटि हुई।",
     changeLocation: "कृपया हेडर से अपना पसंदीदा स्थान चुनें।",
     unknownOption: "मुझे अभी तक यह विकल्प संभालने का तरीका नहीं पता है।",
-    thankYou: "एग्रीनेट के साथ बातचीत करने के लिए आपका बहुत धन्यवाद।",
+    thankYou: "एग्रीनेट के साथ बातचीत करने के लिए आपका बहुत धन्यवाद। 🌾",
     feedbackPrompt: "अगर आपको कुछ और चाहिए तो बताएं।",
+    // NEW: Government schemes specific feedback prompt
+    govtFeedbackPrompt:
+      "क्या आपको और मदद चाहिए या सेवा या भाषा बदलनी है? नीचे दिए गए बटन पर क्लिक करें, या अपने सवाल पूछते रहें।",
     // Options
     optionWeather: "मौसम",
     optionGovtSchemes: "सरकारी योजनाएँ",
@@ -51,11 +63,12 @@ const responses = {
     optionNoChangeLocation: "नहीं, मैं अपना स्थान बदलना चाहता हूँ",
     optionYesForecast: "हाँ, अगले 5 दिनों का पूर्वानुमान दिखाएँ",
     optionNoForecast: "नहीं, बस इतना ही",
-    optionGiveFeedback: "प्रतिक्रिया दें",
-    optionGoBack: "मुख्य मेनू पर वापस जाएँ"
+    // optionGiveFeedback: "प्रतिक्रिया दें",
+    optionGoBack: "मुख्य मेनू पर वापस जाएँ",
   },
   mr: {
-    welcomeMessage: "नमस्कार, मी एग्रीनेट आहे, तुमच्या शेतीसंबंधी गरजांसाठी तुमचा विश्वासू सहायक. कृपया तुमची प्राधान्यकृत भाषा निवडा.",
+    welcomeMessage:
+      "नमस्कार, मी एग्रीनेट आहे, तुमच्या शेतीसंबंधी गरजांसाठी तुमचा विश्वासू सहायक. कृपया तुमची प्राधान्यकृत भाषा निवडा.",
     servicePrompt: "कृपया आपल्याला कोणत्या सेवेमध्ये मदत हवी आहे ते निवडा.",
     farmingPrompt: "कृषीशी संबंधित काहीही प्रश्न विचारा.",
     weatherConfirm: (district) =>
@@ -66,22 +79,22 @@ const responses = {
     errorWeather: "क्षमस्व, हवामान डेटा मिळवण्यात त्रुटी आली आहे.",
     changeLocation: "कृपया हेडरमधून तुमचा आवडता स्थान निवडा.",
     unknownOption: "मला अजून कळलेलं नाही की हा पर्याय कसा हाताळायचा.",
-    thankYou: "एग्रीनेटशी बोलल्याबद्दल तुमचे मनापासून आभार.",
+    thankYou: "एग्रीनेटशी बोलल्याबद्दल तुमचे मनापासून आभार 🌾",
     feedbackPrompt: "जर तुम्हाला आणखी काही हवे असल्यास कळवा.",
-    // Options
+    govtFeedbackPrompt:
+      "आपल्याला अधिक मदतीची गरज आहे का किंवा सेवा/भाषा बदलायची आहे का? खालील बटणावर टॅप करा किंवा आपले प्रश्न विचारत रहा.",
     optionWeather: "हवामान",
     optionGovtSchemes: "सरकारी योजना",
     optionYesLocation: "होय, हेच माझं स्थान आहे",
     optionNoChangeLocation: "नाही, मला माझं स्थान बदलायचं आहे",
     optionYesForecast: "होय, पुढील 5 दिवसांचं पूर्वानुमान दाखवा",
     optionNoForecast: "नाही, सध्या इतकंच",
-    optionGiveFeedback: "प्रतिक्रिया द्या",
-    optionGoBack: "मुख्य मेनूमध्ये परत जा"
-  }
+    // optionGiveFeedback: "प्रतिक्रिया द्या",
+    optionGoBack: "मुख्य मेनूमध्ये परत जा",
+  },
 };
 // -----------------------------------------------------------------------------
 
-// Weather labels for current weather display
 const weatherLabels = {
   en: {
     currentWeatherFor: "Current Weather for",
@@ -89,7 +102,7 @@ const weatherLabels = {
     min: "Min",
     max: "Max",
     humidity: "Humidity",
-    windSpeed: "Wind Speed"
+    windSpeed: "Wind Speed",
   },
   hi: {
     currentWeatherFor: " का वर्तमान मौसम",
@@ -97,7 +110,7 @@ const weatherLabels = {
     min: "न्यूनतम",
     max: "अधिकतम",
     humidity: "नमी",
-    windSpeed: "हवा की गति"
+    windSpeed: "हवा की गति",
   },
   mr: {
     currentWeatherFor: " साठी सध्याचे हवामान",
@@ -105,11 +118,10 @@ const weatherLabels = {
     min: "किमान",
     max: "कमाल",
     humidity: "आर्द्रता",
-    windSpeed: "वाऱ्याची गती"
-  }
+    windSpeed: "वाऱ्याची गती",
+  },
 };
 
-// Helper function to round numeric values while preserving units (like °C, m/s)
 const formatValue = (val) => {
   if (typeof val === "string") {
     const match = val.match(/^([\d.]+)(.*)$/);
@@ -123,7 +135,6 @@ const formatValue = (val) => {
   return isNaN(num) ? val : Math.round(num);
 };
 
-// Format a date string into "7th March 2025"
 const formatDateOrdinal = (dateString) => {
   const date = new Date(dateString);
   const day = formatValue(date.getDate());
@@ -132,7 +143,6 @@ const formatDateOrdinal = (dateString) => {
   return `${day} ${month} ${year}`;
 };
 
-// Group forecast items by date
 const groupForecastByDate = (forecastItems) => {
   const grouped = {};
   forecastItems.forEach((item) => {
@@ -149,27 +159,26 @@ const groupForecastByDate = (forecastItems) => {
   return grouped;
 };
 
-// Updated formatForecastData to accept a language parameter, add icons, bold headers, and round numbers
 const formatForecastData = (forecastItems, lang = "en") => {
   const forecastLabels = {
     en: {
       forecastFor: "Forecast data for",
       temperature: "Temperature",
       windSpeed: "Wind Speed",
-      humidity: "Humidity"
+      humidity: "Humidity",
     },
     hi: {
       forecastFor: " के लिए मौसम पूर्वानुमान",
       temperature: "तापमान",
       windSpeed: "हवा की गति",
-      humidity: "नमी"
+      humidity: "नमी",
     },
     mr: {
       forecastFor: " साठी हवामान पूर्वानुमान",
       temperature: "तापमान",
       windSpeed: "वाऱ्याची गती",
-      humidity: "आर्द्रता"
-    }
+      humidity: "आर्द्रता",
+    },
   };
   const labels = forecastLabels[lang] || forecastLabels.en;
   const grouped = groupForecastByDate(forecastItems);
@@ -192,7 +201,6 @@ const formatForecastData = (forecastItems, lang = "en") => {
         lang === "en"
           ? `${labels.forecastFor} ${formattedTime}:`
           : `${formattedTime}${labels.forecastFor}:`;
-      // Bold forecast header and add a calendar icon
       result += `<strong>📅 ${forecastHeader}</strong>\n`;
       const tags = item.tags && item.tags[0] && item.tags[0].list;
       let temperature = "N/A",
@@ -202,8 +210,12 @@ const formatForecastData = (forecastItems, lang = "en") => {
         const tempTag =
           tags.find((tag) => tag.descriptor.code === "temperature") ||
           tags.find((tag) => tag.descriptor.code === "min-temp");
-        const windTag = tags.find((tag) => tag.descriptor.code === "wind-speed");
-        const humidityTag = tags.find((tag) => tag.descriptor.code === "humidity");
+        const windTag = tags.find(
+          (tag) => tag.descriptor.code === "wind-speed"
+        );
+        const humidityTag = tags.find(
+          (tag) => tag.descriptor.code === "humidity"
+        );
         if (tempTag) temperature = formatValue(tempTag.value);
         if (windTag) windSpeed = formatValue(windTag.value);
         if (humidityTag) humidity = formatValue(humidityTag.value);
@@ -223,13 +235,13 @@ const AiBot = () => {
   // languageMap maps the initial option text to language codes
   const languageMap = {
     English: "en",
-    "हिंदी": "hi",
-    "मराठी": "mr"
+    हिंदी: "hi",
+    मराठी: "mr",
   };
 
   // New state to track the selected service
   const [selectedService, setSelectedService] = useState("");
-  
+
   const [messages, setMessages] = useState([
     {
       text: responses.en.welcomeMessage,
@@ -244,7 +256,9 @@ const AiBot = () => {
   const [userSubmitted, setUserSubmitted] = useState(false);
   const [weatherData, setWeatherData] = useState(null);
   const [awaitLocationChange, setAwaitLocationChange] = useState(false);
-  const [confirmedLocation, setConfirmedLocation] = useState(location.selectedDistrict || "");
+  const [confirmedLocation, setConfirmedLocation] = useState(
+    location.selectedDistrict || ""
+  );
 
   const messagesEndRef = useRef(null);
 
@@ -293,18 +307,25 @@ const AiBot = () => {
       ]);
       (async () => {
         await simulateTypingThenAddMessage({
-          text: responses[language || "en"].weatherConfirm(location.selectedDistrict),
+          text: responses[language || "en"].weatherConfirm(
+            location.selectedDistrict
+          ),
           sender: "bot",
           options: [
             responses[language || "en"].optionYesLocation,
-            responses[language || "en"].optionNoChangeLocation
+            responses[language || "en"].optionNoChangeLocation,
           ],
         });
       })();
       setConfirmedLocation(location.selectedDistrict);
       setAwaitLocationChange(false);
     }
-  }, [awaitLocationChange, location.selectedDistrict, confirmedLocation, language]);
+  }, [
+    awaitLocationChange,
+    location.selectedDistrict,
+    confirmedLocation,
+    language,
+  ]);
 
   const simulateTypingThenAddMessage = (newBotMessage, delay = 1500) => {
     return new Promise((resolve) => {
@@ -333,7 +354,13 @@ const AiBot = () => {
         return [...prev, { text: "Typing", sender: "bot" }];
       });
       setLoading(true);
-      await sendQueryToBot(userQuery, language, setMessages, setLoading, typingDots);
+      await sendQueryToBot(
+        userQuery,
+        language,
+        setMessages,
+        setLoading,
+        typingDots
+      );
       setMessages((prev) => {
         if (prev.length && prev[prev.length - 1].text === "Typing") {
           return prev.slice(0, -1);
@@ -341,6 +368,15 @@ const AiBot = () => {
         return prev;
       });
       setLoading(false);
+
+      // NEW: For government schemes service, add feedback prompt after API response.
+      if (selectedService === "govtSchemes") {
+        await simulateTypingThenAddMessage({
+          text: responses[language].govtFeedbackPrompt,
+          sender: "bot",
+          options: [responses[language].optionGoBack],
+        });
+      }
     }
   };
 
@@ -366,7 +402,7 @@ const AiBot = () => {
         sender: "bot",
         options: [
           responses[selectedLangCode].optionWeather,
-          responses[selectedLangCode].optionGovtSchemes
+          responses[selectedLangCode].optionGovtSchemes,
         ],
       });
     } else if (option === responses[language].optionGovtSchemes) {
@@ -377,13 +413,21 @@ const AiBot = () => {
       });
     } else if (option === responses[language].optionWeather) {
       setSelectedService("weather");
-      const selectedDistrict = location.selectedDistrict || "your location";
+      if (!location.selectedDistrict) {
+        await simulateTypingThenAddMessage({
+          text: responses[language].changeLocation,
+          sender: "bot",
+        });
+        // Set flag to wait for location selection
+        setAwaitLocationChange(true);
+        return; // Exit until the location is set
+      }
       await simulateTypingThenAddMessage({
-        text: responses[language].weatherConfirm(selectedDistrict),
+        text: responses[language].weatherConfirm(location.selectedDistrict),
         sender: "bot",
         options: [
           responses[language].optionYesLocation,
-          responses[language].optionNoChangeLocation
+          responses[language].optionNoChangeLocation,
         ],
       });
     } else if (option === responses[language].optionYesLocation) {
@@ -425,7 +469,9 @@ const AiBot = () => {
                 : `<strong>${loc}${labels.currentWeatherFor}:</strong>`;
             const currentWeatherMsg =
               `${weatherMsgPrefix}\n` +
-              `🌡️ ${labels.temperature}: ${formatValue(minTemp)} (${labels.min}) / ${formatValue(maxTemp)} (${labels.max})\n` +
+              `🌡️ ${labels.temperature}: ${formatValue(minTemp)} (${
+                labels.min
+              }) / ${formatValue(maxTemp)} (${labels.max})\n` +
               `💧 ${labels.humidity}: ${formatValue(humidity)}\n` +
               `💨 ${labels.windSpeed}: ${formatValue(windSpeed)}`;
             await simulateTypingThenAddMessage({
@@ -437,7 +483,7 @@ const AiBot = () => {
               sender: "bot",
               options: [
                 responses[language].optionYesForecast,
-                responses[language].optionNoForecast
+                responses[language].optionNoForecast,
               ],
             });
           } else {
@@ -469,7 +515,10 @@ const AiBot = () => {
           const datePart = namePart.split(" ")[0];
           return first5Dates.includes(datePart);
         });
-        const formattedForecast = formatForecastData(filteredForecast, language);
+        const formattedForecast = formatForecastData(
+          filteredForecast,
+          language
+        );
         await simulateTypingThenAddMessage({
           text: formattedForecast,
           sender: "bot",
@@ -479,8 +528,8 @@ const AiBot = () => {
           text: responses[language].feedbackPrompt,
           sender: "bot",
           options: [
-            responses[language].optionGiveFeedback,
-            responses[language].optionGoBack
+            // responses[language].optionGiveFeedback,
+            responses[language].optionGoBack,
           ],
         });
       } else {
@@ -499,32 +548,18 @@ const AiBot = () => {
         text: responses[language].feedbackPrompt,
         sender: "bot",
         options: [
-          responses[language].optionGiveFeedback,
-          responses[language].optionGoBack
-        ],
-      });
-    } else if (option === responses[language].optionGiveFeedback) {
-      await simulateTypingThenAddMessage({
-        text: "Thank you for your feedback. How else can I assist you?",
-        sender: "bot",
-      });
-      await simulateTypingThenAddMessage({
-        text: responses[language].feedbackPrompt,
-        sender: "bot",
-        options: [
-          responses[language].optionGiveFeedback,
-          responses[language].optionGoBack
+          // responses[language].optionGiveFeedback,
+          responses[language].optionGoBack,
         ],
       });
     } else if (option === responses[language].optionGoBack) {
-      // Reset conversation: show welcome message with language options
       setSelectedService("");
       setWeatherData(null);
       setLanguage("");
       await simulateTypingThenAddMessage({
-        text: responses["en"].welcomeMessage, // Default welcome in English; update as needed.
+        text: responses["en"].welcomeMessage,
         sender: "bot",
-        options: ["English", "हिंदी", "मराठी"]
+        options: ["English", "हिंदी", "मराठी"],
       });
     } else {
       await simulateTypingThenAddMessage({
@@ -631,7 +666,8 @@ const AiBot = () => {
                   textAlign: "left",
                 }}
                 dangerouslySetInnerHTML={{
-                  __html: msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
+                  __html:
+                    msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
                 }}
               />
             </Box>
@@ -664,7 +700,6 @@ const AiBot = () => {
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input Bar */}
       <Box
         sx={{
           display: "flex",
