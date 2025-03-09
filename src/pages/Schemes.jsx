@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Grid } from "@mui/material";
 import { fetchSchemes } from "../api/apiService";
 import SearchBar from "../components/SearchBar";
 import SchemeCard from "../components/SchemeCard";
@@ -16,7 +16,6 @@ const Schemes = () => {
   const [visibleSchemes, setVisibleSchemes] = useState(ITEMS_PER_PAGE);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 1) On mount, restore search query from sessionStorage (if it exists)
   useEffect(() => {
     const storedQuery = sessionStorage.getItem(LOCAL_STORAGE_KEY);
     if (storedQuery) {
@@ -24,7 +23,6 @@ const Schemes = () => {
     }
   }, []);
 
-  // 2) Fetch schemes from API
   useEffect(() => {
     const loadSchemes = async () => {
       setLoading(true);
@@ -38,7 +36,6 @@ const Schemes = () => {
   const handleSearchChange = (e) => {
     const newQuery = e.target.value;
     setSearchQuery(newQuery);
-    // Update sessionStorage so we can restore on next mount
     sessionStorage.setItem(LOCAL_STORAGE_KEY, newQuery);
   };
 
@@ -46,7 +43,6 @@ const Schemes = () => {
     setVisibleSchemes((prev) => prev + ITEMS_PER_PAGE);
   };
 
-  // Filter schemes based on search query
   const filteredSchemes = schemes.filter((scheme) =>
     scheme.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -74,17 +70,23 @@ const Schemes = () => {
             {t("schemes.discover", "Discover Schemes")}
           </Typography>
 
-          {/* 3) Pass handleSearchChange to SearchBar */}
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-          />
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={12}>
+              <SearchBar
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+              />
+            </Grid>
+          </Grid>
 
-          {/* 4) Render filtered results */}
           {filteredSchemes.length > 0 ? (
-            filteredSchemes
-              .slice(0, visibleSchemes)
-              .map((scheme) => <SchemeCard key={scheme.id} scheme={scheme} />)
+            <Grid container spacing={2} alignItems="stretch">
+              {filteredSchemes.slice(0, visibleSchemes).map((scheme) => (
+                <Grid item xs={12} md={6} key={scheme.id}>
+                  <SchemeCard scheme={scheme} />
+                </Grid>
+              ))}
+            </Grid>
           ) : (
             <Box
               sx={{
@@ -119,8 +121,8 @@ const Schemes = () => {
                 padding: "10px 20px",
                 fontWeight: "500",
                 textTransform: "none",
-                marginTop:'1rem',
-                boxShadow:'none'
+                marginTop: "2rem",
+                boxShadow: "none",
               }}
               onClick={handleLoadMore}
             >

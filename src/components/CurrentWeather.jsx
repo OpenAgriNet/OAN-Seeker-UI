@@ -176,6 +176,7 @@ const CurrentWeather = ({ widgetData, allForecastData }) => {
                   width: "28px",
                   height: "28px",
                   marginRight: "8px",
+                  marginBottom:'1rem'
                 }}
               />
               <Box>
@@ -197,6 +198,7 @@ const CurrentWeather = ({ widgetData, allForecastData }) => {
                   width: "28px",
                   height: "28px",
                   marginRight: "8px",
+                  marginBottom:'1rem'
                 }}
               />
               <Box>
