@@ -16,7 +16,6 @@ const WelcomeScreen = () => {
   };
 
   const handleButtonClick = () => {
-    // Ensure the latest language is saved in sessionStorage via context
     const selectedDistrict = sessionStorage.getItem("selectedDistrict");
     if (selectedDistrict) {
       navigate("/weather");
@@ -27,31 +26,28 @@ const WelcomeScreen = () => {
 
   return (
     <div className="landing-page">
-      <div className="overlay" />
-      <div className="text-container">
-        <img src={Logo} alt="Site Logo" className="logo" />
-        <h1 style={{ marginBottom: "2rem" }}>
-          {t("welcomeScreen.title", "AgriNet:")}
-        </h1>
-        <h1>
-          {t(
-            "welcomeScreen.subtitle",
-            "An Open Network for Global Agriculture"
-          )}
-        </h1>
-        <p
-          style={{
-            marginBottom: "1rem",
-            fontWeight: 500,
-            fontSize: "1rem",
-            color: "rgba(225, 225, 225, 1)",
-          }}
-        >
-          {t(
-            "welcomeScreen.selectLanguage",
-            "Select your preferred language"
-          )}
-        </p>
+    <div className="overlay" />
+    <div className="text-container">
+      <img src={Logo} alt="Site Logo" className="logo" />
+      <h1 style={{ marginBottom: "2rem" }}>
+        {t("welcomeScreen.title", "AgriNet:")}
+      </h1>
+      <h1>
+        {t("welcomeScreen.subtitle", "An Open Network for Global Agriculture")}
+      </h1>
+      <p
+        style={{
+          marginBottom: "1rem",
+          fontWeight: 500,
+          fontSize: "1rem",
+          color: "rgba(225, 225, 225, 1)",
+        }}
+      >
+        {t("welcomeScreen.selectLanguage", "Select your preferred language")}
+      </p>
+  
+      {/* Wrap dropdown and button in a single row container */}
+      <div className="language-button-row">
         <FormControl
           variant="outlined"
           size="small"
@@ -69,19 +65,20 @@ const WelcomeScreen = () => {
             id="language-select"
             value={language}
             onChange={handleChange}
-            fullWidth
           >
             <MenuItem value="en">{t("language.english", "English")}</MenuItem>
             <MenuItem value="hi">{t("language.hindi", "Hindi")}</MenuItem>
             <MenuItem value="mr">{t("language.marathi", "Marathi")}</MenuItem>
           </Select>
         </FormControl>
-
+  
         <button className="button" onClick={handleButtonClick}>
           {t("welcomeScreen.getStarted", "Get Started")}
         </button>
       </div>
     </div>
+  </div>
+  
   );
 };
 

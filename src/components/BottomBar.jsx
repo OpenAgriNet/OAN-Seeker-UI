@@ -10,12 +10,19 @@ const BottomBar = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [value, setValue] = useState(0);
+
+  // Set Weather as the default active tab (index 1)
+  const [value, setValue] = useState(1);
 
   useEffect(() => {
-    if (location.pathname === "/schemes") setValue(0);
-    else if (location.pathname === "/weather") setValue(1);
-    else if (location.pathname === "/aibot") setValue(2);
+    if (location.pathname === "/schemes") {
+      setValue(0);
+    } else if (location.pathname === "/weather") {
+      setValue(1);
+    } else if (location.pathname === "/aibot") {
+      setValue(2);
+    }
+    // If it's none of the above, the value remains 1 (Weather)
   }, [location.pathname]);
 
   const handleChange = (event, newValue) => {
