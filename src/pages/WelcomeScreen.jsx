@@ -29,14 +29,15 @@ const WelcomeScreen = () => {
     <div className="overlay" />
     <div className="text-container">
       <img src={Logo} alt="Site Logo" className="logo" />
-      <h1 style={{ marginBottom: "2rem" }}>
+      <h1 style={{ marginBottom: "2rem"}}>
         {t("welcomeScreen.title", "AgriNet:")}
       </h1>
-      <h1>
+      <h2 >
         {t("welcomeScreen.subtitle", "An Open Network for Global Agriculture")}
-      </h1>
+      </h2>
       <p
         style={{
+          marginTop:'3rem',
           marginBottom: "1rem",
           fontWeight: 500,
           fontSize: "1rem",

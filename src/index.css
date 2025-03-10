@@ -123,9 +123,14 @@ body {
 }
 
 .text-container h1 {
-  font-size: '40px';
+  font-size: 40px !important;
   font-weight: 500;
   margin-bottom: 10px;
+}
+.text-container h2 {
+  font-size: 40px !important;
+  font-weight: 400;
+  line-height: 113.99999999999999%;
 }
 
 .text-container p {
