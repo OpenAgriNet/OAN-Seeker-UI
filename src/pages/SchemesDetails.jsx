@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   IconButton,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -74,27 +73,23 @@ const SchemesDetails = () => {
             backgroundColor: "white",
             padding: "16px",
             borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
           }}
         >
+          {/* Make the entire row clickable */}
           <Box
-            onClick={() => navigate(-1)}
             sx={{
-              cursor: "pointer",
-              padding: "8px",
-              borderRadius: "50%",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              gap: 1,
+              cursor: "pointer",
             }}
+            onClick={() => navigate(-1)}
           >
             <ArrowBackIcon />
+            <Typography variant="h5" fontWeight="400" fontSize={"22px"}>
+              {scheme.title}
+            </Typography>
           </Box>
-          <Typography variant="h5" fontWeight="400" fontSize={"22px"}>
-            {scheme.title}
-          </Typography>
         </Box>
 
         <Box className="page-content" sx={{ padding: "16px" }}>
@@ -103,39 +98,51 @@ const SchemesDetails = () => {
             {t("schemesDetails.provider", "Provider")}: {scheme.provider_name}
           </Typography>
 
-          {/* Categories */}
+          {/* Categories (bullet list) */}
           {scheme.categories && scheme.categories.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">
                 {t("schemesDetails.categories", "Categories")}
               </Typography>
-              <Typography
-                variant="body2"
-                color="rgba(67, 62, 63, 1)"
-                fontSize={"14px"}
-              >
-                {scheme.categories.join(", ")}
-              </Typography>
+              <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
+                {scheme.categories.map((category, index) => (
+                  <li key={index}>
+                    <Typography
+                      variant="body2"
+                      color="rgba(67, 62, 63, 1)"
+                      fontSize="14px"
+                    >
+                      {category}
+                    </Typography>
+                  </li>
+                ))}
+              </Box>
             </Box>
           )}
 
-          {/* Fulfillments */}
+          {/* Fulfillments (bullet list) */}
           {scheme.fulfillments && scheme.fulfillments.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">
                 {t("schemesDetails.fulfillments", "Fulfillments")}
               </Typography>
-              <Typography
-                variant="body2"
-                color="rgba(67, 62, 63, 1)"
-                fontSize={"14px"}
-              >
-                {scheme.fulfillments.join(", ")}
-              </Typography>
+              <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
+                {scheme.fulfillments.map((fulfillment, index) => (
+                  <li key={index}>
+                    <Typography
+                      variant="body2"
+                      color="rgba(67, 62, 63, 1)"
+                      fontSize="14px"
+                    >
+                      {fulfillment}
+                    </Typography>
+                  </li>
+                ))}
+              </Box>
             </Box>
           )}
 
-          {/* Locations */}
+          {/* Locations (comma-separated) */}
           {scheme.locations && scheme.locations.length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">
@@ -151,7 +158,7 @@ const SchemesDetails = () => {
             </Box>
           )}
 
-          {/* Eligibility & Required Documents */}
+          {/* Eligibility & Required Documents (bullet list per item) */}
           {Object.keys(groupedTags).length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">
@@ -160,29 +167,29 @@ const SchemesDetails = () => {
                   "Eligibility & Required Documents"
                 )}
               </Typography>
-              {Object.entries(groupedTags).map(
-                ([tagName, listItems], index) => {
-                  const normalizedTagName = tagName.replace(/\s+/g, "");
-                  return (
-                    <Box key={index} sx={{ mt: 1 }}>
-                      <Typography variant="subtitle1">
-                        {t(`schemesDetails.${normalizedTagName}`, tagName)}
-                      </Typography>
+              {Object.entries(groupedTags).map(([tagName, listItems], index) => {
+                const normalizedTagName = tagName.replace(/\s+/g, "");
+                return (
+                  <Box key={index} sx={{ mt: 1 }}>
+                    <Typography variant="subtitle1">
+                      {t(`schemesDetails.${normalizedTagName}`, tagName)}
+                    </Typography>
+                    <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
                       {listItems.map((item, idx) => (
-                        <Typography
-                          key={idx}
-                          variant="body2"
-                          color="rgba(67, 62, 63, 1)"
-                          fontSize="14px"
-                          sx={{ ml: 2 }}
-                        >
-                          {`${item.name}: ${item.value}`}
-                        </Typography>
+                        <li key={idx}>
+                          <Typography
+                            variant="body2"
+                            color="rgba(67, 62, 63, 1)"
+                            fontSize="14px"
+                          >
+                            {`${item.name}: ${item.value}`}
+                          </Typography>
+                        </li>
                       ))}
                     </Box>
-                  );
-                }
-              )}
+                  </Box>
+                );
+              })}
             </Box>
           )}
 
@@ -217,8 +224,8 @@ const SchemesDetails = () => {
                   gap: 1,
                   padding: "10px 20px",
                   fontWeight: "500",
-                  textTransform: "none", 
-                  boxShadow:'none'
+                  textTransform: "none",
+                  boxShadow: "none",
                 }}
                 onClick={handleOpenMedia}
                 endIcon={<OpenInNewIcon />}
