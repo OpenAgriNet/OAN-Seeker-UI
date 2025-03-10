@@ -80,15 +80,13 @@ body {
   width: 100%;
 }
 
-/* Container for the dropdown + button */
 .language-button-row {
   display: flex;
-  flex-direction: column; /* Mobile: stacked */
+  flex-direction: column; 
   align-items: center;
   width: 100%;
 }
 
-/* Desktop styles */
 @media (min-width: 768px) {
   .language-button-row {
     align-items: flex-start;
@@ -156,8 +154,8 @@ body {
 
 @media (min-width: 768px) {
   .button {
-    width: 250px; /* narrower on desktop */
-    margin-top: 0; /* remove extra top margin on desktop */
+    width: 250px; 
+    margin-top: 0;
   }
 }
 

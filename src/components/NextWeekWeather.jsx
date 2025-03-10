@@ -112,7 +112,7 @@ const NextWeekWeather = ({ weatherData }) => {
 
       {displayForecasts.map((item, index) => {
         const temperatureObj = item.forecast.tags?.[0]?.list.find(
-          (t) => t.descriptor.code === "temperature"
+          (t) => t.descriptor.code === "Temperature"
         );
         const temperature = temperatureObj
           ? parseFloat(temperatureObj.value)
