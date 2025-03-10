@@ -9,7 +9,9 @@ import {
   Typography,
   CircularProgress,
   Box,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -22,7 +24,6 @@ const DISTRICTS_API = "https://oan-weather-seeker-api.tekdinext.com/location/dis
 const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const { t } = useTranslation();
   const { language } = useContext(LanguageContext);
-  // Consume the location context (assuming it holds a value like locationId or coordinates)
   const { updateLocation, location } = useContext(LocationContext);
 
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
     if (storedState) {
       const parsedState = JSON.parse(storedState);
       setSelectedState(parsedState);
-      // Fetch districts using the stored state's id
       fetchDistricts(parsedState.value);
     }
     if (storedDistrict) {
@@ -52,13 +52,10 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        // Pass both language and location context value (if available) as query parameters.
-        // Adjust the query parameter name "loc" to match your API’s requirements.
         const response = await axios.get(
           `${STATES_API}?lang=${language}&loc=${location || ""}`,
           { headers: { accept: "application/json" } }
         );
-        // Map the returned state objects to the format needed by Autocomplete
         const stateList = response.data.states.map((state) => ({
           value: state.state_id,
           label: state.state_name,
@@ -115,8 +112,13 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>
+      <DialogTitle
+        sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+      >
         {t("locationPopup.title", "Select Your Location")}
+        <IconButton onClick={onClose} size="small">
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         <Box>

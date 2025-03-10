@@ -448,20 +448,21 @@ const AiBot = () => {
               currentWeather.tags[0] &&
               currentWeather.tags[0].list;
             const loc = tags
-              ? tags.find((tag) => tag.descriptor.code === "location")?.value
+              ? tags.find((tag) => tag.descriptor.code === "Location")?.value
               : "N/A";
             const minTemp = tags
-              ? tags.find((tag) => tag.descriptor.code === "min-temp")?.value
+              ? tags.find((tag) => tag.descriptor.code === "Min-Temp")?.value
               : "N/A";
             const maxTemp = tags
-              ? tags.find((tag) => tag.descriptor.code === "max-temp")?.value
+              ? tags.find((tag) => tag.descriptor.code === "Max-Temp")?.value
               : "N/A";
             const humidity = tags
-              ? tags.find((tag) => tag.descriptor.code === "humidity")?.value
+              ? tags.find((tag) => tag.descriptor.code === "Humidity")?.value
               : "N/A";
             const windSpeed = tags
-              ? tags.find((tag) => tag.descriptor.code === "wind-speed")?.value
+              ? tags.find((tag) => tag.descriptor.code === "Wind-Speed")?.value
               : "N/A";
+
             const labels = weatherLabels[language] || weatherLabels.en;
             const weatherMsgPrefix =
               language === "en"
