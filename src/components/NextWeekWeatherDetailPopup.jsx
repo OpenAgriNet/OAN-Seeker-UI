@@ -113,14 +113,14 @@ const NextWeekWeatherDetailPopup = ({
 
       // Retrieve tags for temperature/humidity/wind
       const tempTag = item.tags?.[0]?.list?.find(
-        (t) => t.descriptor.code === "temperature"
+        (t) => t.descriptor.code === "Temperature"
       );
       const humTag = item.tags?.[0]?.list?.find(
-        (t) => t.descriptor.code === "humidity"
+        (t) => t.descriptor.code === "Humidity"
       );
       const windTag = item.tags?.[0]?.list?.find(
-        (t) => t.descriptor.code === "wind-speed"
-      );
+        (t) => t.descriptor.code === "Wind-Speed"
+      );      
 
       const temperatureValue = tempTag ? parseFloat(tempTag.value) : null;
       const humidityValue = humTag ? parseFloat(humTag.value) : null;
