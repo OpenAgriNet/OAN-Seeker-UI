@@ -156,63 +156,60 @@ const CurrentWeather = ({ widgetData, allForecastData }) => {
       </Box>
 
       <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          border: "1px solid #f7e6c4",
-          borderRadius: "12px",
-          padding: "12px",
-          mt: 3,
-        }}
-      >
-        <Grid container spacing={2} justifyContent="space-between">
-          <Grid item xs={6}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={humidityIcon}
-                alt="Humidity Icon"
-                style={{
-                  width: "28px",
-                  height: "28px",
-                  marginRight: "8px",
-                  marginBottom:'1rem'
-                }}
-              />
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t("currentWeather.humidity", "Humidity")}
-                </Typography>
-                <Typography variant="h6" fontWeight="500" fontSize={"20px"}>
-                  {humidity}%
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={windIcon}
-                alt="Wind Icon"
-                style={{
-                  width: "28px",
-                  height: "28px",
-                  marginRight: "8px",
-                  marginBottom:'1.5rem'
-                }}
-              />
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t("currentWeather.wind", "Wind")}
-                </Typography>
-                <Typography variant="h6" fontWeight="500" fontSize={"20px"}>
-                  {wholeWindSpeed} km/h
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
+  sx={{
+    border: "1px solid #f7e6c4",
+    borderRadius: "12px",
+    padding: "12px",
+    mt: 3,
+  }}
+>
+  <Grid container spacing={2} justifyContent="space-around">
+    <Grid item xs={5}>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <img
+          src={humidityIcon}
+          alt="Humidity Icon"
+          style={{
+            width: "28px",
+            height: "28px",
+            marginRight: "8px",
+            marginBottom: "1rem",
+          }}
+        />
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            {t("currentWeather.humidity", "Humidity")}
+          </Typography>
+          <Typography variant="h6" fontWeight="500" fontSize={"20px"}>
+            {humidity}%
+          </Typography>
+        </Box>
       </Box>
+    </Grid>
+    <Grid item xs={5}>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <img
+          src={windIcon}
+          alt="Wind Icon"
+          style={{
+            width: "28px",
+            height: "28px",
+            marginRight: "8px",
+            marginBottom: "1.5rem",
+          }}
+        />
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            {t("currentWeather.wind", "Wind")}
+          </Typography>
+          <Typography variant="h6" fontWeight="500" fontSize={"20px"}>
+            {wholeWindSpeed} km/h
+          </Typography>
+        </Box>
+      </Box>
+    </Grid>
+  </Grid>
+</Box>
 
       <CurrentWeatherPopup
         open={openPopup}

@@ -22,17 +22,14 @@ const responses = {
     unknownOption: "I'm not sure how to handle that option yet.",
     thankYou: "Thank you so much for conversing with AgriNet 🌾",
     feedbackPrompt: "Let me know if you need anything else.",
-    // NEW: Government schemes specific feedback prompt
     govtFeedbackPrompt:
       "Let me know if you need anything else, or to change services or language click on below option, otherwise continue asking queries.",
-    // Options
     optionWeather: "Weather",
     optionGovtSchemes: "Government Schemes",
     optionYesLocation: "Yes, this is my location",
     optionNoChangeLocation: "No, I want to change my location",
     optionYesForecast: "Yes, show forecast for 5 days",
     optionNoForecast: "No, that’s all for now",
-    // optionGiveFeedback: "Give Feedback",
     optionGoBack: "Go Back to Main Menu",
   },
   hi: {
@@ -53,17 +50,14 @@ const responses = {
     unknownOption: "मुझे अभी तक यह विकल्प संभालने का तरीका नहीं पता है।",
     thankYou: "एग्रीनेट के साथ बातचीत करने के लिए आपका बहुत धन्यवाद। 🌾",
     feedbackPrompt: "अगर आपको कुछ और चाहिए तो बताएं।",
-    // NEW: Government schemes specific feedback prompt
     govtFeedbackPrompt:
       "क्या आपको और मदद चाहिए या सेवा या भाषा बदलनी है? नीचे दिए गए बटन पर क्लिक करें, या अपने सवाल पूछते रहें।",
-    // Options
     optionWeather: "मौसम",
     optionGovtSchemes: "सरकारी योजनाएँ",
     optionYesLocation: "हाँ, यही मेरा स्थान है",
     optionNoChangeLocation: "नहीं, मैं अपना स्थान बदलना चाहता हूँ",
     optionYesForecast: "हाँ, अगले 5 दिनों का पूर्वानुमान दिखाएँ",
     optionNoForecast: "नहीं, बस इतना ही",
-    // optionGiveFeedback: "प्रतिक्रिया दें",
     optionGoBack: "मुख्य मेनू पर वापस जाएँ",
   },
   mr: {
@@ -89,11 +83,9 @@ const responses = {
     optionNoChangeLocation: "नाही, मला माझं स्थान बदलायचं आहे",
     optionYesForecast: "होय, पुढील 5 दिवसांचं पूर्वानुमान दाखवा",
     optionNoForecast: "नाही, सध्या इतकंच",
-    // optionGiveFeedback: "प्रतिक्रिया द्या",
     optionGoBack: "मुख्य मेनूमध्ये परत जा",
   },
 };
-// -----------------------------------------------------------------------------
 
 const weatherLabels = {
   en: {
@@ -232,6 +224,8 @@ const formatForecastData = (forecastItems, lang = "en") => {
 const AiBot = () => {
   // Consume location context for updated location values
   const { location } = useContext(LocationContext);
+  const [selectedService, setSelectedService] = useState("");
+
   // languageMap maps the initial option text to language codes
   const languageMap = {
     English: "en",
@@ -239,16 +233,19 @@ const AiBot = () => {
     मराठी: "mr",
   };
 
-  // New state to track the selected service
-  const [selectedService, setSelectedService] = useState("");
-
-  const [messages, setMessages] = useState([
-    {
-      text: responses.en.welcomeMessage,
-      sender: "bot",
-      options: ["English", "हिंदी", "मराठी"],
-    },
-  ]);
+  // Initialize messages state from session storage if available
+  const [messages, setMessages] = useState(() => {
+    const storedMessages = sessionStorage.getItem("chatHistory");
+    return storedMessages
+      ? JSON.parse(storedMessages)
+      : [
+          {
+            text: responses.en.welcomeMessage,
+            sender: "bot",
+            options: ["English", "हिंदी", "मराठी"],
+          },
+        ];
+  });
   const [input, setInput] = useState("");
   const [language, setLanguage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -261,6 +258,11 @@ const AiBot = () => {
   );
 
   const messagesEndRef = useRef(null);
+
+  // Save chat history to session storage whenever messages update
+  useEffect(() => {
+    sessionStorage.setItem("chatHistory", JSON.stringify(messages));
+  }, [messages]);
 
   useEffect(() => {
     let interval;
@@ -369,7 +371,6 @@ const AiBot = () => {
       });
       setLoading(false);
 
-      // NEW: For government schemes service, add feedback prompt after API response.
       if (selectedService === "govtSchemes") {
         await simulateTypingThenAddMessage({
           text: responses[language].govtFeedbackPrompt,
@@ -418,9 +419,8 @@ const AiBot = () => {
           text: responses[language].changeLocation,
           sender: "bot",
         });
-        // Set flag to wait for location selection
         setAwaitLocationChange(true);
-        return; // Exit until the location is set
+        return;
       }
       await simulateTypingThenAddMessage({
         text: responses[language].weatherConfirm(location.selectedDistrict),
@@ -470,9 +470,7 @@ const AiBot = () => {
                 : `<strong>${loc}${labels.currentWeatherFor}:</strong>`;
             const currentWeatherMsg =
               `${weatherMsgPrefix}\n` +
-              `🌡️ ${labels.temperature}: ${formatValue(minTemp)} (${
-                labels.min
-              }) / ${formatValue(maxTemp)} (${labels.max})\n` +
+              `🌡️ ${labels.temperature}: ${formatValue(minTemp)} (${labels.min}) / ${formatValue(maxTemp)} (${labels.max})\n` +
               `💧 ${labels.humidity}: ${formatValue(humidity)}\n` +
               `💨 ${labels.windSpeed}: ${formatValue(windSpeed)}`;
             await simulateTypingThenAddMessage({
@@ -516,22 +514,15 @@ const AiBot = () => {
           const datePart = namePart.split(" ")[0];
           return first5Dates.includes(datePart);
         });
-        const formattedForecast = formatForecastData(
-          filteredForecast,
-          language
-        );
+        const formattedForecast = formatForecastData(filteredForecast, language);
         await simulateTypingThenAddMessage({
           text: formattedForecast,
           sender: "bot",
         });
-        // NEW: After forecast delivery, prompt feedback message.
         await simulateTypingThenAddMessage({
           text: responses[language].feedbackPrompt,
           sender: "bot",
-          options: [
-            // responses[language].optionGiveFeedback,
-            responses[language].optionGoBack,
-          ],
+          options: [responses[language].optionGoBack],
         });
       } else {
         await simulateTypingThenAddMessage({
@@ -540,7 +531,6 @@ const AiBot = () => {
         });
       }
     } else if (option === responses[language].optionNoForecast) {
-      // When user selects "No, that's all for now", display thank you and feedback prompt
       await simulateTypingThenAddMessage({
         text: responses[language].thankYou,
         sender: "bot",
@@ -548,10 +538,7 @@ const AiBot = () => {
       await simulateTypingThenAddMessage({
         text: responses[language].feedbackPrompt,
         sender: "bot",
-        options: [
-          // responses[language].optionGiveFeedback,
-          responses[language].optionGoBack,
-        ],
+        options: [responses[language].optionGoBack],
       });
     } else if (option === responses[language].optionGoBack) {
       setSelectedService("");
@@ -667,8 +654,7 @@ const AiBot = () => {
                   textAlign: "left",
                 }}
                 dangerouslySetInnerHTML={{
-                  __html:
-                    msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
+                  __html: msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
                 }}
               />
             </Box>

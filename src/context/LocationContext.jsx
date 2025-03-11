@@ -3,13 +3,19 @@ import React, { createContext, useState } from "react";
 export const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
-  const [location, setLocation] = useState({
-    selectedState: "",
-    selectedDistrict: "",
+  // Initialize state with data from sessionStorage if available
+  const [location, setLocation] = useState(() => {
+    const storedLocation = sessionStorage.getItem("location");
+    return storedLocation
+      ? JSON.parse(storedLocation)
+      : { selectedState: "", selectedDistrict: "" };
   });
 
+  // Update both the state and sessionStorage
   const updateLocation = (state, district) => {
-    setLocation({ selectedState: state, selectedDistrict: district });
+    const newLocation = { selectedState: state, selectedDistrict: district };
+    setLocation(newLocation);
+    sessionStorage.setItem("location", JSON.stringify(newLocation));
   };
 
   return (
