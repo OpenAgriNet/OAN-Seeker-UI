@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
+  Chip,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -94,53 +95,52 @@ const SchemesDetails = () => {
 
         <Box className="page-content" sx={{ padding: "16px" }}>
           {/* Provider */}
-          <Typography variant="body1" fontWeight="bold" sx={{ mt: 1 }}>
-            {t("schemesDetails.provider", "Provider")}: {scheme.provider_name}
-          </Typography>
 
           {/* Categories (bullet list) */}
           {scheme.categories && scheme.categories.length > 0 && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h6">
-                {t("schemesDetails.categories", "Categories")}
-              </Typography>
-              <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
-                {scheme.categories.map((category, index) => (
-                  <li key={index}>
-                    <Typography
-                      variant="body2"
-                      color="rgba(67, 62, 63, 1)"
-                      fontSize="14px"
-                    >
-                      {category}
-                    </Typography>
-                  </li>
-                ))}
-              </Box>
+            <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {scheme.categories.map((category, index) => (
+                <Chip
+                  key={index}
+                  label={category}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "15px",
+                    backgroundColor: "#f3ffc3",
+                    fontSize: "12px",
+                    height: "26px",
+                    color: "rgba(0, 0, 0, 1)",
+                    border: "1px solid #0000001f",
+                  }}
+                />
+              ))}
             </Box>
           )}
 
           {/* Fulfillments (bullet list) */}
           {scheme.fulfillments && scheme.fulfillments.length > 0 && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h6">
-                {t("schemesDetails.fulfillments", "Fulfillments")}
-              </Typography>
-              <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
-                {scheme.fulfillments.map((fulfillment, index) => (
-                  <li key={index}>
-                    <Typography
-                      variant="body2"
-                      color="rgba(67, 62, 63, 1)"
-                      fontSize="14px"
-                    >
-                      {fulfillment}
-                    </Typography>
-                  </li>
-                ))}
-              </Box>
+            <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {scheme.fulfillments.map((fulfillment, index) => (
+                <Chip
+                  key={index}
+                  label={fulfillment}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "15px",
+                    backgroundColor: "#f3ffc3",
+                    fontSize: "12px",
+                    height: "26px",
+                    color: "rgba(0, 0, 0, 1)",
+                    border: "1px solid #0000001f",
+                  }}
+                />
+              ))}
             </Box>
           )}
+
+          <Typography variant="body1" fontWeight="bold" sx={{ mt: 3 }}>
+            {t("schemesDetails.provider", "Provider")}: {scheme.provider_name}
+          </Typography>
 
           {/* Locations (comma-separated) */}
           {scheme.locations && scheme.locations.length > 0 && (
@@ -167,29 +167,31 @@ const SchemesDetails = () => {
                   "Eligibility & Required Documents"
                 )}
               </Typography>
-              {Object.entries(groupedTags).map(([tagName, listItems], index) => {
-                const normalizedTagName = tagName.replace(/\s+/g, "");
-                return (
-                  <Box key={index} sx={{ mt: 1 }}>
-                    <Typography variant="subtitle1">
-                      {t(`schemesDetails.${normalizedTagName}`, tagName)}
-                    </Typography>
-                    <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
-                      {listItems.map((item, idx) => (
-                        <li key={idx}>
-                          <Typography
-                            variant="body2"
-                            color="rgba(67, 62, 63, 1)"
-                            fontSize="14px"
-                          >
-                            {`${item.name}: ${item.value}`}
-                          </Typography>
-                        </li>
-                      ))}
+              {Object.entries(groupedTags).map(
+                ([tagName, listItems], index) => {
+                  const normalizedTagName = tagName.replace(/\s+/g, "");
+                  return (
+                    <Box key={index} sx={{ mt: 1 }}>
+                      <Typography variant="subtitle1">
+                        {t(`schemesDetails.${normalizedTagName}`, tagName)}
+                      </Typography>
+                      <Box component="ul" sx={{ margin: 0, paddingLeft: 3 }}>
+                        {listItems.map((item, idx) => (
+                          <li key={idx}>
+                            <Typography
+                              variant="body2"
+                              color="rgba(67, 62, 63, 1)"
+                              fontSize="14px"
+                            >
+                              {`${item.name}: ${item.value}`}
+                            </Typography>
+                          </li>
+                        ))}
+                      </Box>
                     </Box>
-                  </Box>
-                );
-              })}
+                  );
+                }
+              )}
             </Box>
           )}
 
