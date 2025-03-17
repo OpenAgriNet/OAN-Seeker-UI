@@ -1,3 +1,4 @@
+// Header.jsx
 import React, { useState, useContext } from "react";
 import {
   AppBar,
@@ -8,7 +9,6 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
-  Typography,
   Select,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -32,7 +32,9 @@ const Header = () => {
 
   // Use the shared location and language from context
   const { location } = useContext(LocationContext);
-  const { language, updateLanguage } = useContext(LanguageContext);
+
+  // IMPORTANT: We pull out "updateLanguageFromHeader"
+  const { language, updateLanguageFromHeader } = useContext(LanguageContext);
 
   const handleMenuToggle = () => {
     setOpen(!open);
@@ -48,8 +50,10 @@ const Header = () => {
 
   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
-    updateLanguage(newLanguage);
-    i18n.changeLanguage(newLanguage); 
+    // Call "updateLanguageFromHeader" so the chatbot knows it was from the header
+    updateLanguageFromHeader(newLanguage);
+    // Optional: also update i18n here if you want immediate effect
+    i18n.changeLanguage(newLanguage);
   };
 
   return (
@@ -82,9 +86,10 @@ const Header = () => {
               mr: 1,
             }}
           >
-            {location.selectedDistrict ? location.selectedDistrict : t("header.location", "Location")}
+            {location.selectedDistrict
+              ? location.selectedDistrict
+              : t("header.location", "Location")}
           </Button>
-
 
           <Select
             value={language}
