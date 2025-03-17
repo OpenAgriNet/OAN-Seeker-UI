@@ -5,18 +5,23 @@ import { sendQueryToBot, fetchWeather } from "../api/apiService";
 import { LocationContext } from "../context/LocationContext";
 import { LanguageContext } from "../context/LanguageContext";
 
-// ----- Extended responses dictionary -----
+// Extended responses dictionary
 const responses = {
   en: {
-    welcomeMessage:
-      "Hi, I’m AgriNet, your trusted assistant for all your farming needs. Please select your preferred language to get started.",
+    welcomeMessage: "Hi, I’m AgriNet, your trusted assistant.",
+    confirmLanguage: (langText) =>
+      `I see your preferred language is <strong>${langText}</strong>.<br/>Please confirm if this is your language?`,
     servicePrompt: "Please select the service you need help with",
+    optionYesLang: "Yes, this is my Language",
+    optionNoLang: "No, I want to change my language",
+    changeLanguage: "Please select your preferred language from the Header..",
+
+    // The rest of your existing keys:
     farmingPrompt: "Ask me anything related to farming.",
     weatherConfirm: (district) =>
       `I see you are interested in weather updates. Please confirm if this is your location: <strong>${district}</strong>`,
     weatherFetch: "Great! Fetching the latest weather update for your area...",
-    forecastPrompt:
-      "Would you like to see a weather forecast for the next few days?",
+    forecastPrompt: "Would you like to see a weather forecast for the next few days?",
     noWeatherData: "Sorry, no weather data available for your location.",
     errorWeather: "Sorry, there was an error fetching the weather data.",
     changeLocation: "Please select your preferred location from the Header..",
@@ -33,19 +38,23 @@ const responses = {
     optionNoForecast: "No, that’s all for now",
     optionGoBack: "Go Back to Main Menu",
   },
+
   hi: {
-    welcomeMessage:
-      "नमस्ते, मैं एग्रीनेट हूं, आपकी कृषि आवश्यकताओं के लिए आपका विश्वसनीय सहायक। कृपया अपनी पसंदीदा भाषा चुनें।",
+    welcomeMessage: "नमस्ते, मैं एग्रीनेट हूं, आपकी कृषि आवश्यकताओं के लिए आपका विश्वसनीय सहायक।",
+    confirmLanguage: (langText) =>
+      `मैं देख रहा हूँ कि आपकी पसंदीदा भाषा <strong>${langText}</strong> है।<br/>क्या यह आपकी भाषा है?`,
     servicePrompt: "कृपया बताएं कि आपको किस सेवा की आवश्यकता है।",
+    optionYesLang: "हाँ, यही मेरी भाषा है",
+    optionNoLang: "नहीं, मैं अपनी भाषा बदलना चाहता हूँ",
+    changeLanguage: "कृपया हेडर से अपनी पसंदीदा भाषा चुनें..",
+
+    // The rest of your existing keys:
     farmingPrompt: "कृषि से संबंधित कोई भी सवाल पूछें।",
     weatherConfirm: (district) =>
       `मुझे दिख रहा है कि आप मौसम अपडेट्स में रुचि रखते हैं। कृपया पुष्टि करें कि क्या यह आपका स्थान है: <strong>${district}</strong>`,
-    weatherFetch:
-      "बहुत बढ़िया! आपके क्षेत्र का नवीनतम मौसम अपडेट प्राप्त किया जा रहा है...",
-    forecastPrompt:
-      "क्या आप आने वाले कुछ दिनों का मौसम पूर्वानुमान देखना चाहेंगे?",
-    noWeatherData:
-      "क्षमा करें, आपके स्थान के लिए कोई मौसम डेटा उपलब्ध नहीं है।",
+    weatherFetch: "बहुत बढ़िया! आपके क्षेत्र का नवीनतम मौसम अपडेट प्राप्त किया जा रहा है...",
+    forecastPrompt: "क्या आप आने वाले कुछ दिनों का मौसम पूर्वानुमान देखना चाहेंगे?",
+    noWeatherData: "क्षमा करें, आपके स्थान के लिए कोई मौसम डेटा उपलब्ध नहीं है।",
     errorWeather: "क्षमा करें, मौसम डेटा प्राप्त करने में त्रुटि हुई।",
     changeLocation: "कृपया हेडर से अपना पसंदीदा स्थान चुनें।",
     unknownOption: "मुझे अभी तक यह विकल्प संभालने का तरीका नहीं पता है।",
@@ -61,10 +70,17 @@ const responses = {
     optionNoForecast: "नहीं, बस इतना ही",
     optionGoBack: "मुख्य मेनू पर वापस जाएँ",
   },
+
   mr: {
-    welcomeMessage:
-      "नमस्कार, मी एग्रीनेट आहे, तुमच्या शेतीसंबंधी गरजांसाठी तुमचा विश्वासू सहायक. कृपया तुमची प्राधान्यकृत भाषा निवडा.",
-    servicePrompt: "कृपया आपल्याला कोणत्या सेवेमध्ये मदत हवी आहे ते निवडा.",
+    welcomeMessage: "नमस्कार, मी एग्रीनेट आहे, तुमच्या शेतीसंबंधी गरजांसाठी तुमचा विश्वासू सहायक.",
+    confirmLanguage: (langText) =>
+      `मला दिसते की तुमची आवडती भाषा <strong>${langText}</strong> आहे.<br/>कृपया पुष्टी करा की ही तुमची भाषा आहे का?`,
+    servicePrompt: "कृपया तुम्हाला कोणत्या सेवेमध्ये मदत हवी आहे ते निवडा.",
+    optionYesLang: "होय, ही माझी भाषा आहे",
+    optionNoLang: "नाही, मला माझी भाषा बदलायची आहे",
+    changeLanguage: "कृपया हेडरमधून तुमची आवडती भाषा निवडा..",
+
+    // The rest of your existing keys:
     farmingPrompt: "कृषीशी संबंधित काहीही प्रश्न विचारा.",
     weatherConfirm: (district) =>
       `मला दिसतेय की तुम्ही हवामानाच्या अपडेट्समध्ये रस घेत आहात. कृपया पुष्टी करा की हा तुमचा स्थान आहे: <strong>${district}</strong>`,
@@ -88,39 +104,34 @@ const responses = {
   },
 };
 
-// For the special "currently selected" message
-function getCurrentlySelectedMessage(langCode) {
-  // Convert code => text
-  let langText = "English";
-  if (langCode === "hi") langText = "हिंदी";
-  if (langCode === "mr") langText = "मराठी";
+// Convert language code => display text
+function getLangDisplay(langCode) {
+  if (langCode === "hi") return "हिंदी";
+  if (langCode === "mr") return "मराठी";
+  return "English";
+}
 
+// Return the initial "confirm your language" message
+function getInitialLanguageConfirmation(langCode) {
+  const r = responses[langCode] || responses.en;
+  const display = getLangDisplay(langCode);
   return {
-    text: `Hi, I’m AgriNet, your trusted assistant.
-           I see your preferred language is <strong>${langText}</strong>. If you want to change it, click one of the other buttons below. Otherwise, click <strong>Continue</strong> to proceed.`,
+    text: `${r.welcomeMessage}<br/>${r.confirmLanguage(display)}`,
     sender: "bot",
-    options: ["Continue", "English", "हिंदी", "मराठी"],
+    options: [r.optionYesLang, r.optionNoLang],
   };
 }
 
-// If no language in sessionStorage, ask user to pick from 3
-function getNoLanguageMessage() {
-  return {
-    text:
-      "Hi, I’m AgriNet, your trusted assistant for all your farming needs. " +
-      "Please select your preferred language to get started.",
-    sender: "bot",
-    options: ["English", "हिंदी", "मराठी"],
-  };
-}
-
-// Return the initial bot message depending on sessionStorage
+// Decide the initial bot message
 function getInitialBotMessage() {
   const storedLang = sessionStorage.getItem("language");
   if (!storedLang) {
-    return getNoLanguageMessage();
+    // If no stored language, default to "en"
+    sessionStorage.setItem("language", "en");
+    return getInitialLanguageConfirmation("en");
   } else {
-    return getCurrentlySelectedMessage(storedLang);
+    // Show the "confirm language" message in the stored language
+    return getInitialLanguageConfirmation(storedLang);
   }
 }
 
@@ -150,20 +161,6 @@ const weatherLabels = {
     humidity: "आर्द्रता",
     windSpeed: "वाऱ्याची गती",
   },
-};
-
-// Map language button text => code
-const languageMap = {
-  English: "en",
-  हिंदी: "hi",
-  मराठी: "mr",
-};
-
-// Map code => language button text
-const inverseLanguageMap = {
-  en: "English",
-  hi: "हिंदी",
-  mr: "मराठी",
 };
 
 function formatValue(val) {
@@ -258,13 +255,8 @@ function formatForecastData(forecastItems, lang = "en") {
         const tempTag =
           tags.find((tag) => tag.descriptor.code === "temperature") ||
           tags.find((tag) => tag.descriptor.code === "min-temp");
-        const windTag = tags.find(
-          (tag) => tag.descriptor.code === "wind-speed"
-        );
-        const humidityTag = tags.find(
-          (tag) => tag.descriptor.code === "humidity"
-        );
-
+        const windTag = tags.find((tag) => tag.descriptor.code === "wind-speed");
+        const humidityTag = tags.find((tag) => tag.descriptor.code === "humidity");
         if (tempTag) temperature = formatValue(tempTag.value);
         if (windTag) windSpeed = formatValue(windTag.value);
         if (humidityTag) humidity = formatValue(humidityTag.value);
@@ -280,16 +272,14 @@ function formatForecastData(forecastItems, lang = "en") {
 
 function AiBot() {
   const { location } = useContext(LocationContext);
-  const { language, updateLanguage } = useContext(LanguageContext);
+  const { language, updateLanguage, headerChange } = useContext(LanguageContext);
 
-  // This tracks if we have "confirmed" the user's language or not
   const [confirmedLang, setConfirmedLang] = useState(language);
-
   const [selectedService, setSelectedService] = useState("");
+
   const [messages, setMessages] = useState(() => {
     const stored = sessionStorage.getItem("chatHistory");
     if (stored) return JSON.parse(stored);
-    // If no chat history, create initial message
     return [getInitialBotMessage()];
   });
 
@@ -303,9 +293,10 @@ function AiBot() {
 
   // Location
   const [awaitLocationChange, setAwaitLocationChange] = useState(false);
-  const [confirmedLocation, setConfirmedLocation] = useState(
-    location.selectedDistrict || ""
-  );
+  const [confirmedLocation, setConfirmedLocation] = useState(location.selectedDistrict || "");
+
+  // If user is asked to pick language from the header
+  const [awaitLanguageChange, setAwaitLanguageChange] = useState(false);
 
   const messagesEndRef = useRef(null);
 
@@ -327,7 +318,7 @@ function AiBot() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Show "Typing..." for initial
+  // Show "Typing..." for the initial message
   useEffect(() => {
     if (messages.length === 1 && messages[0].sender === "bot") {
       const original = messages[0];
@@ -342,6 +333,7 @@ function AiBot() {
     }
   }, []);
 
+  // Auto-scroll
   useEffect(() => {
     if (userSubmitted && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -349,57 +341,53 @@ function AiBot() {
     }
   }, [messages, userSubmitted]);
 
-  // If user changes location in the header
+  // If user changes location from the header
   useEffect(() => {
     if (
       awaitLocationChange &&
       location.selectedDistrict &&
       location.selectedDistrict !== confirmedLocation
     ) {
-      setMessages((prev) => [
-        ...prev,
-        { text: location.selectedDistrict, sender: "user" },
-      ]);
+      setMessages((prev) => [...prev, { text: location.selectedDistrict, sender: "user" }]);
       (async () => {
+        const r = responses[language] || responses.en;
         await simulateTypingThenAddMessage({
-          text: responses[language || "en"].weatherConfirm(
-            location.selectedDistrict
-          ),
+          text: r.weatherConfirm(location.selectedDistrict),
           sender: "bot",
-          options: [
-            responses[language || "en"].optionYesLocation,
-            responses[language || "en"].optionNoChangeLocation,
-          ],
+          options: [r.optionYesLocation, r.optionNoChangeLocation],
         });
       })();
       setConfirmedLocation(location.selectedDistrict);
       setAwaitLocationChange(false);
     }
-  }, [
-    awaitLocationChange,
-    location.selectedDistrict,
-    confirmedLocation,
-    language,
-  ]);
+  }, [awaitLocationChange, location.selectedDistrict, confirmedLocation, language]);
 
-  // If user changes language from header
-  // => show the "currently selected" message again (unless they've clicked "Continue" or changed again).
+  // If user changes language from the header:
+  // Show user-side message with just the new language name
+  // Then show the confirm-language bot message with typing effect
   useEffect(() => {
-    if (language !== confirmedLang) {
-      // They changed from the header
-      setConfirmedLang(language);
-      // Show the "currently selected" style message again
-      setMessages((prev) => [...prev, getCurrentlySelectedMessage(language)]);
-      setUserSubmitted(true);
+    if (headerChange && language !== confirmedLang) {
+      (async () => {
+        // 1) Add a user-side message with the new language name
+        setMessages((prev) => [
+          ...prev,
+          { text: getLangDisplay(language), sender: "user" },
+        ]);
+        setUserSubmitted(true);
+
+        // 2) Then show the bot "confirm language" with typing effect
+        await simulateTypingThenAddMessage(getInitialLanguageConfirmation(language));
+        setConfirmedLang(language);
+      })();
     }
-  }, [language, confirmedLang]);
+  }, [headerChange, language, confirmedLang]);
 
   function simulateTypingThenAddMessage(newBotMessage, delay = 1500) {
     return new Promise((resolve) => {
       setMessages((prev) => [...prev, { text: "Typing", sender: "bot" }]);
       setLoading(true);
       setTimeout(() => {
-        setMessages((prev) => prev.slice(0, -1)); // remove "Typing"
+        setMessages((prev) => prev.slice(0, -1));
         setLoading(false);
         setMessages((prev) => [...prev, newBotMessage]);
         setUserSubmitted(true);
@@ -408,6 +396,7 @@ function AiBot() {
     });
   }
 
+  // Handle user text input
   async function handleSend() {
     if (input.trim()) {
       setMessages((prev) => [...prev, { text: input, sender: "user" }]);
@@ -421,13 +410,7 @@ function AiBot() {
       });
       setLoading(true);
 
-      await sendQueryToBot(
-        userQuery,
-        language,
-        setMessages,
-        setLoading,
-        typingDots
-      );
+      await sendQueryToBot(userQuery, language, setMessages, setLoading, typingDots);
 
       setMessages((prev) => {
         if (prev.length && prev[prev.length - 1].text === "Typing") {
@@ -437,18 +420,21 @@ function AiBot() {
       });
       setLoading(false);
 
+      // If user is in govtSchemes
+      const r = responses[language] || responses.en;
       if (selectedService === "govtSchemes") {
         await simulateTypingThenAddMessage({
-          text: responses[language].govtFeedbackPrompt,
+          text: r.govtFeedbackPrompt,
           sender: "bot",
-          options: [responses[language].optionGoBack],
+          options: [r.optionGoBack],
         });
       }
     }
   }
 
+  // Handle user clicking a bot button
   async function handleOptionClick(option) {
-    // Remove options from the last bot message
+    // Remove old options
     setMessages((prev) => {
       const newMsgs = [...prev];
       for (let i = newMsgs.length - 1; i >= 0; i--) {
@@ -460,91 +446,64 @@ function AiBot() {
       return newMsgs;
     });
 
-    // Show user's selection
     setMessages((prev) => [...prev, { text: option, sender: "user" }]);
     setUserSubmitted(true);
 
-    // If we are in "currently selected" flow:
-    // The user might have 4 buttons: [Continue] [English] [हिंदी] [मराठी]
-    if (option === "Continue") {
-      // Just show the service prompt
+    const r = responses[language] || responses.en;
+
+    // If user clicks "Yes, this is my Language"
+    if (option === r.optionYesLang) {
+      // Show the "servicePrompt" + 2 service options
       await simulateTypingThenAddMessage({
-        text: responses[language].servicePrompt,
+        text: r.servicePrompt,
         sender: "bot",
-        options: [
-          responses[language].optionWeather,
-          responses[language].optionGovtSchemes,
-        ],
-      });
-      return;
-    }
-    // If user clicks the same language that is "currently selected," treat it like "Continue" if you wish.
-    // Or do nothing. For now let's do the same as "Continue."
-    if (option === inverseLanguageMap[language]) {
-      // The user re-clicked the same language. Let's just proceed:
-      await simulateTypingThenAddMessage({
-        text: responses[language].servicePrompt,
-        sender: "bot",
-        options: [
-          responses[language].optionWeather,
-          responses[language].optionGovtSchemes,
-        ],
+        options: [r.optionWeather, r.optionGovtSchemes],
       });
       return;
     }
 
-    // If user picks one of the languages
-    if (option === "English" || option === "हिंदी" || option === "मराठी") {
-      const newLang = languageMap[option];
-      updateLanguage(newLang);
-
-      // Show the "Please select the service" in the new language
+    // If user clicks "No, I want to change my language"
+    if (option === r.optionNoLang) {
       await simulateTypingThenAddMessage({
-        text: responses[newLang].servicePrompt,
+        text: r.changeLanguage,
         sender: "bot",
-        options: [
-          responses[newLang].optionWeather,
-          responses[newLang].optionGovtSchemes,
-        ],
       });
+      setAwaitLanguageChange(true);
       return;
     }
 
-    // Next is your existing logic:
-    if (option === responses[language].optionGovtSchemes) {
+    // Next: existing logic for "optionWeather", "optionGovtSchemes", etc.
+    if (option === r.optionGovtSchemes) {
       setSelectedService("govtSchemes");
       await simulateTypingThenAddMessage({
-        text: responses[language].farmingPrompt,
+        text: r.farmingPrompt,
         sender: "bot",
       });
       return;
     }
 
-    if (option === responses[language].optionWeather) {
+    if (option === r.optionWeather) {
       setSelectedService("weather");
       if (!location.selectedDistrict) {
         await simulateTypingThenAddMessage({
-          text: responses[language].changeLocation,
+          text: r.changeLocation,
           sender: "bot",
         });
         setAwaitLocationChange(true);
         return;
       }
       await simulateTypingThenAddMessage({
-        text: responses[language].weatherConfirm(location.selectedDistrict),
+        text: r.weatherConfirm(location.selectedDistrict),
         sender: "bot",
-        options: [
-          responses[language].optionYesLocation,
-          responses[language].optionNoChangeLocation,
-        ],
+        options: [r.optionYesLocation, r.optionNoChangeLocation],
       });
       return;
     }
 
-    if (option === responses[language].optionYesLocation) {
+    if (option === r.optionYesLocation) {
       setConfirmedLocation(location.selectedDistrict);
       await simulateTypingThenAddMessage({
-        text: responses[language].weatherFetch,
+        text: r.weatherFetch,
         sender: "bot",
       });
       setTimeout(async () => {
@@ -556,9 +515,7 @@ function AiBot() {
           if (weatherItems && weatherItems.length > 0) {
             const currentWeather = weatherItems[0];
             const tags =
-              currentWeather.tags &&
-              currentWeather.tags[0] &&
-              currentWeather.tags[0].list;
+              currentWeather.tags && currentWeather.tags[0] && currentWeather.tags[0].list;
 
             const loc = tags
               ? tags.find((t) => t.descriptor.code === "Location")?.value
@@ -584,30 +541,25 @@ function AiBot() {
 
             const msg =
               `${prefix}\n` +
-              `🌡️ ${lbl.temperature}: ${formatValue(minTemp)} (${
-                lbl.min
-              }) / ${formatValue(maxTemp)} (${lbl.max})\n` +
+              `🌡️ ${lbl.temperature}: ${formatValue(minTemp)} (${lbl.min}) / ${formatValue(maxTemp)} (${lbl.max})\n` +
               `💧 ${lbl.humidity}: ${formatValue(humidity)}\n` +
               `💨 ${lbl.windSpeed}: ${formatValue(windSpeed)}`;
 
             await simulateTypingThenAddMessage({ text: msg, sender: "bot" });
             await simulateTypingThenAddMessage({
-              text: responses[language].forecastPrompt,
+              text: r.forecastPrompt,
               sender: "bot",
-              options: [
-                responses[language].optionYesForecast,
-                responses[language].optionNoForecast,
-              ],
+              options: [r.optionYesForecast, r.optionNoForecast],
             });
           } else {
             await simulateTypingThenAddMessage({
-              text: responses[language].noWeatherData,
+              text: r.noWeatherData,
               sender: "bot",
             });
           }
         } catch (error) {
           await simulateTypingThenAddMessage({
-            text: responses[language].errorWeather,
+            text: r.errorWeather,
             sender: "bot",
           });
         }
@@ -615,16 +567,16 @@ function AiBot() {
       return;
     }
 
-    if (option === responses[language].optionNoChangeLocation) {
+    if (option === r.optionNoChangeLocation) {
       await simulateTypingThenAddMessage({
-        text: responses[language].changeLocation,
+        text: r.changeLocation,
         sender: "bot",
       });
       setAwaitLocationChange(true);
       return;
     }
 
-    if (option === responses[language].optionYesForecast) {
+    if (option === r.optionYesForecast) {
       if (weatherData) {
         const forecastItems = weatherData.slice(1);
         const dates = Object.keys(groupForecastByDate(forecastItems)).sort();
@@ -637,60 +589,56 @@ function AiBot() {
         const formatted = formatForecastData(filtered, language);
         await simulateTypingThenAddMessage({ text: formatted, sender: "bot" });
         await simulateTypingThenAddMessage({
-          text: responses[language].feedbackPrompt,
+          text: r.feedbackPrompt,
           sender: "bot",
-          options: [responses[language].optionGoBack],
+          options: [r.optionGoBack],
         });
       } else {
         await simulateTypingThenAddMessage({
-          text: responses[language].noWeatherData,
+          text: r.noWeatherData,
           sender: "bot",
         });
       }
       return;
     }
 
-    if (option === responses[language].optionNoForecast) {
+    if (option === r.optionNoForecast) {
       await simulateTypingThenAddMessage({
-        text: responses[language].thankYou,
+        text: r.thankYou,
         sender: "bot",
       });
       await simulateTypingThenAddMessage({
-        text: responses[language].feedbackPrompt,
+        text: r.feedbackPrompt,
         sender: "bot",
-        options: [responses[language].optionGoBack],
+        options: [r.optionGoBack],
       });
       return;
     }
 
-    if (option === responses[language].optionGoBack) {
+    if (option === r.optionGoBack) {
       setSelectedService("");
       setWeatherData(null);
       await simulateTypingThenAddMessage({
-        text: responses[language].servicePrompt,
+        text: r.servicePrompt,
         sender: "bot",
-        options: [
-          responses[language].optionWeather,
-          responses[language].optionGovtSchemes,
-        ],
+        options: [r.optionWeather, r.optionGovtSchemes],
       });
       return;
     }
 
-    // If none of the above matched
+    // If none matched
     await simulateTypingThenAddMessage({
-      text: responses[language].unknownOption,
+      text: r.unknownOption,
       sender: "bot",
     });
   }
 
-  // Disabling logic
+  // Possibly disable input if waiting for user to pick location or language
   const lastMessage = messages[messages.length - 1];
   const isLastMsgBot = lastMessage?.sender === "bot";
-  const hasOptions =
-    Array.isArray(lastMessage?.options) && lastMessage.options.length > 0;
+  const hasOptions = Array.isArray(lastMessage?.options) && lastMessage.options.length > 0;
   const isGovtFeedbackPrompt =
-    lastMessage?.text === responses[language]?.govtFeedbackPrompt;
+    lastMessage?.text === (responses[language] || responses.en).govtFeedbackPrompt;
   const waitingForOptions = isLastMsgBot && hasOptions && !isGovtFeedbackPrompt;
 
   return (
@@ -705,7 +653,6 @@ function AiBot() {
         position: "relative",
       }}
     >
-      {/* Header */}
       <Box
         sx={{
           padding: 2,
@@ -791,8 +738,7 @@ function AiBot() {
                   textAlign: "left",
                 }}
                 dangerouslySetInnerHTML={{
-                  __html:
-                    msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
+                  __html: msg.text === "Typing" ? `Typing ${typingDots}` : msg.text,
                 }}
               />
             </Box>
@@ -800,32 +746,28 @@ function AiBot() {
             {/* Buttons */}
             {msg.sender === "bot" && msg.options && (
               <Box sx={{ display: "flex", gap: 1, marginBottom: 2 }}>
-                {msg.options.map((opt, idx) => {
-                  // highlight if the button matches the currently selected language
-                  const isSelected = opt === inverseLanguageMap[language];
-                  return (
-                    <Button
-                      key={idx}
-                      variant="contained"
-                      size="small"
-                      onClick={() => handleOptionClick(opt)}
-                      sx={{
-                        border: "none",
-                        backgroundColor: isSelected ? "#666666" : "#808080",
-                        boxShadow: "none",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: isSelected ? "#666666" : "#808080",
-                        },
-                        textTransform: "none",
-                        fontSize: "0.9rem",
-                        fontWeight: "500",
-                      }}
-                    >
-                      {opt}
-                    </Button>
-                  );
-                })}
+                {msg.options.map((opt, idx) => (
+                  <Button
+                    key={idx}
+                    variant="contained"
+                    size="small"
+                    onClick={() => handleOptionClick(opt)}
+                    sx={{
+                      border: "none",
+                      backgroundColor: "#808080",
+                      boxShadow: "none",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "#666666",
+                      },
+                      textTransform: "none",
+                      fontSize: "0.9rem",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {opt}
+                  </Button>
+                ))}
               </Box>
             )}
           </Box>
@@ -865,13 +807,11 @@ function AiBot() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            disabled={selectedService === "weather" || waitingForOptions}
+            disabled={loading || waitingForOptions || awaitLanguageChange || awaitLocationChange}
           />
           <IconButton
             onClick={handleSend}
-            disabled={
-              loading || selectedService === "weather" || waitingForOptions
-            }
+            disabled={loading || waitingForOptions || awaitLanguageChange}
             sx={{
               backgroundColor: "black",
               color: "white",
