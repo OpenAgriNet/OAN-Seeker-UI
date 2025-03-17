@@ -74,7 +74,6 @@ const LocationPopup = ({ open, onClose, onLocationSelect }) => {
   const fetchDistricts = async (stateId) => {
     setLoadingDistricts(true);
     try {
-      // Similarly pass the location value to the districts API
       const response = await axios.get(
         `${DISTRICTS_API}/${stateId}?lang=${language}&loc=${location || ""}`,
         { headers: { accept: "application/json" } }
