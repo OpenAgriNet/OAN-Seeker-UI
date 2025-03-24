@@ -62,7 +62,8 @@ const responses = {
     errorWeather: "क्षमा करें, मौसम डेटा प्राप्त करने में त्रुटि हुई।",
     changeLocation: "कृपया हेडर से अपना पसंदीदा स्थान चुनें।",
     unknownOption: "मुझे अभी तक यह विकल्प संभालने का तरीका नहीं पता है।",
-    thankYou: "एग्रीनेट 🌾 के साथ बातचीत करने के लिए आपका बहुत धन्यवाद\nयदि आप सेवाएँ बदलना चाहते हैं, तो नीचे दिए गए विकल्प पर क्लिक करें",
+    thankYou:
+      "एग्रीनेट 🌾 के साथ बातचीत करने के लिए आपका बहुत धन्यवाद\nयदि आप सेवाएँ बदलना चाहते हैं, तो नीचे दिए गए विकल्प पर क्लिक करें",
     govtFeedbackPrompt:
       "क्या आपको और मदद चाहिए या सेवा या भाषा बदलनी है? नीचे दिए गए बटन पर क्लिक करें, या अपने सवाल पूछते रहें।",
     optionWeather: "मौसम",
@@ -93,7 +94,8 @@ const responses = {
     errorWeather: "क्षमस्व, हवामान डेटा मिळवण्यात त्रुटी आली आहे.",
     changeLocation: "कृपया हेडरमधून तुमचा आवडता स्थान निवडा.",
     unknownOption: "मला अजून कळलेलं नाही की हा पर्याय कसा हाताळायचा.",
-    thankYou: "एग्रीनेट 🌾 सोबत संवाद केल्याबद्दल आपले खूप आभार\nआपल्याला सेवा बदलायची असल्यास, खाली दिलेल्या पर्यायावर क्लिक करा",
+    thankYou:
+      "एग्रीनेट 🌾 सोबत संवाद केल्याबद्दल आपले खूप आभार\nआपल्याला सेवा बदलायची असल्यास, खाली दिलेल्या पर्यायावर क्लिक करा",
     govtFeedbackPrompt:
       "आपल्याला अधिक मदतीची गरज आहे का किंवा सेवा/भाषा बदलायची आहे का? खालील बटणावर टॅप करा किंवा आपले प्रश्न विचारत रहा.",
     optionWeather: "हवामान",
@@ -278,7 +280,8 @@ function formatForecastData(forecastItems, lang = "en") {
 
 function AiBot() {
   const { location } = useContext(LocationContext);
-  const { language, updateLanguage, headerChange } = useContext(LanguageContext);
+  const { language, updateLanguage, headerChange } =
+    useContext(LanguageContext);
 
   const [confirmedLang, setConfirmedLang] = useState(language);
   const [selectedService, setSelectedService] = useState("");
@@ -579,9 +582,9 @@ function AiBot() {
 
             const msg =
               `${prefix}\n` +
-              `🌡️ ${lbl.temperature}: ${formatValue(minTemp)} (${lbl.min}) / ${formatValue(
-                maxTemp
-              )} (${lbl.max})\n` +
+              `🌡️ ${lbl.temperature}: ${formatValue(minTemp)} (${
+                lbl.min
+              }) / ${formatValue(maxTemp)} (${lbl.max})\n` +
               `💧 ${lbl.humidity}: ${formatValue(humidity)}\n` +
               `💨 ${lbl.windSpeed}: ${formatValue(windSpeed)}`;
 
@@ -676,7 +679,8 @@ function AiBot() {
   const hasOptions =
     Array.isArray(lastMessage?.options) && lastMessage.options.length > 0;
   const isGovtFeedbackPrompt =
-    lastMessage?.text === (responses[language] || responses.en).govtFeedbackPrompt;
+    lastMessage?.text ===
+    (responses[language] || responses.en).govtFeedbackPrompt;
   const waitingForOptions = isLastMsgBot && hasOptions && !isGovtFeedbackPrompt;
 
   const startRecording = async () => {
@@ -915,14 +919,20 @@ function AiBot() {
               loading ||
               waitingForOptions ||
               awaitLanguageChange ||
-              awaitLocationChange
+              awaitLocationChange ||
+              selectedService === "weather"
             }
           />
 
           {/* Microphone / Stop Icon Button */}
           <IconButton
             onClick={isRecording ? stopRecording : startRecording}
-            disabled={loading || waitingForOptions || awaitLanguageChange}
+            disabled={
+              loading ||
+              waitingForOptions ||
+              awaitLanguageChange ||
+              selectedService === "weather"
+            }
             sx={{
               backgroundColor: "black",
               color: "white",
@@ -936,7 +946,12 @@ function AiBot() {
           {/* Send Icon Button */}
           <IconButton
             onClick={handleSend}
-            disabled={loading || waitingForOptions || awaitLanguageChange}
+            disabled={
+              loading ||
+              waitingForOptions ||
+              awaitLanguageChange ||
+              selectedService === "weather"
+            }
             sx={{
               backgroundColor: "black",
               color: "white",
