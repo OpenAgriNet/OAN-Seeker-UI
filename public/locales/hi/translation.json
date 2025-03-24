@@ -26,7 +26,8 @@
       "morning": "सुप्रभात",
       "afternoon": "नमस्कार",
       "evening": "शुभ संध्या"
-    }
+    },
+    "noData": "{{location}} के लिए कोई मौसम डेटा उपलब्ध नहीं है।"
   },
   "currentWeather": {
     "noData": "कोई डेटा उपलब्ध नहीं",

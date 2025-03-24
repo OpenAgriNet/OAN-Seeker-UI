@@ -88,6 +88,9 @@
     "saturday": "Saturday",
     "sunday": "Sunday"
   },
+  "weather": {
+    "noData": "No weather data available for {{location}}."
+  },
   "weatherDetail": {
     "temperature": "Temperature",
     "humidity": "Humidity",
