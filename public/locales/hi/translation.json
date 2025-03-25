@@ -75,7 +75,9 @@
     "additionalEligibility": "अतिरिक्त पात्रता",
     "demographicEligibility": "जनसांख्यिकीय पात्रता",
     "details": "विवरण",
-    "viewDocument": "योजना दस्तावेज़ देखें"
+    "viewDocument": "योजना दस्तावेज़ देखें",
+    "cannotDisplay": "यह दस्तावेज़ आपके ब्राउज़र में प्रदर्शित नहीं किया जा सकता है।",
+    "downloadDoc": "PDF डाउनलोड करने के लिए यहाँ क्लिक करें"
   },
   "searchBar": {
     "placeholder": "नाम से खोजें"

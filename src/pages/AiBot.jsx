@@ -736,11 +736,15 @@ function AiBot() {
         const reader = new FileReader();
         reader.onloadend = () => {
           const base64Audio = reader.result.split(",")[1];
-          setMessages((prev) => [
-            ...prev,
-            { text: "Voice message received", sender: "user" },
-          ]);
-          // Send the voice query
+          setMessages((prev) => {
+            const cleared = removeLastBotOptions(prev);
+            return [
+              ...cleared,
+              { text: "Voice message received", sender: "user" },
+            ];
+          });
+          setUserSubmitted(true);
+
           sendQueryToBot(
             "",
             language,
@@ -750,19 +754,11 @@ function AiBot() {
             base64Audio
           ).then(async () => {
             const r = responses[language] || responses.en;
-            if (selectedService === "govtSchemes") {
-              await simulateTypingThenAddMessage({
-                text: r.govtFeedbackPrompt,
-                sender: "bot",
-                options: [r.optionGoBack],
-              });
-            } else {
-              await simulateTypingThenAddMessage({
-                text: r.govtFeedbackPrompt,
-                sender: "bot",
-                options: [r.optionGoBack],
-              });
-            }
+            await simulateTypingThenAddMessage({
+              text: r.govtFeedbackPrompt,
+              sender: "bot",
+              options: [r.optionGoBack],
+            });
           });
         };
         reader.readAsDataURL(audioBlob);
