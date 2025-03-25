@@ -27,7 +27,7 @@ Additionally, **AgriNet** features an interactive **Chatbot** that enables users
   - Retrieve weather updates using natural language queries.
 
 - **Multilingual Support:**  
-  - Supports multiple languages (English, Hindi, Marathi, etc.), ensuring a wider reach.
+  - Supports multiple languages (English, Hindi, Marathi), ensuring a wider reach.
 
 ## **Installation**
 
