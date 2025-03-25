@@ -1,0 +1,118 @@
+{
+  "welcomeScreen": {
+    "title": "एग्रीनेट",
+    "subtitle": "वैश्विक कृषि के लिए एक ओपन नेटवर्क",
+    "selectLanguage": "अपनी पसंदीदा भाषा चुनें",
+    "getStarted": "शुरू करें"
+  },
+  "language": {
+    "english": "English",
+    "hindi": "हिंदी",
+    "marathi": "मराठी"
+  },
+  "home": {
+    "selectLocation": "कृपया अपनी लोकेशन चुनें",
+    "state": "राज्य",
+    "district": "जिला",
+    "submit": "सबमिट करें"
+  },
+  "weather": {
+    "noLocation": "लोकेशन नहीं चुनी गई",
+    "noLocationTitle": "कृपया अपनी लोकेशन चुनें",
+    "noLocationDescription": "सटीक मौसम जानकारी के लिए आपकी लोकेशन ज़रूरी है। ऊपर दिए गए",
+    "location": "लोकेशन",
+    "toGetStarted": "बटन पर टैप करें",
+    "greeting": {
+      "morning": "सुप्रभात",
+      "afternoon": "नमस्कार",
+      "evening": "शुभ संध्या"
+    },
+    "noData": "{{location}} के लिए कोई मौसम डेटा उपलब्ध नहीं है।"
+  },
+  "currentWeather": {
+    "noData": "कोई डेटा उपलब्ध नहीं",
+    "humidity": "आर्द्रता",
+    "wind": "हवा"
+  },
+  "header": {
+    "location": "लोकेशन",
+    "aboutUs": "हमारे बारे में",
+    "contactUs": "संपर्क करें"
+  },
+  "bottomBar": {
+    "schemes": "योजनाएँ",
+    "weather": "मौसम",
+    "chatbot": "चैटबॉट"
+  },
+  "languagePopup": {
+    "title": "भाषा चुनें",
+    "label": "भाषा",
+    "save": "सेव करें"
+  },
+  "locationPopup": {
+    "title": "अपनी लोकेशन चुनें",
+    "state": "राज्य",
+    "district": "जिला",
+    "submit": "सबमिट करें"
+  },
+  "schemes": {
+    "discover": "योजनाएँ खोजें",
+    "noSchemes": "के लिए कोई योजना उपलब्ध नहीं",
+    "loadMore": "और लोड करें"
+  },
+  "schemesCard": {
+    "benefitDetail": "लाभ का विवरण",
+    "viewDetails": "विवरण देखें"
+  },
+  "schemesDetails": {
+    "noDetails": "कोई योजना विवरण उपलब्ध नहीं।",
+    "provider": "प्रदाता",
+    "categories": "श्रेणियाँ",
+    "fulfillments": "पूर्ति",
+    "locations": "स्थान",
+    "eligibilityTitle": "पात्रता और ज़रूरी दस्तावेज़",
+    "requiredDocuments": "ज़रूरी दस्तावेज़",
+    "additionalEligibility": "अतिरिक्त पात्रता",
+    "demographicEligibility": "जनसांख्यिकीय पात्रता",
+    "details": "विवरण",
+    "viewDocument": "योजना दस्तावेज़ देखें",
+    "cannotDisplay": "यह दस्तावेज़ आपके ब्राउज़र में प्रदर्शित नहीं किया जा सकता है।",
+    "downloadDoc": "PDF डाउनलोड करने के लिए यहाँ क्लिक करें"
+  },
+  "searchBar": {
+    "placeholder": "नाम से खोजें"
+  },
+  "days": {
+    "monday": "सोमवार",
+    "tuesday": "मंगलवार",
+    "wednesday": "बुधवार",
+    "thursday": "गुरुवार",
+    "friday": "शुक्रवार",
+    "saturday": "शनिवार",
+    "sunday": "रविवार"
+  },
+  "weatherDetail": {
+    "temperature": "तापमान",
+    "humidity": "आर्द्रता",
+    "windSpeed": "हवा की गति",
+    "forecastFor": "का मौसम पूर्वानुमान",
+    "noData": "इस दिन के लिए डेटा उपलब्ध नहीं।"
+  },
+  "nextWeekWeather": {
+    "nextDays": "अगले 5 दिन"
+  },
+  "monthsShort": {
+    "jan": "जनवरी",
+    "feb": "फरवरी",
+    "mar": "मार्च",
+    "apr": "अप्रैल",
+    "may": "मई",
+    "jun": "जून",
+    "jul": "जुलाई",
+    "aug": "अगस्त",
+    "sep": "सितंबर",
+    "oct": "अक्टूबर",
+    "nov": "नवंबर",
+    "dec": "दिसंबर"
+  }
+}

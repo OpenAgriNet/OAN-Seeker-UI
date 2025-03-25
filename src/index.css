@@ -1,6 +1,187 @@
+@font-face {
+  font-family: "HelveticaNow";
+  src: url("../src/assets/fonts/HelveticaNow-Regular.woff2") format("woff2"),
+       url("../src/assets/fonts/HelveticaNow-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HelveticaNow";
+  src: url("../src/assets/fonts/HelveticaNow-Bold.woff2") format("woff2"),
+       url("../src/assets/fonts/HelveticaNow-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Poppins", sans-serif !important;
+  background-color: rgba(255, 255, 255, 1);
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif !important;
+}
+
+.page-content {
+  margin: 10px;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.landing-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url("../src/assets/landing.jpg") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #00000085;
+  z-index: 2;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+  padding: 20px;
+}
+
+.logo {
+  width: 86px;
+  height: 43px;
+  margin-bottom: 10px;
+}
+
+.main-heading {
+  font-size: 24px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.language-label {
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Keep full width for mobile by default */
+.language-select {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  outline: none;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.language-button-row {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .language-button-row {
+    align-items: flex-start;
+    gap: 0px; 
+  }
+
+  .language-select {
+    width: 250px !important;
+    margin-bottom: 0;
+  }
+}
+
+.cta-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #f0f0f0;
+}
+
+.text-container {
+  position: absolute;
+  width: 90%;
+  text-align: left;
+  z-index: 2;
+  color: #fff !important;
+}
+
+.text-container h1 {
+  font-size: 40px !important;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.text-container h2 {
+  font-size: 40px !important;
+  font-weight: 400;
+  line-height: 113.99999999999999%;
+}
+
+.text-container p {
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.button {
+  background-color: rgba(178, 210, 53, 1);
+  color: rgba(0, 0, 0, 1);
+  font-size: 1rem;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+  margin-top: 1rem;
+}
+
+.button:hover {
+  background-color: rgba(178, 210, 53, 1);
+}
+
+@media (min-width: 768px) {
+  .button {
+    width: 250px; 
+    margin-top: 0;
+  }
+}
+
+.css-1l6hn1g-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
+  color: rgba(49, 92, 10, 1) !important;
 }
