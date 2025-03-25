@@ -31,14 +31,27 @@ Additionally, **AgriNet** features an interactive **Chatbot** that enables users
 
 ## **Installation**
 
-To get started, clone the repository and install the required dependencies:
+**To get started, clone the repository and install the required dependencies:**
 
 ```bash
-`git clone https://github.com/tekdi/OAN-Seeker-UI.git`
-`cd OAN-Seeker-UI`
+git clone https://github.com/tekdi/OAN-Seeker-UI.git
+```
+
+**Navigate to the project folder:**
+
+```bash
+cd OAN-Seeker-UI
+```
 
 **Install dependencies:**
-`npm install`
+
+```bash
+npm install
+```
 
 **Start the development server with the following command:**
-`npm run dev`
+
+```bash
+npm run dev
+```
+```
