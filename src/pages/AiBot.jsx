@@ -1,11 +1,18 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { Box, TextField, IconButton, Typography, Button } from "@mui/material";
+import {
+  Box,
+  TextField,
+  IconButton,
+  Typography,
+  Button,
+  Tooltip,
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import MicIcon from "@mui/icons-material/Mic";
+import StopIcon from "@mui/icons-material/Stop";
 import { sendQueryToBot, fetchWeather } from "../api/apiService";
 import { LocationContext } from "../context/LocationContext";
 import { LanguageContext } from "../context/LanguageContext";
-import MicIcon from "@mui/icons-material/Mic";
-import StopIcon from "@mui/icons-material/Stop";
 
 // Extended responses dictionary
 const responses = {
@@ -17,7 +24,6 @@ const responses = {
     optionYesLang: "Yes, this is my Language",
     optionNoLang: "No, I want to change my language",
     changeLanguage: "Please select your preferred language from the Header..",
-
     farmingPrompt: "Ask me anything related to farming.",
     weatherConfirm: (district) =>
       `I see you are interested in weather updates. Please confirm if this is your location: <strong>${district}</strong>`,
@@ -49,7 +55,6 @@ const responses = {
     optionYesLang: "हाँ, यही मेरी भाषा है",
     optionNoLang: "नहीं, मैं अपनी भाषा बदलना चाहता हूँ",
     changeLanguage: "कृपया हेडर से अपनी पसंदीदा भाषा चुनें..",
-
     farmingPrompt: "कृषि से संबंधित कोई भी सवाल पूछें।",
     weatherConfirm: (district) =>
       `मुझे दिख रहा है कि आप मौसम अपडेट्स में रुचि रखते हैं। कृपया पुष्टि करें कि क्या यह आपका स्थान है: <strong>${district}</strong>`,
@@ -84,7 +89,6 @@ const responses = {
     optionYesLang: "होय, ही माझी भाषा आहे",
     optionNoLang: "नाही, मला माझी भाषा बदलायची आहे",
     changeLanguage: "कृपया हेडरमधून तुमची आवडती भाषा निवडा..",
-
     farmingPrompt: "कृषीशी संबंधित काहीही प्रश्न विचारा.",
     weatherConfirm: (district) =>
       `मला दिसतेय की तुम्ही हवामानाच्या अपडेट्समध्ये रस घेत आहात. कृपया पुष्टी करा की हा तुमचा स्थान आहे: <strong>${district}</strong>`,
@@ -257,13 +261,13 @@ function formatForecastData(forecastItems, lang = "en") {
 
       if (tags) {
         const tempTag =
-          tags.find((tag) => tag.descriptor.code === "temperature") ||
-          tags.find((tag) => tag.descriptor.code === "min-temp");
+          tags.find((tag) => tag.descriptor.code === "Temperature") ||
+          tags.find((tag) => tag.descriptor.code === "Min-Temp");
         const windTag = tags.find(
-          (tag) => tag.descriptor.code === "wind-speed"
+          (tag) => tag.descriptor.code === "Wind-Speed"
         );
         const humidityTag = tags.find(
-          (tag) => tag.descriptor.code === "humidity"
+          (tag) => tag.descriptor.code === "Humidity"
         );
         if (tempTag) temperature = formatValue(tempTag.value);
         if (windTag) windSpeed = formatValue(windTag.value);
@@ -308,6 +312,9 @@ function AiBot() {
 
   // If user is asked to pick language from the header
   const [awaitLanguageChange, setAwaitLanguageChange] = useState(false);
+
+  // Tooltip state for voice prompt
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const messagesEndRef = useRef(null);
 
@@ -384,19 +391,30 @@ function AiBot() {
     confirmedLocation,
     language,
   ]);
+  function removeAllBotOptions(messages) {
+    return messages.map((m) => {
+      if (m.sender === "bot" && m.options) {
+        return { ...m, options: null };
+      }
+      return m;
+    });
+  }
 
-  // If user changes language from the header
   useEffect(() => {
     if (headerChange && language !== confirmedLang) {
+      // 1) Remove old options from all bot messages
+      setMessages((prev) => removeAllBotOptions(prev));
+
+      // 2) Then continue with your normal flow
       (async () => {
-        // 1) Add a user-side message with the new language name
+        // Add a user-side message with the new language name
         setMessages((prev) => [
           ...prev,
           { text: getLangDisplay(language), sender: "user" },
         ]);
         setUserSubmitted(true);
 
-        // 2) Then show the bot "confirm language" with typing effect
+        // Show the bot "confirm language" with typing effect
         await simulateTypingThenAddMessage(
           getInitialLanguageConfirmation(language)
         );
@@ -419,6 +437,17 @@ function AiBot() {
     });
   }
 
+  function removeLastBotOptions(messages) {
+    const newMsgs = [...messages];
+    for (let i = newMsgs.length - 1; i >= 0; i--) {
+      if (newMsgs[i].sender === "bot" && newMsgs[i].options) {
+        newMsgs[i] = { ...newMsgs[i], options: null };
+        break;
+      }
+    }
+    return newMsgs;
+  }
+
   // Handle user text input
   async function handleSend() {
     if (!input.trim()) return;
@@ -426,6 +455,8 @@ function AiBot() {
     // Add user message
     setMessages((prev) => [...prev, { text: input, sender: "user" }]);
     setUserSubmitted(true);
+
+    setMessages((prev) => removeLastBotOptions(prev));
 
     const userQuery = input;
     setInput("");
@@ -464,7 +495,7 @@ function AiBot() {
       });
     } else {
       await simulateTypingThenAddMessage({
-        text: "Thank you! (Feedback prompt removed for non-govt flow.)",
+        text: r.govtFeedbackPrompt,
         sender: "bot",
         options: [r.optionGoBack],
       });
@@ -477,7 +508,7 @@ function AiBot() {
     setMessages((prev) => {
       const newMsgs = [...prev];
       for (let i = newMsgs.length - 1; i >= 0; i--) {
-        if (newMsgs[i].options) {
+        if (newMsgs[i].sender === "bot" && newMsgs[i].options) {
           newMsgs[i] = { ...newMsgs[i], options: null };
           break;
         }
@@ -502,6 +533,13 @@ function AiBot() {
 
     // If user clicks "No, I want to change my language"
     if (option === r.optionNoLang) {
+      // Possibly remove ALL options from older messages, too
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.sender === "bot" && msg.options ? { ...msg, options: null } : msg
+        )
+      );
+
       await simulateTypingThenAddMessage({
         text: r.changeLanguage,
         sender: "bot",
@@ -666,14 +704,12 @@ function AiBot() {
       return;
     }
 
-    // If none matched
     await simulateTypingThenAddMessage({
       text: r.unknownOption,
       sender: "bot",
     });
   }
 
-  // Possibly disable input if waiting for user to pick location or language
   const lastMessage = messages[messages.length - 1];
   const isLastMsgBot = lastMessage?.sender === "bot";
   const hasOptions =
@@ -699,14 +735,16 @@ function AiBot() {
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
         const reader = new FileReader();
         reader.onloadend = () => {
-          // Extract only the base64 content (without the Data URL prefix)
           const base64Audio = reader.result.split(",")[1];
-          // Add a user message indicating voice input was captured
-          setMessages((prev) => [
-            ...prev,
-            { text: "Voice message received", sender: "user" },
-          ]);
-          // Send the voice query
+          setMessages((prev) => {
+            const cleared = removeLastBotOptions(prev);
+            return [
+              ...cleared,
+              { text: "Voice message received", sender: "user" },
+            ];
+          });
+          setUserSubmitted(true);
+
           sendQueryToBot(
             "",
             language,
@@ -716,19 +754,11 @@ function AiBot() {
             base64Audio
           ).then(async () => {
             const r = responses[language] || responses.en;
-            if (selectedService === "govtSchemes") {
-              await simulateTypingThenAddMessage({
-                text: r.govtFeedbackPrompt,
-                sender: "bot",
-                options: [r.optionGoBack],
-              });
-            } else {
-              await simulateTypingThenAddMessage({
-                text: "Thank you! (Feedback prompt removed for non-govt flow.)",
-                sender: "bot",
-                options: [r.optionGoBack],
-              });
-            }
+            await simulateTypingThenAddMessage({
+              text: r.govtFeedbackPrompt,
+              sender: "bot",
+              options: [r.optionGoBack],
+            });
           });
         };
         reader.readAsDataURL(audioBlob);
@@ -736,6 +766,12 @@ function AiBot() {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
+      // Show tooltip and play voice prompt
+      setTooltipOpen(true);
+      // playVoicePrompt();
+      setTimeout(() => {
+        setTooltipOpen(false);
+      }, 3000);
     } catch (error) {
       console.error("Error starting recording:", error);
     }
@@ -747,6 +783,14 @@ function AiBot() {
       setIsRecording(false);
     }
   };
+
+  // Determine the voice prompt text for the tooltip
+  const voicePromptText =
+    {
+      en: "Speak now",
+      hi: "अब बोलें",
+      mr: "आता बोला",
+    }[language] || "Speak now";
 
   return (
     <Box
@@ -924,24 +968,33 @@ function AiBot() {
             }
           />
 
-          {/* Microphone / Stop Icon Button */}
-          <IconButton
-            onClick={isRecording ? stopRecording : startRecording}
-            disabled={
-              loading ||
-              waitingForOptions ||
-              awaitLanguageChange ||
-              selectedService === "weather"
-            }
-            sx={{
-              backgroundColor: "black",
-              color: "white",
-              "&:hover": { backgroundColor: "black" },
-              marginRight: "8px",
-            }}
+          {/* Microphone / Stop Icon Button with Tooltip */}
+          <Tooltip
+            title={voicePromptText}
+            open={tooltipOpen}
+            arrow
+            placement="top"
           >
-            {isRecording ? <StopIcon /> : <MicIcon />}
-          </IconButton>
+            <span>
+              <IconButton
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={
+                  loading ||
+                  waitingForOptions ||
+                  awaitLanguageChange ||
+                  selectedService === "weather"
+                }
+                sx={{
+                  backgroundColor: "black",
+                  color: "white",
+                  "&:hover": { backgroundColor: "black" },
+                  marginRight: "8px",
+                }}
+              >
+                {isRecording ? <StopIcon /> : <MicIcon />}
+              </IconButton>
+            </span>
+          </Tooltip>
 
           {/* Send Icon Button */}
           <IconButton

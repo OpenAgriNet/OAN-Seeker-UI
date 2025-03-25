@@ -74,7 +74,9 @@
     "additionalEligibility": "Additional Eligibility",
     "demographicEligibility": "Demographic Eligibility",
     "details": "Details",
-    "viewDocument": "View Scheme Document"
+    "viewDocument": "View Scheme Document",
+    "cannotDisplay": "This document can’t be displayed in your browser.",
+    "downloadDoc": "Click here to download the PDF"
   },
   "searchBar": {
     "placeholder": "Search By Name"

@@ -27,7 +27,7 @@
       "afternoon": "नमस्कार",
       "evening": "शुभ संध्याकाळ"
     },
-     "noData": "{{location}} साठी कोणतीही हवामान माहिती उपलब्ध नाही."
+    "noData": "{{location}} साठी कोणतीही हवामान माहिती उपलब्ध नाही."
   },
   "currentWeather": {
     "noData": "डेटा उपलब्ध नाही",
@@ -75,7 +75,9 @@
     "additionalEligibility": "अतिरिक्त पात्रता",
     "demographicEligibility": "लोकसंख्याशास्त्रीय पात्रता",
     "details": "तपशील",
-    "viewDocument": "योजनेचे दस्तऐवज पहा"
+    "viewDocument": "योजनेचे दस्तऐवज पहा",
+    "cannotDisplay": "हा दस्तऐवज तुमच्या ब्राउझरमध्ये प्रदर्शित केला जाऊ शकत नाही.",
+    "downloadDoc": "PDF डाउनलोड करण्यासाठी येथे क्लिक करा"
   },
   "searchBar": {
     "placeholder": "नावाने शोधा"

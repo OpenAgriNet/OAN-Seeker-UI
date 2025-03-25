@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { LocationContext } from "../context/LocationContext";
 import { LanguageContext } from "../context/LanguageContext";
 import LocationPopup from "../components/LocationPopup";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -115,52 +116,53 @@ const Header = () => {
 
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ overflow: "hidden" }}
-          >
-            <Box
-              sx={{
+          <ClickAwayListener onClickAway={() => setOpen(false)}>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0, transition: { duration: 0 } }} // ← no animation on close
+              transition={{ duration: 0.3 }}
+              style={{
                 position: "absolute",
-                top: "56px",
+                top: 56,
                 left: 0,
                 width: "100%",
-                backgroundColor: "#000000de",
-                boxShadow: 2,
-                color: "white",
-                textAlign: "left",
-                py: 2,
+                overflow: "hidden",
               }}
             >
-              <MenuItem
-                onClick={() => {
-                  handleMenuToggle();
-                  navigate("/aboutus");
+              <Box
+                sx={{
+                  backgroundColor: "#000000de",
+                  py: 2,
+                  color: "white",
+                  textAlign: "left",
                 }}
-                sx={{ display: "flex", alignItems: "center" }}
               >
-                <ListItemIcon sx={{ minWidth: "40px", color: "white" }}>
-                  <InfoIcon />
-                </ListItemIcon>
-                <ListItemText primary={t("header.aboutUs", "About Us")} />
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  handleMenuToggle();
-                  navigate("/contactus");
-                }}
-                sx={{ display: "flex", alignItems: "center" }}
-              >
-                <ListItemIcon sx={{ minWidth: "40px", color: "white" }}>
-                  <AlternateEmailIcon />
-                </ListItemIcon>
-                <ListItemText primary={t("header.contactUs", "Contact Us")} />
-              </MenuItem>
-            </Box>
-          </motion.div>
+                <MenuItem
+                  onClick={() => {
+                    setOpen(false);
+                    navigate("/aboutus");
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "white" }}>
+                    <InfoIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={t("header.aboutUs", "About Us")} />
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setOpen(false);
+                    navigate("/contactus");
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "white" }}>
+                    <AlternateEmailIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={t("header.contactUs", "Contact Us")} />
+                </MenuItem>
+              </Box>
+            </motion.div>
+          </ClickAwayListener>
         )}
       </AnimatePresence>
 

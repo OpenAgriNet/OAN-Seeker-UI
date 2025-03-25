@@ -20,6 +20,7 @@ const SchemesDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const scheme = location.state?.scheme;
+  console.log("scheme", scheme);
   const [openMedia, setOpenMedia] = useState(false);
 
   if (!scheme) {
@@ -64,6 +65,14 @@ const SchemesDetails = () => {
   const handleCloseMedia = () => {
     setOpenMedia(false);
   };
+  const handleBack = () => {
+    if (window.history.state?.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/schemes");
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -77,17 +86,11 @@ const SchemesDetails = () => {
           }}
         >
           {/* Make the entire row clickable */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              cursor: "pointer",
-            }}
-            onClick={() => navigate(-1)}
-          >
-            <ArrowBackIcon />
-            <Typography variant="h5" fontWeight="400" fontSize={"22px"}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton onClick={handleBack}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h5" fontWeight="400" fontSize="22px">
               {scheme.title}
             </Typography>
           </Box>
@@ -157,8 +160,6 @@ const SchemesDetails = () => {
               </Typography>
             </Box>
           )}
-
-          {/* Eligibility & Required Documents (bullet list per item) */}
           {Object.keys(groupedTags).length > 0 && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6">
@@ -194,8 +195,6 @@ const SchemesDetails = () => {
               )}
             </Box>
           )}
-
-          {/* Scheme Details */}
           <Box sx={{ mt: 3 }}>
             <Typography variant="h6">
               {t("schemesDetails.details", "Details")}
@@ -209,8 +208,6 @@ const SchemesDetails = () => {
               {scheme.long_desc}
             </Typography>
           </Box>
-
-          {/* Document Button - Opens Media Popup */}
           {scheme.media && (
             <Box sx={{ mt: 3, textAlign: "center" }}>
               <Button
@@ -238,8 +235,6 @@ const SchemesDetails = () => {
           )}
         </Box>
       </Box>
-
-      {/* Media Popup */}
       <Dialog
         open={openMedia}
         onClose={handleCloseMedia}
@@ -262,15 +257,41 @@ const SchemesDetails = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          {/* Use an iframe to display the media content */}
-          <Box
-            component="iframe"
-            src={scheme.media}
+          <object
+            data={scheme.media}
+            type="application/pdf"
             width="100%"
             height="500px"
-            sx={{ border: "none" }}
-            title={scheme.title}
-          />
+            aria-label={scheme.title}
+          >
+            <Box sx={{ textAlign: "center", p: 4 }}>
+              <Typography variant="body1" gutterBottom>
+                {t(
+                  "schemesDetails.cannotDisplay",
+                  "This document can’t be displayed in your browser."
+                )}
+              </Typography>
+              <Button
+                href={scheme.media}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="contained"
+                sx={{
+                  textTransform: "none",
+                  backgroundColor: "#b2d235",
+                  color: "rgba(0, 0, 0, 1)",
+                  fontSize: "16px",
+                  borderRadius: "8px",
+                  boxShadow: "none",
+                }}
+              >
+                {t(
+                  "schemesDetails.downloadDoc",
+                  "Click here to download the PDF"
+                )}
+              </Button>
+            </Box>
+          </object>
         </DialogContent>
       </Dialog>
     </>
