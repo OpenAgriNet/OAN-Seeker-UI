@@ -34,7 +34,7 @@ Additionally, **AgriNet** features an interactive **Chatbot** that enables users
 **To get started, clone the repository and install the required dependencies:**
 
 ```bash
-git clone https://github.com/tekdi/OAN-Seeker-UI.git
+git clone https://github.com/OpenAgriNet/OAN-Seeker-UI.git  
 ```
 
 **Navigate to the project folder:**
